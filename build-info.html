@@ -3,744 +3,797 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Build Information - X-ORBIT</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Build Information — X-ORBIT</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
-    color: #e8f0ff;
-    min-height: 100vh;
-    padding: 20px;
-    line-height: 1.6;
+  font-family: 'Inter', sans-serif;
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  padding: 32px 24px;
+  line-height: 1.6;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+.container { max-width: 1100px; margin: 0 auto; }
 
+/* ── Header ─────────────────────────────── */
 .header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding: 30px;
-    background: rgba(120, 80, 255, 0.1);
-    border-radius: 20px;
-    border: 1px solid rgba(120, 80, 255, 0.2);
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.header-top {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 4px;
 }
 
 .header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #7d5cff 0%, #3c82ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.version-badge {
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
 }
 
 .header p {
-    color: #a8b4d9;
-    font-size: 1.1rem;
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.3px;
 }
 
+/* ── Grid ───────────────────────────────── */
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 1px;
 }
 
 .card {
-    background: rgba(15, 15, 35, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    border: 1px solid rgba(120, 80, 255, 0.2);
-    padding: 25px;
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    border-color: rgba(120, 80, 255, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(120, 80, 255, 0.2);
+  background: #000;
+  padding: 24px;
 }
 
 .card-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(120, 80, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
-.card-header i {
-    font-size: 1.5rem;
-    color: #7d5cff;
-    margin-right: 12px;
+.card-header-dot {
+  width: 6px; height: 6px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .card-header h2 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #e8f0ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
 }
 
+/* ── Info rows ──────────────────────────── */
 .info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-
-.info-item:last-child {
-    border-bottom: none;
-}
+.info-item:last-child { border-bottom: none; }
 
 .info-label {
-    font-weight: 500;
-    color: #d0d8ff;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  flex-shrink: 0;
 }
 
 .info-value {
-    color: #a8b4d9;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    text-align: right;
-    max-width: 200px;
-    word-break: break-all;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  font-family: 'Courier New', monospace;
+  text-align: right;
+  word-break: break-all;
 }
 
-.status-indicator {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 8px;
+/* ── Status dot ─────────────────────────── */
+.dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
 }
+.dot-on    { background: #fff; }
+.dot-green { background: #10b981; }
+.dot-off   { background: #ef4444; }
+.dot-warn  { background: rgba(255,255,255,0.4); }
 
-.status-online {
-    background: #10b981;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-}
-
-.status-warning {
-    background: #f59e0b;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-}
-
-.status-error {
-    background: #ef4444;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-}
-
-.performance-bar {
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 8px;
-}
-
-.performance-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #10b981, #3b82f6);
-    border-radius: 3px;
-    transition: width 0.3s ease;
+/* ── Settings grid ──────────────────────── */
+.settings-card {
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 24px;
+  margin-bottom: 1px;
 }
 
 .settings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-top: 18px;
+  overflow: hidden;
 }
 
 .setting-item {
-    background: rgba(120, 80, 255, 0.05);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid rgba(120, 80, 255, 0.1);
+  background: #000;
+  padding: 14px 16px;
 }
 
 .setting-label {
-    font-size: 0.85rem;
-    color: #7d5cff;
-    font-weight: 600;
-    margin-bottom: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 5px;
 }
 
 .setting-value {
-    color: #e8f0ff;
-    font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
 }
 
-.refresh-btn {
-    background: linear-gradient(135deg, #7d5cff 0%, #3c82ff 100%);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 20px auto;
-}
-
-.refresh-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(125, 92, 255, 0.4);
-}
-
-.system-health {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.health-score {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #10b981;
-}
-
+/* ── Uptime display ─────────────────────── */
 .uptime-display {
-    font-size: 1.2rem;
-    color: #7d5cff;
-    font-weight: 600;
-    text-align: center;
-    margin: 20px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin: 8px 0 16px;
+  font-family: 'Courier New', monospace;
 }
 
-.connection-quality {
-    font-weight: 700;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+/* ── Connection quality ─────────────────── */
+.quality-poor    { color: #ef4444; font-weight: 700; }
+.quality-ok      { color: rgba(255,255,255,0.6); font-weight: 700; }
+.quality-splendid { color: #fff; font-weight: 700; }
+
+/* ── Refresh button ─────────────────────── */
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 10px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: all 0.15s ease;
+}
+.refresh-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+.refresh-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spinning { display: inline-block; animation: spin 1s linear infinite; }
+
+/* ── Account emblem ─────────────────────── */
+.account-card {
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 24px;
+  margin-bottom: 1px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
-.quality-poor {
-    color: #ef4444;
+.account-emblem {
+  width: 56px; height: 56px;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.04);
+  text-transform: uppercase;
 }
 
-.quality-ok {
-    color: #f59e0b;
+.account-info { flex: 1; min-width: 200px; }
+
+.account-name {
+  font-size: 16px; font-weight: 700; color: #fff;
+  margin-bottom: 2px;
 }
 
-.quality-splendid {
-    color: #10b981;
+.account-badge {
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 2px 9px;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 14px;
+}
+.account-badge.premium { border-color: rgba(251,191,36,0.5); color: #fbbf24; background: rgba(251,191,36,0.07); }
+
+.uuid-value {
+  filter: blur(4px);
+  transition: filter 0.2s ease;
+  cursor: pointer;
+}
+.uuid-value:hover { filter: none; }
+
+/* ── OS / Activation cards ──────────────── */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 1px;
 }
 
-@media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .header h1 {
-        font-size: 2rem;
-    }
-    
-    .info-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-    
-    .info-value {
-        text-align: left;
-        max-width: 100%;
-    }
+.activation-input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.35);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  padding: 10px 12px;
+  margin-top: 14px;
+  cursor: not-allowed;
+  outline: none;
+  pointer-events: none;
+}
+
+.activation-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 10px;
+  line-height: 1.6;
+  border-left: 1px solid rgba(255,255,255,0.12);
+  padding-left: 10px;
+}
+
+.os-edition {
+  font-size: 20px; font-weight: 700;
+  color: #fff; letter-spacing: -0.3px;
+  margin: 8px 0 4px;
+}
+.os-edition-sub {
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  body { padding: 20px 16px; }
+  .grid { grid-template-columns: 1fr; }
+  .info-item { flex-direction: column; gap: 3px; }
+  .info-value { text-align: left; }
 }
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <h1>X-ORBIT Build Information</h1>
-        <p>System diagnostics and configuration overview</p>
+
+  <div class="header">
+    <div class="header-top">
+      <h1>X-ORBIT Build Information</h1>
+      <span class="version-badge">v5.3.4B Ventas</span>
     </div>
+    <p>System diagnostics and configuration overview</p>
+  </div>
 
-    <div class="grid">
-        <!-- OS Build Information -->
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-rocket"></i>
-                <h2>OS Build Information</h2>
-            </div>
-            <div class="info-item">
-                <span class="info-label">X-ORBIT Version</span>
-                <span class="info-value">5.0.0 Ventas</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Build Number</span>
-                <span class="info-value" id="buildNumber">20251030.040501</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Kernel Version</span>
-                <span class="info-value">X-ORBIT-Core 5.4.2</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Architecture</span>
-                <span class="info-value">x64 (WebAssembly)</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Build Date</span>
-                <span class="info-value">Feb 9, 2026</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Environment</span>
-                <span class="info-value">
-                    <span class="status-indicator status-online"></span>
-                    Production
-                </span>
-            </div>
-        </div>
+  <div class="grid">
 
-        <!-- Device Information -->
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-desktop"></i>
-                <h2>Device Information</h2>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Device Name</span>
-                <span class="info-value" id="deviceName">X-ORBIT-Station</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">IP Address</span>
-                <span class="info-value" id="ipAddress">192.168.1.100</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Display Resolution</span>
-                <span class="info-value" id="displayRes"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Color Depth</span>
-                <span class="info-value" id="colorDepth"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Timezone</span>
-                <span class="info-value" id="timezone"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Language</span>
-                <span class="info-value" id="language"></span>
-            </div>
-        </div>
-
-        <!-- System Performance -->
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-tachometer-alt"></i>
-                <h2>System Performance</h2>
-            </div>
-            <div class="info-item">
-                <span class="info-label">CPU Usage</span>
-                <span class="info-value">
-                    <span id="cpuUsage">23%</span>
-                    <div class="performance-bar">
-                        <div class="performance-fill" style="width: 23%"></div>
-                    </div>
-                </span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Memory Usage</span>
-                <span class="info-value">
-                    <span id="memUsage">67%</span>
-                    <div class="performance-bar">
-                        <div class="performance-fill" style="width: 67%"></div>
-                    </div>
-                </span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Network Status</span>
-                <span class="info-value">
-                    <span class="status-indicator status-online"></span>
-                    Connected (Fast)
-                </span>
-            </div>
-            <div class="system-health">
-                <span>System Health:</span>
-                <span class="health-score">94</span>
-                <span>/100</span>
-            </div>
-        </div>
-
-        <!-- Browser Information -->
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-globe"></i>
-                <h2>Browser Environment</h2>
-            </div>
-            <div class="info-item">
-                <span class="info-label">User Agent</span>
-                <span class="info-value" id="userAgent"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Browser</span>
-                <span class="info-value" id="browserName"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Platform</span>
-                <span class="info-value" id="platform"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">WebGL Support</span>
-                <span class="info-value" id="webglSupport"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Local Storage</span>
-                <span class="info-value" id="localStorage"></span>
-            </div>
-        </div>
-
-        <!-- Network Information -->
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-wifi"></i>
-                <h2>Network Information</h2>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Connection Type</span>
-                <span class="info-value" id="connectionType">4g</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Ping</span>
-                <span class="info-value" id="latency">Testing...</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Jitter</span>
-                <span class="info-value" id="jitter">Testing...</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Connection Quality</span>
-                <span class="info-value">
-                    <span class="connection-quality" id="connectionQuality">Checking...</span>
-                </span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Online Status</span>
-                <span class="info-value">
-                    <span class="status-indicator status-online"></span>
-                    <span id="onlineStatus">Online</span>
-                </span>
-            </div>
-        </div>
-
-        <!-- System Uptime -->
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-clock"></i>
-                <h2>System Uptime</h2>
-            </div>
-            <div class="uptime-display" id="uptimeDisplay">
-                2d 14h 23m 45s
-            </div>
-            <div class="info-item">
-                <span class="info-label">Session Start</span>
-                <span class="info-value" id="sessionStart"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Last Boot</span>
-                <span class="info-value" id="lastBoot"></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Overview -->
+    <!-- OS Build -->
     <div class="card">
-        <div class="card-header">
-            <i class="fas fa-cog"></i>
-            <h2>Current Settings Overview</h2>
-        </div>
-        <div class="settings-grid">
-            <div class="setting-item">
-                <div class="setting-label">Theme</div>
-                <div class="setting-value" id="currentTheme">Dark Mode</div>
-            </div>
-            <div class="setting-item">
-                <div class="setting-label">Dock Position</div>
-                <div class="setting-value" id="dockPosition">Bottom</div>
-            </div>
-            <div class="setting-item">
-                <div class="setting-label">Animations</div>
-                <div class="setting-value" id="animationsEnabled">Enabled</div>
-            </div>
-            <div class="setting-item">
-                <div class="setting-label">Transparency</div>
-                <div class="setting-value" id="transparencyEnabled">Enabled</div>
-            </div>
-            <div class="setting-item">
-                <div class="setting-label">Auto-hide Dock</div>
-                <div class="setting-value" id="autohideDock">Disabled</div>
-            </div>
-            <div class="setting-item">
-                <div class="setting-label">Window Snapping</div>
-                <div class="setting-value" id="windowSnapping">Enabled</div>
-            </div>
-        </div>
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>OS Build</h2>
+      </div>
+      <div class="info-item">
+        <span class="info-label">X-ORBIT Version</span>
+        <span class="info-value">v5.3.4B Ventas</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Build Number</span>
+        <span class="info-value" id="buildNumber">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Kernel Version</span>
+        <span class="info-value">X-ORBIT-Core 5.4.2</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Architecture</span>
+        <span class="info-value">x64 (WebAssembly)</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Build Date</span>
+        <span class="info-value" id="buildDate">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Environment</span>
+        <span class="info-value">
+          <span class="dot dot-on"></span>Production
+        </span>
+      </div>
     </div>
 
-    <button class="refresh-btn" onclick="refreshSystemInfo()">
-        <i class="fas fa-sync-alt"></i>
-        Refresh System Information
-    </button>
+    <!-- Device Information -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>Device Information</h2>
+      </div>
+      <div class="info-item">
+        <span class="info-label">IP Address</span>
+        <span class="info-value" id="ipAddress">Fetching…</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Display Resolution</span>
+        <span class="info-value" id="displayRes">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Color Depth</span>
+        <span class="info-value" id="colorDepth">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Timezone</span>
+        <span class="info-value" id="timezone">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Language</span>
+        <span class="info-value" id="language">—</span>
+      </div>
+    </div>
+
+    <!-- Network -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>Network</h2>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Online Status</span>
+        <span class="info-value" id="onlineStatusRow">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Connection Type</span>
+        <span class="info-value" id="connectionType">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Ping</span>
+        <span class="info-value" id="latency">Testing…</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Jitter</span>
+        <span class="info-value" id="jitter">Testing…</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Quality</span>
+        <span class="info-value">
+          <span id="connectionQuality">Checking…</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Browser -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>Browser Environment</h2>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Browser</span>
+        <span class="info-value" id="browserName">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Platform</span>
+        <span class="info-value" id="platform">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">WebGL</span>
+        <span class="info-value" id="webglSupport">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Local Storage</span>
+        <span class="info-value" id="localStorageStatus">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">User Agent</span>
+        <span class="info-value" id="userAgent" style="font-size:10px;">—</span>
+      </div>
+    </div>
+
+    <!-- Uptime -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>Session Uptime</h2>
+      </div>
+      <div class="uptime-display" id="uptimeDisplay">0s</div>
+      <div class="info-item">
+        <span class="info-label">Session Start</span>
+        <span class="info-value" id="sessionStart">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Last Boot</span>
+        <span class="info-value" id="lastBoot">—</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Account -->
+  <div class="account-card">
+    <div class="account-emblem" id="accountEmblem">?</div>
+    <div class="account-info">
+      <div class="card-header" style="margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="card-header-dot"></div>
+        <h2>Account</h2>
+      </div>
+      <div class="account-name" id="accountName">Loading…</div>
+      <div class="account-badge" id="accountBadge">Standard</div>
+      <div class="info-item">
+        <span class="info-label">Email</span>
+        <span class="info-value" id="accountEmail">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Account ID</span>
+        <span class="info-value" id="accountId">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Device UUID</span>
+        <span class="info-value"><span class="uuid-value" id="deviceUuid" title="Hover to reveal">—</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OS Edition + Activation -->
+  <div class="bottom-grid">
+
+    <!-- OS Edition -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>OS Edition</h2>
+      </div>
+      <div class="os-edition" id="osEdition">X-ORBIT Desktop Lite</div>
+      <div class="os-edition-sub" id="osEditionSub">Standard — limited features</div>
+      <div class="info-item">
+        <span class="info-label">Version</span>
+        <span class="info-value">v5.3.4B Ventas</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Status</span>
+        <span class="info-value"><span class="dot dot-green"></span>Activated</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Licensed to</span>
+        <span class="info-value" id="licensedTo">—</span>
+      </div>
+    </div>
+
+    <!-- Activation -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-dot"></div>
+        <h2>Activation</h2>
+      </div>
+      <div class="info-item" style="border-bottom:none; padding-bottom:0;">
+        <span class="info-label">Activation Status</span>
+        <span class="info-value"><span class="dot dot-green"></span>Activated</span>
+      </div>
+      <input class="activation-input" type="text" id="activationKey" readonly
+             value="Activated via X-ORBIT Account" />
+      <div class="activation-note">
+        X-ORBIT Desktop is activated through your X-ORBIT account. There is no manual
+        activation key — your account subscription and login serve as your licence.
+        To manage your subscription, visit <span style="color:rgba(255,255,255,0.55);">xorbit.org/support</span>.
+      </div>
+    </div>
+
+  </div>
+
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">
+    <span id="refreshIcon">↻</span>
+    Refresh
+  </button>
+
 </div>
 
 <script>
-function getDeviceName() {
-    const funnyNames = [
-        'Computron-3000', 'The-Procrastinator', 'Caffeine-Powered-Beast',
-        'Debugging-Nightmare', 'Code-Monkey-Station', 'Syntax-Error-Generator',
-        'The-Blue-Screen-Special', 'Infinite-Loop-Machine', 'Stack-Overflow-Central',
-        'Rubber-Duck-Debugger', 'The-Feature-Creep', 'Legacy-Code-Survivor',
-        'Deadline-Panic-Box', 'The-Merge-Conflict', 'Spaghetti-Code-Maker',
-        'The-Documentation-Avoider', 'Production-Bug-Factory', 'The-Refactor-Resister',
-        'Memory-Leak-Simulator', 'The-Quick-Fix-Machine'
-    ];
-    
-    const randomIndex = Math.floor(Math.random() * funnyNames.length);
-    document.getElementById('deviceName').textContent = funnyNames[randomIndex];
-}
+// ── Build number & date ──────────────────────────────────────────────
+const BUILD_NUMBER = '20260303.053404';
+const BUILD_DATE   = 'Mar 3, 2026';
+document.getElementById('buildNumber').textContent = BUILD_NUMBER;
+document.getElementById('buildDate').textContent   = BUILD_DATE;
 
+// ── System info ──────────────────────────────────────────────────────
 function getSystemInfo() {
-    document.getElementById('userAgent').textContent = navigator.userAgent.substring(0, 50) + '...';
-    document.getElementById('platform').textContent = navigator.platform;
-    document.getElementById('language').textContent = navigator.language;
-    document.getElementById('displayRes').textContent = `${screen.width} × ${screen.height}`;
-    document.getElementById('colorDepth').textContent = `${screen.colorDepth}-bit`;
-    
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.getElementById('timezone').textContent = timezone;
-    
-    let browserName = 'Unknown';
-    if (navigator.userAgent.includes('Chrome')) browserName = 'Chrome';
-    else if (navigator.userAgent.includes('Firefox')) browserName = 'Firefox';
-    else if (navigator.userAgent.includes('Safari')) browserName = 'Safari';
-    else if (navigator.userAgent.includes('Edge')) browserName = 'Edge';
-    document.getElementById('browserName').textContent = browserName;
-    
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    document.getElementById('webglSupport').textContent = gl ? 'Supported' : 'Not Supported';
-    
-    try {
-        localStorage.setItem('test', 'test');
-        localStorage.removeItem('test');
-        document.getElementById('localStorage').textContent = 'Available';
-    } catch(e) {
-        document.getElementById('localStorage').textContent = 'Not Available';
-    }
-    
-    performNetworkTest();
-    
-    document.getElementById('onlineStatus').textContent = navigator.onLine ? 'Online' : 'Offline';
-    const statusIndicator = document.querySelector('#onlineStatus').previousElementSibling;
-    statusIndicator.className = `status-indicator ${navigator.onLine ? 'status-online' : 'status-error'}`;
-    
-    getDeviceName();
-    
-    fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('ipAddress').textContent = data.ip;
-        })
-        .catch(() => {
-            document.getElementById('ipAddress').textContent = '192.168.1.100';
-        });
+  document.getElementById('displayRes').textContent   = `${screen.width} × ${screen.height}`;
+  document.getElementById('colorDepth').textContent   = `${screen.colorDepth}-bit`;
+  document.getElementById('timezone').textContent     = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  document.getElementById('language').textContent     = navigator.language;
+  document.getElementById('platform').textContent     = navigator.platform;
+  document.getElementById('userAgent').textContent    = navigator.userAgent.substring(0, 60) + '…';
+
+  let browser = 'Unknown';
+  const ua = navigator.userAgent;
+  if (ua.includes('Edg'))     browser = 'Edge';
+  else if (ua.includes('Chrome'))  browser = 'Chrome';
+  else if (ua.includes('Firefox')) browser = 'Firefox';
+  else if (ua.includes('Safari'))  browser = 'Safari';
+  document.getElementById('browserName').textContent = browser;
+
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  document.getElementById('webglSupport').textContent = gl ? 'Supported' : 'Not Supported';
+
+  try {
+    localStorage.setItem('_t', '1');
+    localStorage.removeItem('_t');
+    document.getElementById('localStorageStatus').textContent = 'Available';
+  } catch(e) {
+    document.getElementById('localStorageStatus').textContent = 'Not Available';
+  }
+
+  const online = navigator.onLine;
+  document.getElementById('onlineStatusRow').innerHTML =
+    `<span class="dot ${online ? 'dot-on' : 'dot-off'}"></span>${online ? 'Online' : 'Offline'}`;
+
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(d => document.getElementById('ipAddress').textContent = d.ip)
+    .catch(() => document.getElementById('ipAddress').textContent = 'Unavailable');
 }
 
+// ── Network test ─────────────────────────────────────────────────────
 async function performNetworkTest() {
-    document.getElementById('latency').textContent = 'Testing...';
-    document.getElementById('jitter').textContent = 'Testing...';
-    document.getElementById('connectionQuality').textContent = 'Checking...';
-    
-    try {
-        const pingResults = [];
-        
-        // Perform 5 ping tests
-        for (let i = 0; i < 5; i++) {
-            const startTime = performance.now();
-            await fetch('https://httpbin.org/get?t=' + Date.now(), { 
-                method: 'HEAD',
-                mode: 'no-cors',
-                cache: 'no-cache'
-            });
-            const endTime = performance.now();
-            pingResults.push(endTime - startTime);
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        
-        // Calculate average ping
-        const avgPing = Math.round(pingResults.reduce((a, b) => a + b, 0) / pingResults.length);
-        
-        // Calculate jitter (difference between max and min ping)
-        const jitter = Math.round(Math.max(...pingResults) - Math.min(...pingResults));
-        
-        document.getElementById('latency').textContent = avgPing + 'ms';
-        document.getElementById('jitter').textContent = jitter + 'ms';
-        
-        // Determine connection quality
-        let quality = 'Splendid';
-        let qualityClass = 'quality-splendid';
-        
-        if (avgPing > 100 || jitter > 30) {
-            quality = 'Poor';
-            qualityClass = 'quality-poor';
-        } else if (avgPing > 50 || jitter > 15) {
-            quality = 'Ok';
-            qualityClass = 'quality-ok';
-        }
-        
-        const qualityElement = document.getElementById('connectionQuality');
-        qualityElement.textContent = quality;
-        qualityElement.className = 'connection-quality ' + qualityClass;
-        
-        if (navigator.connection) {
-            document.getElementById('connectionType').textContent = navigator.connection.effectiveType || 'Unknown';
-        } else {
-            document.getElementById('connectionType').textContent = 'Unknown';
-        }
-    } catch (error) {
-        // Fallback to simulated values
-        const avgPing = Math.floor(Math.random() * 60) + 20;
-        const jitter = Math.floor(Math.random() * 20) + 5;
-        
-        document.getElementById('latency').textContent = avgPing + 'ms';
-        document.getElementById('jitter').textContent = jitter + 'ms';
-        
-        let quality = 'Splendid';
-        let qualityClass = 'quality-splendid';
-        
-        if (avgPing > 100 || jitter > 30) {
-            quality = 'Poor';
-            qualityClass = 'quality-poor';
-        } else if (avgPing > 50 || jitter > 15) {
-            quality = 'Ok';
-            qualityClass = 'quality-ok';
-        }
-        
-        const qualityElement = document.getElementById('connectionQuality');
-        qualityElement.textContent = quality;
-        qualityElement.className = 'connection-quality ' + qualityClass;
-        
-        document.getElementById('connectionType').textContent = '4g';
+  document.getElementById('latency').textContent        = 'Testing…';
+  document.getElementById('jitter').textContent         = 'Testing…';
+  document.getElementById('connectionQuality').textContent = 'Checking…';
+  document.getElementById('connectionQuality').className   = '';
+
+  if (navigator.connection) {
+    document.getElementById('connectionType').textContent =
+      navigator.connection.effectiveType || 'Unknown';
+  } else {
+    document.getElementById('connectionType').textContent = 'Unknown';
+  }
+
+  try {
+    const pings = [];
+    for (let i = 0; i < 5; i++) {
+      const t0 = performance.now();
+      await fetch('https://httpbin.org/get?t=' + Date.now(), {
+        method: 'HEAD', mode: 'no-cors', cache: 'no-cache'
+      });
+      pings.push(performance.now() - t0);
+      await new Promise(r => setTimeout(r, 100));
     }
+    const avg    = Math.round(pings.reduce((a,b) => a+b, 0) / pings.length);
+    const jitter = Math.round(Math.max(...pings) - Math.min(...pings));
+    setNetworkResults(avg, jitter);
+  } catch {
+    const avg    = Math.floor(Math.random() * 60) + 20;
+    const jitter = Math.floor(Math.random() * 20) + 5;
+    setNetworkResults(avg, jitter);
+  }
 }
 
+function setNetworkResults(avg, jitter) {
+  document.getElementById('latency').textContent = avg + 'ms';
+  document.getElementById('jitter').textContent  = jitter + 'ms';
+
+  const el = document.getElementById('connectionQuality');
+  if (avg > 100 || jitter > 30) {
+    el.textContent = 'Poor'; el.className = 'quality-poor';
+  } else if (avg > 50 || jitter > 15) {
+    el.textContent = 'OK'; el.className = 'quality-ok';
+  } else {
+    el.textContent = 'Splendid'; el.className = 'quality-splendid';
+  }
+}
+
+// ── Uptime ───────────────────────────────────────────────────────────
 function updateUptime() {
-    let indexLoadTime;
-    
-    try {
-        if (window.parent && window.parent.performance && window.parent.performance.timing) {
-            indexLoadTime = window.parent.performance.timing.navigationStart;
-        } else {
-            indexLoadTime = performance.timing.navigationStart;
-        }
-    } catch (e) {
-        indexLoadTime = performance.timing.navigationStart;
+  let startMs;
+
+  // Try parent frame first (X-ORBIT app load time)
+  try {
+    if (window.parent && window.parent !== window && window.parent.performance) {
+      startMs = window.parent.performance.timeOrigin
+             || window.parent.performance.timing?.navigationStart;
     }
-    
-    const currentTime = Date.now();
-    const uptime = currentTime - indexLoadTime;
-    
-    const days = Math.floor(uptime / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((uptime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((uptime % (1000 * 60)) / 1000);
-    
-    let uptimeText = '';
-    if (days > 0) {
-        uptimeText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    } else if (hours > 0) {
-        uptimeText = `${hours}h ${minutes}m ${seconds}s`;
-    } else if (minutes > 0) {
-        uptimeText = `${minutes}m ${seconds}s`;
-    } else {
-        uptimeText = `${seconds}s`;
-    }
-    
-    document.getElementById('uptimeDisplay').textContent = uptimeText;
-    
-    const sessionStartTime = new Date(indexLoadTime);
-    document.getElementById('sessionStart').textContent = sessionStartTime.toLocaleString();
-    document.getElementById('lastBoot').textContent = sessionStartTime.toLocaleString();
+  } catch {}
+
+  // Fallback to this frame's origin
+  if (!startMs) {
+    startMs = performance.timeOrigin || performance.timing?.navigationStart;
+  }
+
+  const elapsed = Date.now() - startMs;
+  const d = Math.floor(elapsed / 86400000);
+  const h = Math.floor((elapsed % 86400000) / 3600000);
+  const m = Math.floor((elapsed % 3600000)  / 60000);
+  const s = Math.floor((elapsed % 60000)    / 1000);
+
+  let txt = '';
+  if (d > 0) txt = `${d}d ${h}h ${m}m ${s}s`;
+  else if (h > 0) txt = `${h}h ${m}m ${s}s`;
+  else if (m > 0) txt = `${m}m ${s}s`;
+  else txt = `${s}s`;
+
+  document.getElementById('uptimeDisplay').textContent = txt;
+
+  const start = new Date(startMs);
+  document.getElementById('sessionStart').textContent = start.toLocaleString();
+  document.getElementById('lastBoot').textContent     = start.toLocaleString();
 }
 
-function updatePerformanceData() {
-    const cpuUsage = Math.floor(Math.random() * 40) + 10;
-    const memUsage = Math.floor(Math.random() * 30) + 50;
-    
-    document.getElementById('cpuUsage').textContent = cpuUsage + '%';
-    document.querySelector('.performance-fill').style.width = cpuUsage + '%';
-    
-    document.getElementById('memUsage').textContent = memUsage + '%';
-    document.querySelectorAll('.performance-fill')[1].style.width = memUsage + '%';
+// ── Account ───────────────────────────────────────────────────────────
+const SUPABASE_URL      = "https://rujvmtvozorylfzsqppc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1anZtdHZvem9yeWxmenNxcHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NjQxNDEsImV4cCI6MjA3MzA0MDE0MX0.b7jJz3Se_oXXDwwd0dWQ8-rEvhY0aU4JDHQVioE39iY";
+
+function getStoredEmail() {
+  try {
+    const s = localStorage.getItem("xorbit_auth_session")
+           || sessionStorage.getItem("xorbit_auth_session");
+    if (s) return JSON.parse(s).email;
+    const u = localStorage.getItem("xorbit_remembered_user");
+    if (u) return JSON.parse(u).email;
+  } catch {}
+  return null;
 }
 
-function loadCurrentSettings() {
-    try {
-        if (window.parent && window.parent.settings) {
-            const settings = window.parent.settings;
-            document.getElementById('currentTheme').textContent = settings.theme === 'light' ? 'Light Mode' : 'Dark Mode';
-            document.getElementById('dockPosition').textContent = settings.dockPosition.charAt(0).toUpperCase() + settings.dockPosition.slice(1);
-            document.getElementById('animationsEnabled').textContent = settings.animations ? 'Enabled' : 'Disabled';
-            document.getElementById('transparencyEnabled').textContent = settings.transparency ? 'Enabled' : 'Disabled';
-            document.getElementById('autohideDock').textContent = settings.dockAutohide ? 'Enabled' : 'Disabled';
-            document.getElementById('windowSnapping').textContent = settings.windowSnapping ? 'Enabled' : 'Disabled';
-        }
-    } catch (e) {
-        console.log('Could not access parent settings');
+function getOrCreateDeviceUuid() {
+  let uuid = localStorage.getItem("xorbit_device_uuid");
+  if (!uuid) {
+    uuid = crypto.randomUUID
+      ? crypto.randomUUID()
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    localStorage.setItem("xorbit_device_uuid", uuid);
+  }
+  return uuid;
+}
+
+async function loadAccount() {
+  document.getElementById('deviceUuid').textContent = getOrCreateDeviceUuid();
+
+  // ── Extract name + account ID from stored session ──────────────────
+  let name      = null;
+  let accountId = null;
+  try {
+    const rawSession = localStorage.getItem("xorbit_auth_session")
+                    || sessionStorage.getItem("xorbit_auth_session");
+    if (rawSession) {
+      const sess = JSON.parse(rawSession);
+      name      = sess.user?.user_metadata?.full_name
+               || sess.user?.user_metadata?.name
+               || sess.name
+               || sess.full_name
+               || null;
+      accountId = sess.user?.id || sess.id || null;
     }
-}
+  } catch {}
 
-function refreshSystemInfo() {
-    const btn = document.querySelector('.refresh-btn');
-    const icon = btn.querySelector('i');
-    
-    btn.disabled = true;
-    icon.style.animation = 'spin 1s linear infinite';
-    
-    setTimeout(() => {
-        getSystemInfo();
-        updatePerformanceData();
-        updateUptime();
-        loadCurrentSettings();
-        
-        btn.disabled = false;
-        icon.style.animation = '';
-    }, 1500);
-}
-
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+  try {
+    const rawUser = localStorage.getItem("xorbit_remembered_user");
+    if (rawUser) {
+      const u = JSON.parse(rawUser);
+      if (!name)      name      = u.name || u.full_name || u.username || null;
+      if (!accountId) accountId = u.id || null;
     }
-`;
-document.head.appendChild(style);
+  } catch {}
 
-document.addEventListener('DOMContentLoaded', function() {
-    getSystemInfo();
-    updatePerformanceData();
-    updateUptime();
-    loadCurrentSettings();
-    
-    setInterval(updatePerformanceData, 5000);
-    setInterval(updateUptime, 1000);
+  const email = getStoredEmail();
+  if (!email) {
+    document.getElementById('accountName').textContent   = 'Not signed in';
+    document.getElementById('accountEmblem').textContent = '?';
+    document.getElementById('accountEmail').textContent  = '—';
+    document.getElementById('accountId').textContent     = '—';
+    document.getElementById('licensedTo').textContent    = '—';
+    return;
+  }
+
+  const displayName = name || email.split('@')[0];
+  document.getElementById('accountEmail').textContent   = email;
+  document.getElementById('accountName').textContent    = displayName;
+  document.getElementById('accountEmblem').textContent  = displayName[0].toUpperCase();
+  document.getElementById('accountId').textContent      = accountId || '—';
+  document.getElementById('licensedTo').textContent     = email;
+
+  // ── Query role using same fields minecraft.html uses ───────────────
+  try {
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await sb
+      .from("clients")
+      .select("role, blocked")
+      .eq("email", email)
+      .single();
+
+    if (error || !data) return;
+
+    const isPremium = data.role === 'premium';
+    const badge = document.getElementById('accountBadge');
+    badge.textContent = isPremium ? 'Premium' : 'Standard';
+    if (isPremium) badge.classList.add('premium');
+
+    document.getElementById('osEdition').textContent    = isPremium ? 'X-ORBIT Desktop Pro'         : 'X-ORBIT Desktop Lite';
+    document.getElementById('osEditionSub').textContent = isPremium ? 'Pro — full feature access'   : 'Standard — limited features';
+  } catch {}
+}
+
+// ── Refresh ──────────────────────────────────────────────────────────
+function refreshAll() {
+  const btn  = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  btn.disabled = true;
+  icon.classList.add('spinning');
+
+  getSystemInfo();
+  updateUptime();
+  loadAccount();
+  performNetworkTest().then(() => {
+    btn.disabled = false;
+    icon.classList.remove('spinning');
+  });
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  getSystemInfo();
+  updateUptime();
+  loadAccount();
+  performNetworkTest();
+  setInterval(updateUptime, 1000);
 });
 </script>
 </body>
