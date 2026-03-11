@@ -1,0 +1,3516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>THE INTERVAL | X-ORBIT</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  font-size:20px;
+  --bg:#000;--surf:#060606;--s2:#040404;
+  --bdr:#1a1a1a;--bhi:#282828;
+  --txt:#fff;--dim:#ccc;--mut:#888;
+  --fnt:#555;--gst:#444;--ded:#2a2a2a;
+  --wrn:#fbbf24;--ok:#6ee7b7;--err:#f87171;
+  --live:#f87171;--blnk:#6ee7b7;
+  --felt:#030d06;--rail:#0a1a0c;
+}
+*,:before,:after{box-sizing:border-box;}
+body{
+  font-family:'Share Tech Mono',monospace;
+  background:var(--bg);color:var(--txt);
+  font-size:16px;min-height:100vh;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.01) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.01) 1px,transparent 1px);
+  background-size:52px 52px;pointer-events:none;z-index:0;
+}
+
+/* ══ SHELL */
+#app{
+  position:relative;z-index:1;
+  max-width:1300px;margin:0 auto;
+  padding:14px 16px;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:100vh;
+}
+
+/* ══ HEADER */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--bdr);padding-bottom:11px;
+}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:.95rem;letter-spacing:4px;display:flex;align-items:center;gap:10px;}
+.lb{background:var(--txt);color:var(--bg);padding:1px 5px;}
+.logo-sub{font-size:.48rem;letter-spacing:4px;color:var(--gst);text-transform:uppercase;margin-top:2px;}
+.hud{display:flex;gap:18px;}
+.hstat{text-align:right;}
+.hv{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;color:var(--fnt);}
+.hl{font-size:.46rem;letter-spacing:3px;color:var(--gst);text-transform:uppercase;}
+
+/* ══ MAIN GRID: left game area | right log panel */
+#main{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:12px;
+  flex:1;
+  align-items:start;
+}
+#leftCol{display:flex;flex-direction:column;gap:9px;}
+
+/* ══ TURN BAR */
+#turnBar{
+  border:1px solid var(--bdr);background:var(--surf);
+  padding:6px 13px;display:flex;align-items:center;justify-content:space-between;
+  font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--gst);
+}
+#turnMsg{display:flex;align-items:center;gap:6px;color:var(--fnt);}
+#dmgBadge{
+  display:none;align-items:center;gap:5px;
+  font-size:.55rem;color:var(--wrn);
+  padding:2px 7px;border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.06);
+}
+#thinkDots{display:none;align-items:center;gap:7px;font-size:.52rem;color:var(--gst);}
+.dots span{width:4px;height:4px;background:var(--gst);display:inline-block;animation:dp 1.1s ease-in-out infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dp{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+
+/* ══ TABLE BOX */
+#tableBox{
+  position:relative;
+  background:var(--felt);
+  border:2px solid var(--rail);border-radius:6px;
+  overflow:hidden;
+  box-shadow:inset 0 0 90px rgba(0,0,0,.8),0 0 0 4px #070707,0 0 0 5px var(--bdr);
+}
+#tableBox::before{
+  content:'';position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.004) 4px,rgba(255,255,255,.004) 8px),
+    radial-gradient(ellipse 88% 75% at 50% 50%,rgba(12,48,18,.55) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+#tableBox::after{content:'';position:absolute;inset:10px;border:1px solid rgba(255,255,255,.02);border-radius:4px;pointer-events:none;z-index:0;}
+
+/* ══ TABLE ZONES */
+#tableInner{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  padding:16px 14px 12px;
+  min-height:460px;
+}
+.zone-top{display:flex;justify-content:center;padding-bottom:10px;position:relative;}
+.zone-top::after{content:'OPPONENT';position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:.38rem;letter-spacing:5px;color:rgba(255,255,255,.06);text-transform:uppercase;white-space:nowrap;}
+.zone-mid{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  border-top:1px solid rgba(255,255,255,.035);
+  border-bottom:1px solid rgba(255,255,255,.035);
+  padding:9px 0;
+}
+.zone-bot{display:flex;justify-content:center;padding-top:10px;position:relative;}
+.zone-bot::before{content:'YOU';position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:.38rem;letter-spacing:5px;color:rgba(255,255,255,.06);text-transform:uppercase;white-space:nowrap;}
+
+/* ══ SEAT */
+.seat{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:130px;}
+.av{
+  width:54px;height:54px;
+  border:1px solid var(--bhi);background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;color:var(--mut);
+  position:relative;transition:border-color .22s,box-shadow .22s;
+}
+.av.active{border-color:var(--txt);box-shadow:0 0 14px rgba(255,255,255,.12);}
+.av.dead-av{opacity:.2;border-color:var(--ded);}
+.tdot{position:absolute;top:-5px;right:-5px;width:8px;height:8px;background:var(--txt);animation:bl .7s step-end infinite;}
+@keyframes bl{50%{opacity:0;}}
+.sname{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:2px;color:var(--fnt);text-transform:uppercase;}
+.hearts{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;max-width:130px;}
+.hh{font-size:.68rem;}
+.hh.f{color:var(--live);}
+.hh.e{color:var(--ded);opacity:.45;}
+.hptxt{font-size:.46rem;color:var(--gst);letter-spacing:1px;}
+.cuff-badge{font-size:.42rem;letter-spacing:1px;color:var(--wrn);border:1px solid rgba(251,191,36,.25);padding:1px 5px;text-transform:uppercase;display:none;}
+.cuff-badge.on{display:block;}
+/* ══ CUFF BANNER (non-blocking top bar, same slide pattern as turnBanner) */
+#cuffOv{
+  position:fixed;top:0;left:50%;
+  transform:translateX(-50%) translateY(-130%);
+  z-index:401;
+  background:rgba(14,10,2,.97);
+  color:var(--wrn);
+  border-bottom:1px solid rgba(251,191,36,.45);
+  box-shadow:0 6px 36px rgba(251,191,36,.18),inset 0 -1px 0 rgba(251,191,36,.1);
+  padding:7px 22px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.52rem;letter-spacing:3px;text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+  border-radius:0 0 6px 6px;
+  pointer-events:none;
+  opacity:0;
+  transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .3s ease;
+  white-space:nowrap;
+}
+#cuffOv.show{transform:translateX(-50%) translateY(0);opacity:1;}
+#cuffOv i{font-size:.9rem;}
+
+/* ══ DEALER STRIP */
+#dealerStrip{
+  display:flex;align-items:center;gap:14px;
+  padding:5px 18px;
+  border:1px solid rgba(255,255,255,.035);
+  background:rgba(0,0,0,.35);border-radius:2px;
+  width:100%;max-width:480px;
+}
+#dealerStrip .dlabel{font-size:.46rem;letter-spacing:3px;color:var(--gst);text-transform:uppercase;white-space:nowrap;}
+#dealerStrip .dav{
+  width:34px;height:34px;border:1px solid var(--gst);background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--gst);flex-shrink:0;
+}
+#dealerStrip .dsep{flex:1;height:1px;background:var(--bdr);}
+
+/* ══ GUN */
+.gun-wrap{display:flex;align-items:center;justify-content:center;}
+.gun-svg{width:200px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.9));cursor:pointer;}
+.gun-svg.fire{animation:gf .3s ease-out;}
+@keyframes gunWobble{0%,100%{transform:rotate(0) translateX(0);}15%{transform:rotate(-3deg) translateX(-3px);}35%{transform:rotate(3deg) translateX(3px);}55%{transform:rotate(-2deg) translateX(-1px);}75%{transform:rotate(1.5deg) translateX(2px);}90%{transform:rotate(-.5deg);}}
+.gun-svg.gun-wobble{animation:gunWobble .55s ease;}
+.mr-flawless{font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:6px;color:gold;border:1px solid gold;padding:4px 14px;display:inline-block;margin-bottom:14px;animation:mrFlawPulse 1.8s ease-in-out infinite;}
+@keyframes mrFlawPulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+@keyframes gf{
+  0%{transform:scale(1);}
+  18%{transform:scale(1.09) rotate(-2deg);filter:drop-shadow(0 0 24px rgba(255,190,60,.7));}
+  55%{transform:scale(.97) rotate(.5deg);}
+  100%{transform:scale(1) rotate(0);}
+}
+
+/* ══ SHELLS */
+.clbl{font-size:.45rem;letter-spacing:4px;color:rgba(255,255,255,.18);text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.shell-track{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;max-width:400px;}
+.sh{width:26px;height:26px;border:1px solid var(--bhi);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.sh.unknown{background:rgba(255,255,255,.025);color:var(--gst);}
+.sh.live{background:rgba(248,113,113,.16);border-color:var(--live);color:var(--live);}
+.sh.blnk{background:rgba(110,231,183,.1);border-color:var(--blnk);color:var(--blnk);}
+.sh.used{opacity:.09;}
+.sh.cur{box-shadow:0 0 0 1px var(--txt);}
+
+/* ══ ACTION BUTTONS */
+#actionRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn{
+  padding:11px 10px;border:1px solid var(--bhi);background:var(--bg);color:var(--dim);
+  cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.68rem;
+  letter-spacing:2px;text-transform:uppercase;
+  transition:background .1s,border-color .1s,color .1s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.btn:hover:not(:disabled){background:#090909;border-color:var(--fnt);color:var(--txt);}
+.btn:disabled{opacity:.16;cursor:not-allowed;}
+.btn.danger{border-color:rgba(248,113,113,.28);color:var(--live);}
+.btn.danger:hover:not(:disabled){background:rgba(248,113,113,.06);border-color:var(--live);}
+
+/* ══ SIDEBAR — odds + items */
+#sidebar{display:flex;flex-direction:column;gap:9px;}
+.panel{border:1px solid var(--bhi);background:var(--surf);overflow:hidden;}
+.phd{padding:7px 13px;border-bottom:1px solid var(--bdr);font-size:.48rem;letter-spacing:4px;color:var(--gst);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.phd i{color:var(--ded);font-size:.62rem;}
+.phd .phd-right{margin-left:auto;font-size:.42rem;color:var(--ded);letter-spacing:1px;}
+.pbd{padding:10px 12px;}
+.odds-row{display:flex;justify-content:space-between;margin-bottom:5px;}
+.ol{font-size:.58rem;color:var(--live);}
+.ob{font-size:.58rem;color:var(--blnk);}
+.odds-bar{width:100%;height:3px;background:var(--bdr);overflow:hidden;margin-bottom:5px;}
+.of{height:100%;background:var(--live);transition:width .5s ease;}
+.orem{font-size:.52rem;color:var(--gst);letter-spacing:1px;}
+.items-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;}
+.mirror-active-badge{display:none;position:absolute;top:-8px;right:-8px;background:var(--live);color:#000;font-size:.42rem;font-weight:700;padding:2px 5px;border-radius:2px;letter-spacing:1px;z-index:2;}
+.mirror-active-badge.on{display:block;}
+.ev-banner{margin-top:10px;padding:8px 12px;border:1px solid var(--bdr);background:var(--s2);border-radius:2px;text-align:center;}
+.ev-banner .ev-label{font-size:.48rem;letter-spacing:3px;color:var(--gst);margin-bottom:3px;}
+.ev-banner .ev-name{font-size:.7rem;letter-spacing:4px;font-weight:700;}
+.ev-banner .ev-desc{font-size:.46rem;color:var(--mut);margin-top:3px;letter-spacing:1px;}
+.ev-none{color:var(--gst);}
+.ev-double_dmg{color:var(--live);}
+.ev-no_items{color:var(--wrn);}
+.ev-overload{color:var(--live);}
+.ev-medic{color:var(--ok);}
+.ev-blind{color:var(--mut);}
+/* ══ LOADING SCREEN ══════════════════════════════════════════════════ */
+#loadingOv{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:8900;}
+#loadingOv.active{display:flex;}
+
+/* 3D background */
+.ld-bg{position:absolute;inset:0;overflow:hidden;perspective:950px;perspective-origin:50% 44%;}
+.ld-bg::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:2;}
+.ld-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 38% 46% at 50% 50%,rgba(0,0,0,.92) 0%,rgba(0,0,0,.78) 35%,rgba(0,0,0,.32) 65%,rgba(0,0,0,.08) 100%);z-index:3;pointer-events:none;}
+.ld-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* 3D scene containers */
+.ld-scene{position:absolute;will-change:transform;}
+.ld-art{display:block;filter:drop-shadow(0 0 18px rgba(255,255,255,.08));}
+
+/* Scene 1: Shotgun shell — upper left, tall */
+.ld-s1{left:4%;top:2%;width:13%;opacity:.72;animation:ldS1 15s ease-in-out infinite;}
+@keyframes ldS1{0%,100%{transform:rotateY(22deg) rotateX(7deg) translateY(0);}50%{transform:rotateY(16deg) rotateX(13deg) translateY(-20px);}}
+
+/* Scene 2: SMG — right side, wide */
+.ld-s2{right:-1%;top:30%;width:55%;opacity:.68;animation:ldS2 13s ease-in-out infinite 2s;}
+@keyframes ldS2{0%,100%{transform:rotateY(-20deg) rotateX(10deg) translateY(0);}50%{transform:rotateY(-14deg) rotateX(15deg) translateY(16px);}}
+
+/* Scene 3: Person — lower left */
+.ld-s3{left:5%;bottom:0;width:15%;opacity:.65;animation:ldS3 17s ease-in-out infinite 1s;}
+@keyframes ldS3{0%,100%{transform:rotateY(28deg) rotateX(-9deg) translateY(0);}50%{transform:rotateY(22deg) rotateX(-4deg) translateY(-16px);}}
+
+/* Foreground loading UI */
+.ld-title{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(1.4rem,3vw,2.2rem);letter-spacing:10px;color:#fff;margin-bottom:10px;}
+.ld-sub{font-family:'Share Tech Mono',monospace;font-size:.48rem;letter-spacing:4px;color:rgba(255,255,255,.22);text-transform:uppercase;margin-bottom:30px;}
+.ld-dots{display:flex;gap:7px;margin-bottom:34px;}
+.ld-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);animation:ldPulse 1.3s ease-in-out infinite;}
+.ld-dot:nth-child(2){animation-delay:.22s;}
+.ld-dot:nth-child(3){animation-delay:.44s;}
+@keyframes ldPulse{0%,100%{background:rgba(255,255,255,.18);}50%{background:rgba(255,255,255,.9);}}
+.ld-bar-wrap{width:min(380px,82vw);height:2px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:30px;}
+.ld-bar-fill{height:100%;width:0;background:#fff;}
+.ld-msg-wrap{width:min(460px,88vw);text-align:center;min-height:56px;display:flex;align-items:center;justify-content:center;border-top:1px solid rgba(255,255,255,.06);padding-top:18px;}
+.ld-msg{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:rgba(255,255,255,.48);letter-spacing:.5px;line-height:1.6;transition:opacity .35s ease;}
+.ld-msg.fade{opacity:0;}
+.match-result-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:9999;}
+.match-result-ov.show{display:flex;}
+.match-result-box{background:var(--surf);border:1px solid var(--bdr);max-width:380px;width:90%;padding:32px 28px;text-align:center;}
+.mr-title{font-size:1.8rem;letter-spacing:8px;font-weight:700;margin-bottom:6px;}
+.mr-sub{font-size:.55rem;color:var(--mut);letter-spacing:3px;margin-bottom:18px;}
+.mr-score{font-size:2.5rem;letter-spacing:10px;font-weight:700;margin-bottom:6px;}
+.mr-score-lbl{font-size:.45rem;color:var(--gst);letter-spacing:3px;margin-bottom:20px;}
+.isl{
+  aspect-ratio:1;border:1px solid var(--bdr);background:var(--s2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:border-color .1s,background .1s;gap:2px;position:relative;padding:3px;
+}
+.isl:hover:not(.empty):not(.used){border-color:var(--fnt);background:#0a0a0a;}
+.isl.empty{opacity:.1;cursor:default;}
+.isl.used{opacity:.05;cursor:default;}
+.isl i{font-size:.9rem;color:var(--mut);}
+.isl .in{font-size:.33rem;color:var(--gst);letter-spacing:.4px;text-transform:uppercase;text-align:center;line-height:1.3;}
+.itip{display:none;position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--surf);border:1px solid var(--bhi);padding:4px 8px;font-size:.5rem;color:var(--dim);white-space:nowrap;z-index:60;pointer-events:none;}
+.isl:hover .itip{display:block;}
+
+/* ══ RIGHT COLUMN: LOG */
+#rightCol{
+  display:flex;flex-direction:column;
+  gap:9px;
+  position:sticky;top:14px;
+  max-height:calc(100vh - 28px);
+}
+#logPanel{
+  border:1px solid var(--bhi);background:var(--surf);
+  display:flex;flex-direction:column;
+  flex:1;overflow:hidden;
+  min-height:0;
+}
+#logPanel .phd{flex-shrink:0;}
+#logScroll{
+  flex:1;overflow-y:auto;
+  min-height:0;
+}
+#logScroll::-webkit-scrollbar{width:3px;}
+#logScroll::-webkit-scrollbar-thumb{background:var(--bhi);}
+#logList{list-style:none;display:flex;flex-direction:column;}
+#logList li{
+  display:grid;
+  grid-template-columns:18px 1fr auto;
+  align-items:start;gap:8px;
+  padding:8px 12px 8px 10px;
+  border-left:3px solid var(--bdr);
+  border-bottom:1px solid rgba(255,255,255,.02);
+  font-size:.72rem;line-height:1.55;
+  letter-spacing:.3px;
+  transition:background .12s;
+}
+#logList li:hover{background:rgba(255,255,255,.014);}
+#logList li i{font-size:.66rem;margin-top:3px;flex-shrink:0;}
+#logList li .lmsg{color:var(--gst);word-break:break-word;}
+#logList li .lts{font-size:.46rem;color:var(--ded);letter-spacing:1px;white-space:nowrap;margin-top:4px;text-align:right;}
+/* entry slide-in */
+@keyframes logIn{from{opacity:0;transform:translateX(10px);}to{opacity:1;transform:none;}}
+#logList li.new{animation:logIn .18s ease both;}
+/* colour rows */
+#logList li.live  {border-left-color:var(--live);background:rgba(248,113,113,.03);}
+#logList li.live .lmsg{color:#fca5a5;}
+#logList li.blnk  {border-left-color:var(--blnk);background:rgba(110,231,183,.025);}
+#logList li.blnk .lmsg{color:#a7f3d0;}
+#logList li.item  {border-left-color:var(--wrn); background:rgba(251,191,36,.025);}
+#logList li.item .lmsg{color:#fde68a;}
+#logList li.oitem {border-left-color:#a78bfa;    background:rgba(167,139,250,.025);}
+#logList li.oitem .lmsg{color:#c4b5fd;}
+#logList li.heal  {border-left-color:var(--ok);  background:rgba(110,231,183,.025);}
+#logList li.heal .lmsg{color:var(--ok);}
+#logList li.sys   {border-left-color:var(--fnt); }
+#logList li.sys .lmsg{color:var(--fnt);}
+
+/* ══ TURN BANNER */
+#turnBanner{
+  position:fixed;top:0;left:50%;
+  transform:translateX(-50%) translateY(-130%);
+  z-index:400;
+  display:flex;align-items:center;gap:14px;
+  padding:13px 40px;
+  font-family:'Orbitron',monospace;
+  font-size:.88rem;font-weight:700;letter-spacing:6px;text-transform:uppercase;
+  border-bottom:2px solid transparent;
+  border-left:1px solid rgba(255,255,255,.07);
+  border-right:1px solid rgba(255,255,255,.07);
+  border-radius:0 0 4px 4px;
+  white-space:nowrap;pointer-events:none;
+  transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .32s ease;
+  opacity:0;
+}
+#turnBanner.show{transform:translateX(-50%) translateY(0);opacity:1;}
+#turnBanner.your{
+  background:rgba(3,14,8,.97);color:var(--blnk);
+  border-bottom-color:var(--blnk);
+  box-shadow:0 6px 36px rgba(110,231,183,.22),inset 0 -1px 0 rgba(110,231,183,.12);
+}
+#turnBanner.opp{
+  background:rgba(14,3,3,.97);color:var(--live);
+  border-bottom-color:var(--live);
+  box-shadow:0 6px 36px rgba(248,113,113,.22),inset 0 -1px 0 rgba(248,113,113,.12);
+}
+/* scanline shimmer */
+#turnBanner::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 4px,rgba(255,255,255,.012) 4px,rgba(255,255,255,.012) 5px);
+  pointer-events:none;border-radius:inherit;
+}
+#turnBanner i{font-size:1rem;}
+
+/* ══ ITEM BANNER (opponent) */
+#itemBanner{
+  position:fixed;top:0;left:50%;
+  transform:translateX(-50%) translateY(-130%);
+  z-index:399;
+  display:flex;align-items:center;gap:11px;
+  padding:10px 30px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.7rem;letter-spacing:3px;text-transform:uppercase;
+  background:rgba(10,8,2,.97);color:var(--wrn);
+  border-bottom:2px solid var(--wrn);
+  border-left:1px solid rgba(251,191,36,.18);
+  border-right:1px solid rgba(251,191,36,.18);
+  border-radius:0 0 4px 4px;
+  box-shadow:0 5px 28px rgba(251,191,36,.18);
+  white-space:nowrap;pointer-events:none;
+  transition:transform .38s cubic-bezier(.16,1,.3,1),opacity .28s ease;
+  opacity:0;
+}
+#itemBanner.show{transform:translateX(-50%) translateY(0);opacity:1;}
+#itemBanner i{font-size:.82rem;}
+
+/* ══ FLASH */
+@keyframes fDmg{0%,100%{background:rgba(0,0,0,.55);}50%{background:rgba(248,113,113,.22);}}
+@keyframes fHeal{0%,100%{background:rgba(0,0,0,.55);}50%{background:rgba(110,231,183,.2);}}
+.fdmg .av{animation:fDmg .38s ease;}
+.fheal .av{animation:fHeal .38s ease;}
+
+/* ══ TOAST */
+#toast{
+  position:fixed;bottom:18px;left:50%;
+  transform:translateX(-50%) translateY(55px);
+  border:1px solid var(--bhi);background:var(--surf);
+  padding:8px 18px;font-size:.64rem;letter-spacing:2px;text-transform:uppercase;color:var(--dim);
+  transition:transform .26s ease;z-index:300;pointer-events:none;white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ══ OVERLAYS */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;z-index:200;}
+.ov.show{display:flex;}
+.modal{border:1px solid var(--bhi);background:var(--surf);width:460px;max-width:95vw;}
+.mhd{padding:15px 24px;border-bottom:1px solid var(--bdr);font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--fnt);display:flex;align-items:center;gap:8px;}
+.mhd i{font-size:.85rem;}
+.mbd{padding:24px;}
+.mtitle{font-family:'Orbitron',monospace;font-size:1.7rem;font-weight:900;letter-spacing:6px;margin-bottom:4px;line-height:1;}
+.msub{font-size:.58rem;color:var(--gst);letter-spacing:2px;margin-bottom:18px;text-transform:uppercase;}
+.mstats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px;}
+.ms{border:1px solid var(--bdr);padding:9px 10px;background:var(--s2);}
+.msl{font-size:.46rem;color:var(--gst);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+.msv{font-family:'Orbitron',monospace;font-size:.88rem;font-weight:700;color:var(--dim);}
+.mbtn{
+  width:100%;padding:12px;border:1px solid var(--bhi);background:var(--bg);color:var(--txt);
+  cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.68rem;
+  letter-spacing:3px;text-transform:uppercase;
+  transition:background .1s,border-color .1s;
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:7px;
+}
+.mbtn:hover{background:#0a0a0a;border-color:var(--fnt);}
+.mbtn:last-child{margin-bottom:0;}
+
+/* START MODAL */
+.start-logo{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;letter-spacing:8px;margin-bottom:4px;}
+.start-tag{font-size:.55rem;color:var(--gst);letter-spacing:3px;margin-bottom:18px;text-transform:uppercase;}
+.srules{display:flex;flex-direction:column;gap:5px;margin-bottom:18px;border:1px solid var(--bdr);padding:12px;background:var(--s2);}
+.rule{font-size:.56rem;color:var(--gst);letter-spacing:.4px;display:flex;align-items:flex-start;gap:7px;line-height:1.6;}
+.rule i{color:var(--fnt);flex-shrink:0;margin-top:2px;font-size:.58rem;}
+.sdiff{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px;}
+.dbt{
+  padding:10px 5px;border:1px solid var(--bdr);background:var(--s2);
+  cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.58rem;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gst);
+  transition:border-color .1s,color .1s,background .1s;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.dbt:hover{border-color:var(--fnt);color:var(--dim);}
+.dbt.sel{border-color:var(--txt);color:var(--txt);background:#0a0a0a;}
+.dbt i{font-size:.95rem;}
+.dsub{font-size:.4rem;color:inherit;letter-spacing:.4px;}
+
+/* RECYCLE MODAL */
+.rinfo{font-size:.58rem;color:var(--gst);letter-spacing:.5px;margin-bottom:14px;padding:9px 12px;border:1px solid var(--bdr);background:var(--s2);line-height:1.7;}
+
+/* CHAMBER MODAL */
+#chamberOv{position:fixed;inset:0;background:rgba(0,0,0,0);display:none;align-items:center;justify-content:center;z-index:300;transition:background .3s ease;}
+#chamberOv.show{display:flex;background:rgba(0,0,0,.92);}
+#chamberModal{
+  border:1px solid var(--bhi);background:var(--surf);
+  width:520px;max-width:96vw;
+  transform:translateY(38px) scale(.96);opacity:0;
+  transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .32s ease;
+}
+#chamberOv.show #chamberModal{transform:none;opacity:1;}
+.cm-hd{padding:13px 22px;border-bottom:1px solid var(--bdr);font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--fnt);display:flex;align-items:center;justify-content:space-between;}
+.cm-hd i{font-size:.82rem;margin-right:7px;}
+.cm-body{padding:22px 22px 18px;}
+.cm-title{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;letter-spacing:5px;color:var(--dim);margin-bottom:3px;}
+.cm-sub{font-size:.54rem;color:var(--gst);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;}
+.cm-slots{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:16px;}
+.csl{
+  aspect-ratio:1;border:1px solid var(--bhi);background:var(--s2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  position:relative;overflow:hidden;
+  transition:border-color .25s,background .25s,box-shadow .25s;
+}
+.csl.wait::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 30%,rgba(255,255,255,.035) 50%,transparent 70%);
+  animation:scan 1.3s ease-in-out infinite;
+}
+@keyframes scan{0%{transform:translateY(-100%);}100%{transform:translateY(200%);}}
+@keyframes slotIn{0%{transform:rotateY(90deg) scale(.8);opacity:0;}60%{transform:rotateY(-7deg) scale(1.04);}100%{transform:none;opacity:1;}}
+.csl.rev{animation:slotIn .42s cubic-bezier(.16,1,.3,1) both;}
+@keyframes prLive{0%{box-shadow:0 0 0 rgba(248,113,113,0);}50%{box-shadow:0 0 30px rgba(248,113,113,.6);}100%{box-shadow:0 0 16px rgba(248,113,113,.22),inset 0 0 12px rgba(248,113,113,.07);}}
+@keyframes prBlnk{0%{box-shadow:0 0 0 rgba(110,231,183,0);}50%{box-shadow:0 0 30px rgba(110,231,183,.5);}100%{box-shadow:0 0 16px rgba(110,231,183,.18),inset 0 0 12px rgba(110,231,183,.05);}}
+.csl.s-live{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.65);}
+.csl.s-live.rev{animation:slotIn .42s cubic-bezier(.16,1,.3,1) both,prLive .5s ease both;}
+.csl.s-blnk{background:rgba(110,231,183,.1);border-color:rgba(110,231,183,.55);}
+.csl.s-blnk.rev{animation:slotIn .42s cubic-bezier(.16,1,.3,1) both,prBlnk .5s ease both;}
+.csl .sico{font-size:1.2rem;opacity:0;transition:opacity .18s .1s;}
+.csl .snum{font-size:.4rem;letter-spacing:1px;color:var(--gst);opacity:0;transition:opacity .18s .15s;}
+.csl.rev .sico,.csl.rev .snum{opacity:1;}
+.csl.s-live .sico{color:var(--live);}
+.csl.s-blnk .sico{color:var(--blnk);}
+.cm-tally{display:flex;gap:10px;align-items:center;font-size:.58rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding:9px 12px;border:1px solid var(--bdr);background:var(--s2);}
+.tl{color:var(--live);display:flex;align-items:center;gap:5px;}
+.tb{color:var(--blnk);display:flex;align-items:center;gap:5px;}
+.tsep{flex:1;height:1px;background:var(--bdr);}
+.ttot{color:var(--gst);font-size:.52rem;}
+.cm-cta{
+  width:100%;padding:12px;border:1px solid var(--bhi);background:var(--bg);color:var(--txt);
+  cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.68rem;
+  letter-spacing:3px;text-transform:uppercase;
+  transition:opacity .28s ease,background .1s,border-color .1s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  opacity:0;pointer-events:none;
+}
+.cm-cta.rdy{opacity:1;pointer-events:all;}
+.cm-cta:hover{background:#0a0a0a;border-color:var(--fnt);}
+
+/* ══ INTRO OVERLAY ══════════════════════════════════════════════════ */
+#introOverlay{
+  display:none;position:fixed;inset:0;background:#000;
+  z-index:9000;align-items:center;justify-content:center;
+}
+#introOverlay.active{display:flex;}
+.int-phase{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;opacity:0;pointer-events:none;
+}
+.int-phase.showing{pointer-events:all;}
+@keyframes intIn{from{opacity:0;}to{opacity:1;}}
+@keyframes intOut{from{opacity:1;}to{opacity:0;}}
+.int-boxes{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
+.int-box{
+  border:2px solid #fff;padding:10px 20px;
+  font-family:'Orbitron',monospace;font-size:clamp(20px,5vw,42px);
+  font-weight:900;letter-spacing:4px;text-transform:uppercase;line-height:1;color:#fff;
+}
+.int-ver{font-size:14px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.28);font-family:'Share Tech Mono',monospace;}
+
+/* ══ MAIN MENU (Steam-style) ════════════════════════════════════════ */
+#mainMenu{
+  display:none;position:fixed;inset:0;background:#000;
+  z-index:8000;overflow:hidden;
+}
+#mainMenu.active{display:flex;}
+.mm-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 75% 65% at 72% 52%,rgba(3,13,6,.95) 0%,transparent 65%),
+    radial-gradient(ellipse 45% 55% at 18% 82%,rgba(10,26,12,.55) 0%,transparent 50%);
+}
+.mm-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:52px 52px;
+}
+/* subtle ambient pulse on the bg green glow */
+@keyframes mmPulse{0%,100%{opacity:.9;}50%{opacity:1;}}
+.mm-bg{animation:mmPulse 6s ease-in-out infinite;}
+
+/* ══ SLUG RAIN ════════════════════════════════════════════════════ */
+.mm-slugs{
+  position:absolute;inset:0;
+  overflow:hidden;pointer-events:none;z-index:0;
+}
+.mm-slug{
+  position:absolute;top:0;
+  pointer-events:none;will-change:transform;
+  animation:slugFall linear infinite;
+}
+@keyframes slugFall{
+  from{transform:translateY(var(--fall-s)) rotate(var(--rot-s));}
+  to  {transform:translateY(var(--fall-e)) rotate(var(--rot-e));}
+}
+
+/* LEFT PANEL */
+.mm-left{
+  position:relative;z-index:1;width:400px;flex-shrink:0;
+  display:flex;flex-direction:column;padding:44px 50px;
+  border-right:1px solid rgba(255,255,255,.06);
+  background:rgba(0,0,0,.32);
+}
+.mm-brand{
+  font-family:'Orbitron',monospace;font-size:.52rem;font-weight:700;
+  letter-spacing:4px;color:rgba(255,255,255,.22);text-transform:uppercase;
+  margin-bottom:46px;display:flex;align-items:center;gap:7px;
+}
+.mm-brand-acc{background:#fff;color:#000;padding:1px 5px;}
+.mm-title{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(1.9rem,3.2vw,2.85rem);letter-spacing:6px;line-height:1;
+  color:#fff;margin-bottom:5px;
+}
+.mm-tagline{font-size:.48rem;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:44px;}
+.mm-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+.mm-btn{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border:1px solid transparent;
+  background:transparent;color:rgba(255,255,255,.38);
+  font-family:'Share Tech Mono',monospace;font-size:.66rem;
+  letter-spacing:2.5px;text-transform:uppercase;
+  cursor:pointer;text-align:left;width:100%;
+  transition:all .15s ease;
+}
+.mm-btn:hover,.mm-btn.mm-active{
+  color:#fff;border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+}
+.mm-btn.mm-prim{
+  color:#fff;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.055);
+}
+.mm-btn.mm-prim:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.38);}
+.mm-btn i{font-size:.86rem;width:18px;text-align:center;flex-shrink:0;}
+.mm-lbl{flex:1;}
+.mm-meta{font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:1px;}
+.mm-arr{
+  width:6px;height:6px;flex-shrink:0;
+  border-right:1px solid currentColor;border-top:1px solid currentColor;
+  transform:rotate(45deg);opacity:.35;
+  transition:transform .15s,opacity .15s;
+}
+.mm-btn:hover .mm-arr{transform:rotate(45deg) translate(2px,-2px);opacity:.8;}
+/* difficulty sub-panel */
+.mm-diff-wrap{overflow:hidden;max-height:0;transition:max-height .3s ease;}
+.mm-diff-wrap.open{max-height:280px;}
+.mm-diff-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+  padding:6px 0 6px 32px;
+}
+.mm-dopt{
+  padding:10px 5px;border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.02);cursor:pointer;
+  color:rgba(255,255,255,.3);font-family:'Share Tech Mono',monospace;
+  font-size:.48rem;letter-spacing:1.5px;text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .15s;text-align:center;
+}
+.mm-dopt i{font-size:.88rem;}
+.mm-dopt .mm-dn{font-size:.52rem;}
+.mm-dopt .mm-dd{font-size:.37rem;color:rgba(255,255,255,.18);letter-spacing:.3px;}
+.mm-dopt:hover{color:rgba(255,255,255,.72);border-color:rgba(255,255,255,.22);}
+.mm-dopt.sel{color:#fff;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);}
+.mm-dopt.overkill-opt{color:rgba(220,50,50,.5);border-color:rgba(180,30,30,.2);}
+.mm-dopt.overkill-opt:hover{color:rgba(255,80,80,.9);border-color:rgba(200,50,50,.5);}
+.mm-dopt.overkill-opt.sel{color:#ff4444;border-color:rgba(255,60,60,.7);background:rgba(180,20,20,.15);}
+.mm-foot{
+  font-size:.4rem;letter-spacing:2px;color:rgba(255,255,255,.12);
+  text-transform:uppercase;padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.05);margin-top:16px;
+}
+
+/* RIGHT PANEL */
+.mm-right{
+  position:relative;z-index:1;flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:52px;gap:22px;
+}
+.mm-gun-wrap{width:100%;max-width:520px;}
+.mm-gun-wrap svg{
+  width:100%;max-width:520px;
+  opacity:.26;filter:drop-shadow(0 0 50px rgba(110,231,183,.22));
+}
+@keyframes mmGunFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.mm-gun-wrap{animation:mmGunFloat 5s ease-in-out infinite;}
+.mm-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:520px;}
+.mm-stat{border:1px solid rgba(255,255,255,.05);padding:12px 14px;background:rgba(255,255,255,.015);}
+.mm-stat-lbl{font-size:.4rem;letter-spacing:2px;color:rgba(255,255,255,.18);text-transform:uppercase;margin-bottom:4px;}
+.mm-stat-val{font-family:'Orbitron',monospace;font-size:.84rem;font-weight:700;color:rgba(255,255,255,.42);}
+.mm-how{width:100%;max-width:520px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.012);padding:15px 19px;}
+.mm-how-hd{
+  font-size:.42rem;letter-spacing:3px;color:rgba(255,255,255,.2);
+  text-transform:uppercase;margin-bottom:10px;padding-bottom:7px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:7px;
+}
+.mm-how-row{
+  display:flex;gap:10px;align-items:flex-start;padding:5px 0;
+  border-bottom:1px solid rgba(255,255,255,.03);
+  font-size:.53rem;color:rgba(255,255,255,.3);letter-spacing:.3px;line-height:1.65;
+}
+.mm-how-row:last-child{border-bottom:none;}
+.mm-how-row i{color:rgba(255,255,255,.18);flex-shrink:0;margin-top:2px;font-size:.54rem;}
+
+/* ══ VISUAL TOGGLE OVERRIDES ════════════════════════════════════════ */
+body.no-scanlines::before{opacity:0;}
+body.no-flash .fdmg .av,body.no-flash .fheal .av{animation:none!important;}
+body.no-banners #turnBanner,body.no-banners #itemBanner{opacity:0!important;pointer-events:none!important;}
+body.no-vignette #tableBox::before{opacity:0;}
+
+/* ══ SETTINGS OVERLAY ════════════════════════════════════════════════ */
+#settingsOv{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.97);z-index:8500;
+  align-items:center;justify-content:center;padding:20px;
+}
+#settingsOv.active{display:flex;}
+.sett-modal{
+  width:100%;max-width:700px;
+  border:1px solid rgba(255,255,255,.1);background:#030303;
+  animation:settIn .3s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes settIn{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:none;}}
+.sett-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.07);
+  font-family:'Orbitron',monospace;font-size:.6rem;
+  letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);
+}
+.sett-back{
+  background:none;border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.4);padding:5px 12px;
+  font-family:'Share Tech Mono',monospace;font-size:.52rem;
+  letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .15s;
+}
+.sett-back:hover{color:#fff;border-color:rgba(255,255,255,.3);}
+.sett-body{display:grid;grid-template-columns:1fr 1fr;}
+.sett-section{padding:22px 24px;}
+.sett-section+.sett-section{border-left:1px solid rgba(255,255,255,.05);}
+.sett-sec-hd{
+  font-size:.42rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.2);margin-bottom:16px;padding-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:7px;
+}
+.sett-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
+}
+.sett-row:last-child{border-bottom:none;}
+.sett-ico{color:rgba(255,255,255,.2);font-size:.78rem;width:16px;text-align:center;flex-shrink:0;}
+.sett-lbl{flex:1;font-size:.55rem;color:rgba(255,255,255,.45);letter-spacing:.4px;}
+.sett-lbl small{display:block;font-size:.4rem;color:rgba(255,255,255,.2);margin-top:2px;letter-spacing:.3px;}
+/* Volume slider group */
+.sett-vol{display:flex;align-items:center;gap:6px;}
+.sett-range{
+  -webkit-appearance:none;appearance:none;
+  width:72px;height:2px;background:rgba(255,255,255,.18);outline:none;cursor:pointer;
+}
+.sett-range::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:#fff;cursor:pointer;}
+.sett-range::-moz-range-thumb{width:11px;height:11px;background:#fff;cursor:pointer;border:none;}
+.sett-pct{
+  font-family:'Orbitron',monospace;font-size:.46rem;font-weight:700;
+  color:rgba(255,255,255,.3);min-width:26px;text-align:right;
+}
+/* Toggle switch */
+.sett-tog{position:relative;width:36px;height:20px;flex-shrink:0;}
+.sett-tog input{opacity:0;width:0;height:0;position:absolute;}
+.sett-track{
+  position:absolute;inset:0;cursor:pointer;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  transition:background .2s,border-color .2s;
+}
+.sett-tog input:checked+.sett-track{
+  background:rgba(110,231,183,.2);border-color:rgba(110,231,183,.45);
+}
+.sett-track::after{
+  content:'';position:absolute;
+  width:12px;height:12px;left:3px;top:3px;
+  background:rgba(255,255,255,.35);
+  transition:transform .2s,background .2s;
+}
+.sett-tog input:checked+.sett-track::after{transform:translateX(16px);background:#6ee7b7;}
+
+/* ══ PLAYER HIT FLASH ════════════════════════════════════════════════ */
+#hitFlash{
+  position:fixed;inset:0;pointer-events:none;z-index:4500;
+  opacity:0;
+  background:radial-gradient(ellipse at center,
+    rgba(255,80,80,.12) 0%,
+    rgba(210,10,10,.92) 100%);
+}
+#hitFlash.flash{animation:hitFlashAnim .85s ease-out forwards;}
+@keyframes hitFlashAnim{
+  0%  {opacity:0;}
+  6%  {opacity:1;}
+  18% {opacity:.85;background:radial-gradient(ellipse at center,rgba(255,255,255,.35) 0%,rgba(210,10,10,.9) 100%);}
+  100%{opacity:0;}
+}
+
+/* ══ PAUSE OVERLAY ══════════════════════════════════════════════════ */
+#pauseOv{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.88);
+  z-index:5000;align-items:center;justify-content:center;
+}
+#pauseOv.active{display:flex;}
+.pause-panel{
+  width:100%;max-width:380px;
+  border:1px solid rgba(255,255,255,.12);background:#020202;
+  animation:settIn .2s cubic-bezier(.16,1,.3,1) both;
+}
+.pause-hd{
+  padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.pause-title{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:.72rem;letter-spacing:4px;color:rgba(255,255,255,.9);
+}
+.pause-sub{
+  font-size:.44rem;letter-spacing:2px;color:rgba(255,255,255,.18);
+  text-transform:uppercase;margin-top:3px;
+}
+.pause-stats{
+  display:flex;border-bottom:1px solid rgba(255,255,255,.05);
+}
+.pause-stat{
+  flex:1;padding:11px 14px;border-right:1px solid rgba(255,255,255,.05);
+}
+.pause-stat:last-child{border-right:none;}
+.pause-stat-lbl{font-size:.38rem;letter-spacing:2px;color:rgba(255,255,255,.18);text-transform:uppercase;margin-bottom:3px;}
+.pause-stat-val{font-family:'Orbitron',monospace;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);}
+.pause-actions{padding:16px 18px;display:flex;flex-direction:column;gap:6px;}
+.pause-btn{
+  width:100%;padding:13px;
+  border:1px solid rgba(255,255,255,.1);background:transparent;
+  color:rgba(255,255,255,.45);
+  font-family:'Share Tech Mono',monospace;font-size:.64rem;
+  letter-spacing:2.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.pause-btn:hover{color:#fff;border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04);}
+.pause-btn.pause-resume{color:#fff;border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06);}
+.pause-btn.pause-resume:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);}
+.pause-hint{
+  font-size:.38rem;letter-spacing:2px;color:rgba(255,255,255,.12);
+  text-transform:uppercase;text-align:center;padding-bottom:14px;
+}
+
+/* ══ INTRO PHASE 3 — FULLSCREEN PROMPT ══════════════════════════════ */
+.int-fs-wrap{text-align:center;max-width:400px;padding:24px;}
+.int-fs-title{
+  font-family:'Orbitron',monospace;font-size:clamp(15px,2.5vw,22px);
+  font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.85);margin-bottom:8px;line-height:1.4;
+}
+.int-fs-sub{
+  font-family:'Share Tech Mono',monospace;font-size:15px;
+  color:rgba(255,255,255,.3);letter-spacing:.5px;margin-bottom:34px;
+}
+.int-fs-actions{display:flex;gap:10px;justify-content:center;}
+.int-fs-btn{
+  padding:12px 26px;border:1px solid rgba(255,255,255,.25);
+  background:transparent;color:rgba(255,255,255,.55);
+  font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s ease;
+}
+.int-fs-btn.primary{background:#fff;color:#000;border-color:#fff;}
+.int-fs-btn.primary:hover{background:#ddd;}
+.int-fs-btn.secondary:hover{color:#fff;border-color:rgba(255,255,255,.5);}
+
+/* ═══════ TUTORIAL ═══════ */
+#tutPanel{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  z-index:10000;
+  background:rgba(3,3,3,.98);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 20px 70px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);
+  width:min(480px,94vw);
+  padding:22px 24px 18px;
+  font-family:'Share Tech Mono',monospace;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  pointer-events:all;
+}
+#tutPanel.vis{display:flex;}
+#tutHead{
+  font-family:'Orbitron',monospace;font-weight:700;
+  font-size:1rem;letter-spacing:3px;color:#fff;
+  text-transform:uppercase;padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+#tutBody{
+  font-size:.85rem;letter-spacing:.3px;color:rgba(255,255,255,.72);
+  line-height:1.75;
+}
+#tutBody i{color:rgba(255,255,255,.9);}
+#tutBody b{color:#fff;font-weight:normal;}
+#tutFoot{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:12px;border-top:1px solid rgba(255,255,255,.06);gap:8px;
+}
+#tutStep{font-size:.65rem;letter-spacing:2px;color:rgba(255,255,255,.22);text-transform:uppercase;}
+#tutBtns{display:flex;gap:8px;}
+.tut-btn{
+  background:transparent;border:1px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.7);font-family:'Share Tech Mono',monospace;
+  font-size:.78rem;letter-spacing:2px;text-transform:uppercase;
+  padding:8px 18px;cursor:pointer;
+  transition:background .12s,border-color .12s,color .12s;
+}
+.tut-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.45);color:#fff;}
+#tutSkip{
+  border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.28);
+  font-size:.68rem;padding:7px 13px;
+}
+#tutSkip:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.6);}
+.tut-lit{
+  outline:1px solid rgba(255,255,255,.6)!important;
+  outline-offset:4px;
+  animation:tutPulse 1.4s ease-in-out infinite;
+}
+@keyframes tutPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.12),0 0 16px rgba(255,255,255,.06);}
+  50%     {box-shadow:0 0 0 6px rgba(255,255,255,.0),0 0 32px rgba(255,255,255,.18);}
+}
+/* ═══════ TUTORIAL CONFIRM ═══════ */
+#tutConfirmOv{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  z-index:9500;display:none;align-items:center;justify-content:center;
+}
+#tutConfirmOv.active{display:flex;}
+#tutConfirmBox{
+  background:rgba(3,3,3,.98);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 20px 70px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);
+  padding:26px 28px 20px;width:min(440px,92vw);
+  font-family:'Share Tech Mono',monospace;
+  display:flex;flex-direction:column;gap:16px;
+}
+#tutConfirmTitle{
+  font-family:'Orbitron',monospace;font-weight:700;
+  font-size:.95rem;letter-spacing:3px;color:#fff;text-transform:uppercase;
+  padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08);
+}
+#tutConfirmBody{
+  font-size:.82rem;letter-spacing:.3px;color:rgba(255,255,255,.5);line-height:1.75;
+}
+#tutConfirmBtns{display:flex;gap:10px;justify-content:flex-end;}
+#tutConfirmNo{border-color:rgba(255,255,255,.08)!important;color:rgba(255,255,255,.28)!important;}
+#tutConfirmNo:hover{background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.2)!important;color:rgba(255,255,255,.55)!important;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="logo" onclick="_eggLogoClick()" style="cursor:pointer;user-select:none;"><i class="fa-solid fa-crosshairs" style="color:var(--fnt)"></i><span class="lb">THE</span> INTERVAL</div>
+    <div class="logo-sub">X-ORBIT Studios 2026</div>
+  </div>
+  <div class="hud">
+    <div class="hstat"><div class="hv" id="rnLbl">--</div><div class="hl">Round</div></div>
+    <div class="hstat"><div class="hv" id="matchLbl">0—0</div><div class="hl">Match</div></div>
+    <div class="hstat"><div class="hv" id="winLbl">0</div><div class="hl">Wins</div></div>
+  </div>
+</header>
+
+<div id="main">
+
+  <!-- LEFT: game -->
+  <div id="leftCol">
+
+    <div id="turnBar">
+      <span id="turnMsg"><i class="fa-solid fa-circle-dot"></i> WAITING</span>
+      <span id="dmgBadge"><i class="fa-solid fa-bolt"></i> DAMAGE ×2</span>
+      <span id="thinkDots">PROCESSING <div class="dots"><span></span><span></span><span></span></div></span>
+    </div>
+
+    <!-- TABLE -->
+    <div id="tableBox">
+      <div id="tableInner">
+
+        <!-- OPPONENT (top) -->
+        <div class="zone-top">
+          <div class="seat" id="sOpp">
+            <div class="av" id="avOpp"><i class="fa-solid fa-person"></i></div>
+            <div class="sname">OPPONENT</div>
+            <div class="hearts" id="hOpp"></div>
+            <div class="hptxt" id="htOpp">HP --</div>
+            <div class="cuff-badge" id="cuffBadge"><i class="fa-solid fa-handcuffs"></i> CUFFED</div>
+          </div>
+        </div>
+
+        <!-- CENTER: dealer + gun + shells -->
+        <div class="zone-mid">
+          <div id="dealerStrip">
+            <div class="dav" onclick="_eggDealerClick()" style="cursor:pointer;"><i class="fa-solid fa-robot"></i></div>
+            <div class="dlabel">DEALER</div>
+            <div class="dsep"></div>
+            <div class="gun-wrap">
+              <svg id="gunSvg" class="gun-svg" viewBox="0 0 210 50" xmlns="http://www.w3.org/2000/svg" onclick="_eggGunClick()" title="...">
+                <ellipse cx="105" cy="32" rx="90" ry="10" fill="rgba(0,0,0,.55)"/>
+                <rect x="2" y="19" width="42" height="13" rx="2.5" fill="#0c1410" stroke="#162016" stroke-width="1.1"/>
+                <rect x="5" y="22" width="35" height="7" rx="1.5" fill="#08090a"/>
+                <line x1="10" y1="22" x2="10" y2="29" stroke="#131e13" stroke-width=".7"/>
+                <line x1="19" y1="22" x2="19" y2="29" stroke="#131e13" stroke-width=".7"/>
+                <line x1="30" y1="22" x2="30" y2="29" stroke="#131e13" stroke-width=".7"/>
+                <rect x="42" y="16" width="60" height="19" rx="1.5" fill="#0f1610" stroke="#1a2a1a" stroke-width="1.1"/>
+                <rect x="50" y="19" width="30" height="13" rx="1" fill="#0a0e0a" stroke="#121c12" stroke-width=".7"/>
+                <rect x="60" y="17" width="18" height="5" rx=".4" fill="#060806" stroke="#0e0e0e" stroke-width=".5"/>
+                <path d="M64 35 Q74 43 86 35" fill="none" stroke="#132013" stroke-width="1.3"/>
+                <line x1="75" y1="35" x2="75" y2="41" stroke="#1a2a1a" stroke-width="1.3"/>
+                <rect x="100" y="17" width="105" height="7" rx="1" fill="#0a0e0a" stroke="#162016" stroke-width=".9"/>
+                <rect x="100" y="27" width="105" height="5" rx="1" fill="#070a07" stroke="#0f160f" stroke-width=".7"/>
+                <line x1="100" y1="24" x2="203" y2="24" stroke="#0d150d" stroke-width=".5"/>
+                <rect x="203" y="14" width="5" height="14" rx=".8" fill="#0d140d" stroke="#1e2e1e" stroke-width=".9"/>
+                <ellipse cx="205" cy="21" rx="1.8" ry="4.5" fill="#050705" stroke="#192419" stroke-width=".7"/>
+                <rect x="190" y="15" width="3" height="3" rx=".4" fill="#162016" stroke="#202e20" stroke-width=".4"/>
+                <rect x="120" y="15" width="5" height="2.5" rx=".4" fill="#132013" stroke="#192419" stroke-width=".4"/>
+                <line x1="99" y1="17" x2="99" y2="34" stroke="#162016" stroke-width=".6"/>
+              </svg>
+            </div>
+            <div class="dsep"></div>
+            <div class="dlabel" style="font-size:.4rem;color:var(--ded);">FACILITATOR</div>
+          </div>
+
+          <div class="clbl"><i class="fa-solid fa-circle-nodes"></i> CHAMBER</div>
+          <div class="shell-track" id="shellTrack"></div>
+        </div>
+
+        <!-- YOU (bottom) -->
+        <div class="zone-bot">
+          <div class="seat" id="sPly" style="position:relative;">
+            <div class="av" id="avPly"><i class="fa-solid fa-user-secret"></i></div>
+            <div class="sname">YOU</div>
+            <div class="hearts" id="hPly"></div>
+            <div class="hptxt" id="htPly">HP --</div>
+            <div class="cuff-badge" id="pCuffBadge"><i class="fa-solid fa-handcuffs"></i> CUFFED</div>
+            <div class="mirror-active-badge" id="mirrorBadge"><i class="fa-solid fa-shield-halved"></i> MIRROR</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LEFT SIDEBAR: odds + items -->
+    <div id="sidebar">
+      <div class="panel">
+        <div class="phd"><i class="fa-solid fa-chart-simple"></i> SHELL ANALYSIS</div>
+        <div class="pbd">
+          <div class="odds-row">
+            <span class="ol"><i class="fa-solid fa-fire-flame-curved"></i> LIVE: <span id="oLt">--</span></span>
+            <span class="ob"><i class="fa-regular fa-circle"></i> BLANK: <span id="oBt">--</span></span>
+          </div>
+          <div class="odds-bar"><div class="of" id="oFill" style="width:50%"></div></div>
+          <div class="orem" onclick="_eggRemClick()" style="cursor:default;">Remaining: <span id="oRem">--</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phd"><i class="fa-solid fa-briefcase-medical"></i> YOUR ITEMS</div>
+        <div class="pbd" style="padding:6px 8px;">
+          <div class="items-grid" id="pItems"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div id="actionRow">
+      <button class="btn danger" id="btnOpp" onclick="shoot('opp')" disabled>
+        <i class="fa-solid fa-gun"></i> SHOOT OPPONENT
+      </button>
+      <button class="btn" id="btnSelf" onclick="shoot('self')" disabled>
+        <i class="fa-solid fa-skull"></i> SHOOT SELF
+      </button>
+    </div>
+
+  </div><!-- /leftCol -->
+
+  <!-- RIGHT: event log — full height -->
+  <div id="rightCol">
+    <div id="logPanel" class="panel">
+      <div class="phd">
+        <i class="fa-solid fa-terminal"></i> EVENT LOG
+        <span class="phd-right" id="logCount">0 entries</span>
+      </div>
+      <div id="logScroll">
+        <ul id="logList"></ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ PAUSE OVERLAY ═════════════════════════════════════════════════ -->
+<div id="pauseOv">
+  <div class="pause-panel">
+    <div class="pause-hd">
+      <div class="pause-title">// PAUSED //</div>
+      <div class="pause-sub">THE INTERVAL</div>
+    </div>
+    <div class="pause-stats">
+      <div class="pause-stat">
+        <div class="pause-stat-lbl">Round</div>
+        <div class="pause-stat-val" id="pauseRnd">--</div>
+      </div>
+      <div class="pause-stat">
+        <div class="pause-stat-lbl">Wins</div>
+        <div class="pause-stat-val" id="pauseWins">--</div>
+      </div>
+      <div class="pause-stat">
+        <div class="pause-stat-lbl">Difficulty</div>
+        <div class="pause-stat-val" id="pauseDiff">--</div>
+      </div>
+    </div>
+    <div class="pause-actions" id="pauseActions">
+      <button class="pause-btn pause-resume" onclick="resumeGame()">
+        <i class="fa-solid fa-play"></i> RESUME
+      </button>
+      <button class="pause-btn" onclick="openSettings()">
+        <i class="fa-solid fa-gear"></i> SETTINGS
+      </button>
+      <button class="pause-btn" onclick="pauseToMenu()">
+        <i class="fa-solid fa-house"></i> MAIN MENU
+      </button>
+    </div>
+    <div class="pause-hint">PRESS P TO RESUME</div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS OVERLAY ══════════════════════════════════════════════ -->
+<div id="settingsOv">
+  <div class="sett-modal">
+    <div class="sett-hd">
+      <span><i class="fa-solid fa-gear" style="margin-right:8px"></i>SETTINGS</span>
+      <button class="sett-back" onclick="closeSettings()"><i class="fa-solid fa-arrow-left"></i>&nbsp; BACK</button>
+    </div>
+    <div class="sett-body">
+
+      <!-- AUDIO -->
+      <div class="sett-section">
+        <div class="sett-sec-hd"><i class="fa-solid fa-volume-high"></i> AUDIO</div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-music"></i>
+          <div class="sett-lbl">Menu Music<small>Plays on the main menu</small></div>
+          <div class="sett-vol">
+            <input class="sett-range" type="range" id="sMenuVol" min="0" max="100" value="75" oninput="applySettings()">
+            <span class="sett-pct" id="sMenuPct">75</span>
+          </div>
+          <label class="sett-tog">
+            <input type="checkbox" id="sMenuOn" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-headphones"></i>
+          <div class="sett-lbl">Game Music<small>Cycles during gameplay</small></div>
+          <div class="sett-vol">
+            <input class="sett-range" type="range" id="sGameVol" min="0" max="100" value="75" oninput="applySettings()">
+            <span class="sett-pct" id="sGamePct">75</span>
+          </div>
+          <label class="sett-tog">
+            <input type="checkbox" id="sGameOn" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-shuffle"></i>
+          <div class="sett-lbl">Shuffle Game Music<small>Random track order</small></div>
+          <label class="sett-tog">
+            <input type="checkbox" id="sGameShuf" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-gun"></i>
+          <div class="sett-lbl">Sound Effects<small>Gunshots &amp; actions</small></div>
+          <div class="sett-vol">
+            <input class="sett-range" type="range" id="sSfxVol" min="0" max="100" value="100" oninput="applySettings()">
+            <span class="sett-pct" id="sSfxPct">100</span>
+          </div>
+          <label class="sett-tog">
+            <input type="checkbox" id="sSfxOn" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- VISUAL -->
+      <div class="sett-section">
+        <div class="sett-sec-hd"><i class="fa-solid fa-eye"></i> VISUAL</div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-table-cells"></i>
+          <div class="sett-lbl">Scanlines &amp; Grid<small>Background overlay effect</small></div>
+          <label class="sett-tog">
+            <input type="checkbox" id="vScanlines" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-bolt"></i>
+          <div class="sett-lbl">Hit Flash<small>Screen flash on damage</small></div>
+          <label class="sett-tog">
+            <input type="checkbox" id="vFlash" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-flag"></i>
+          <div class="sett-lbl">Turn Banners<small>"YOUR TURN" overlays</small></div>
+          <label class="sett-tog">
+            <input type="checkbox" id="vBanners" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+
+        <div class="sett-row">
+          <i class="sett-ico fa-solid fa-circle-half-stroke"></i>
+          <div class="sett-lbl">Table Vignette<small>Felt table shadow effect</small></div>
+          <label class="sett-tog">
+            <input type="checkbox" id="vVignette" checked onchange="applySettings()">
+            <div class="sett-track"></div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ INTRO OVERLAY ════════════════════════════════════════════════ -->
+<div id="introOverlay">
+
+  <!-- Phase 1: X-ORBIT Studio logo -->
+  <div class="int-phase" id="intP1">
+    <img src="https://codehs.com/uploads/39917a9164bc93044cfd490282851ec2"
+         alt="X-ORBIT Logo"
+         style="width:min(88vw,82vh);height:auto;object-fit:contain;margin-bottom:18px;" />
+    <div style="font-size:13px;color:rgba(255,255,255,.2);letter-spacing:.5px;font-family:'Share Tech Mono',monospace;">
+      For more info visit <a href="https://studios.xorbit.org" target="_blank"
+        style="color:rgba(255,255,255,.4);text-decoration:underline;">studios.xorbit.org</a>
+    </div>
+  </div>
+
+  <!-- Phase 2: THE INTERVAL game title -->
+  <div class="int-phase" id="intP2">
+    <div class="int-boxes">
+      <span class="int-box">THE</span>
+      <span class="int-box">INTERVAL</span>
+    </div>
+    <div class="int-ver">X-ORBIT STUDIOS 2026</div>
+  </div>
+
+  <!-- Phase 3: Fullscreen prompt (stays until user clicks) -->
+  <div class="int-phase" id="intP3">
+    <div class="int-fs-wrap">
+      <div class="int-fs-title">This game is best<br>experienced in fullscreen.</div>
+      <div class="int-fs-sub">Shotguns demand full attention.</div>
+      <div class="int-fs-actions">
+        <button class="int-fs-btn primary" onclick="introGoFullscreen()">
+          <i class="fa-solid fa-expand"></i>&nbsp; Go Fullscreen
+        </button>
+        <button class="int-fs-btn secondary" onclick="introContinue()">
+          Continue Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MAIN MENU (Steam-style) ════════════════════════════════════════ -->
+<div id="mainMenu">
+  <div class="mm-bg"></div>
+  <div class="mm-grid"></div>
+  <div class="mm-slugs" id="mmSlugs"></div>
+
+  <!-- LEFT PANEL -->
+  <div class="mm-left">
+
+    <!-- Studio branding -->
+    <div class="mm-brand">
+    <span class="mm-brand-acc">X-ORBIT</span>&nbsp;STUDIOS
+    </div>
+
+    <!-- Game title -->
+    <div class="mm-title">THE<br>INTERVAL</div>
+    <div class="mm-tagline">X-ORBIT Studios 2026</div>
+
+    <!-- Navigation -->
+    <nav class="mm-nav">
+
+      <!-- New Game -->
+      <button class="mm-btn mm-prim" id="mmPlayBtn" onclick="mmPlay()">
+        <i class="fa-solid fa-play"></i>
+        <span class="mm-lbl">NEW GAME</span>
+        <div class="mm-arr"></div>
+      </button>
+
+      <!-- Continue (shown if mid-session) -->
+      <button class="mm-btn" id="mmContinueBtn" style="display:none" onclick="mmContinue()">
+        <i class="fa-solid fa-arrow-right"></i>
+        <span class="mm-lbl">CONTINUE</span>
+        <div class="mm-arr"></div>
+      </button>
+
+      <!-- Difficulty -->
+      <button class="mm-btn" id="mmDiffBtn" onclick="mmToggleDiff()">
+        <i class="fa-solid fa-sliders"></i>
+        <span class="mm-lbl">DIFFICULTY</span>
+        <span class="mm-meta" id="mmDiffLabel">EASY</span>
+      </button>
+      <div class="mm-diff-wrap" id="mmDiffPanel">
+        <div class="mm-diff-grid">
+          <button class="mm-dopt sel" id="mmDiff_easy" onclick="mmSelDiff('easy')">
+            <i class="fa-solid fa-seedling"></i>
+            <div class="mm-dn">EASY</div>
+            <div class="mm-dd">6 HP · fewer live</div>
+          </button>
+          <button class="mm-dopt" id="mmDiff_med" onclick="mmSelDiff('med')">
+            <i class="fa-solid fa-skull-crossbones"></i>
+            <div class="mm-dn">NORMAL</div>
+            <div class="mm-dd">5 HP · balanced</div>
+          </button>
+          <button class="mm-dopt" id="mmDiff_hard" onclick="mmSelDiff('hard')">
+            <i class="fa-solid fa-radiation"></i>
+            <div class="mm-dn">HARD</div>
+            <div class="mm-dd">4 HP · more live</div>
+          </button>
+          <button class="mm-dopt overkill-opt" id="mmDiff_overkill" onclick="mmSelDiff('overkill')">
+            <i class="fa-solid fa-skull"></i>
+            <div class="mm-dn">OVERKILL</div>
+            <div class="mm-dd">6 HP · AI is god</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- How to Play / Replay Tutorial -->
+      <button class="mm-btn" id="mmHowToPlayBtn" onclick="mmHowToPlay()">
+        <i class="fa-solid fa-book-open"></i>
+        <span class="mm-lbl">HOW TO PLAY</span>
+        <div class="mm-arr"></div>
+      </button>
+
+      <!-- Settings -->
+      <button class="mm-btn" onclick="openSettings()">
+        <i class="fa-solid fa-gear"></i>
+        <span class="mm-lbl">SETTINGS</span>
+        <div class="mm-arr"></div>
+      </button>
+
+    </nav>
+
+    <div class="mm-foot">v4.0.0 &nbsp;·&nbsp; X-ORBIT STUDIOS &nbsp;·&nbsp; 2025</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="mm-right">
+
+    <!-- Atmospheric gun art -->
+    <div class="mm-gun-wrap">
+      <svg viewBox="0 0 210 50" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="105" cy="32" rx="90" ry="10" fill="rgba(0,0,0,.55)"/>
+        <rect x="2" y="19" width="42" height="13" rx="2.5" fill="#0c1410" stroke="#162016" stroke-width="1.1"/>
+        <rect x="5" y="22" width="35" height="7" rx="1.5" fill="#08090a"/>
+        <line x1="10" y1="22" x2="10" y2="29" stroke="#131e13" stroke-width=".7"/>
+        <line x1="19" y1="22" x2="19" y2="29" stroke="#131e13" stroke-width=".7"/>
+        <line x1="30" y1="22" x2="30" y2="29" stroke="#131e13" stroke-width=".7"/>
+        <rect x="42" y="16" width="60" height="19" rx="1.5" fill="#0f1610" stroke="#1a2a1a" stroke-width="1.1"/>
+        <rect x="50" y="19" width="30" height="13" rx="1" fill="#0a0e0a" stroke="#121c12" stroke-width=".7"/>
+        <rect x="60" y="17" width="18" height="5" rx=".4" fill="#060806" stroke="#0e0e0e" stroke-width=".5"/>
+        <path d="M64 35 Q74 43 86 35" fill="none" stroke="#132013" stroke-width="1.3"/>
+        <line x1="75" y1="35" x2="75" y2="41" stroke="#1a2a1a" stroke-width="1.3"/>
+        <rect x="100" y="17" width="105" height="7" rx="1" fill="#0a0e0a" stroke="#162016" stroke-width=".9"/>
+        <rect x="100" y="27" width="105" height="5" rx="1" fill="#070a07" stroke="#0f160f" stroke-width=".7"/>
+        <line x1="100" y1="24" x2="203" y2="24" stroke="#0d150d" stroke-width=".5"/>
+        <rect x="203" y="14" width="5" height="14" rx=".8" fill="#0d140d" stroke="#1e2e1e" stroke-width=".9"/>
+        <ellipse cx="205" cy="21" rx="1.8" ry="4.5" fill="#050705" stroke="#192419" stroke-width=".7"/>
+        <rect x="190" y="15" width="3" height="3" rx=".4" fill="#162016" stroke="#202e20" stroke-width=".4"/>
+        <rect x="120" y="15" width="5" height="2.5" rx=".4" fill="#132013" stroke="#192419" stroke-width=".4"/>
+        <line x1="99" y1="17" x2="99" y2="34" stroke="#162016" stroke-width=".6"/>
+      </svg>
+    </div>
+
+    <!-- Session stats -->
+    <div class="mm-stat-grid">
+      <div class="mm-stat">
+        <div class="mm-stat-lbl">CURRENT ROUND</div>
+        <div class="mm-stat-val" id="mmRnd">--</div>
+      </div>
+      <div class="mm-stat">
+        <div class="mm-stat-lbl">SESSION WINS</div>
+        <div class="mm-stat-val" id="mmWins">--</div>
+      </div>
+      <div class="mm-stat">
+        <div class="mm-stat-lbl">GAME MODE</div>
+        <div class="mm-stat-val">VS AI</div>
+      </div>
+      <div class="mm-stat">
+        <div class="mm-stat-lbl">BUILD</div>
+        <div class="mm-stat-val">V4.0.0</div>
+      </div>
+    </div>
+
+    <!-- How to play rules -->
+    <div class="mm-how" id="mmRulesBox">
+      <div class="mm-how-hd"><i class="fa-solid fa-book-open"></i> HOW TO PLAY</div>
+      <div class="mm-how-row"><i class="fa-solid fa-gun"></i><span>Shoot the opponent or yourself. A blank on yourself means you keep your turn.</span></div>
+      <div class="mm-how-row"><i class="fa-solid fa-heart"></i><span>Reduce your opponent's HP to zero to win the round.</span></div>
+      <div class="mm-how-row"><i class="fa-solid fa-rotate"></i><span>When the chamber empties, items refresh and a new batch of shells loads.</span></div>
+      <div class="mm-how-row"><i class="fa-solid fa-handcuffs"></i><span>Use items wisely — the opponent AI will also use theirs strategically.</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TURN BANNER -->
+<div id="turnBanner">
+  <i id="tbIcon" class="fa-solid fa-crosshairs"></i>
+  <span id="tbText">YOUR TURN</span>
+</div>
+
+<!-- ══ ITEM BANNER -->
+<div id="itemBanner">
+  <i id="ibIcon" class="fa-solid fa-bolt"></i>
+  <span id="ibText">OPPONENT USED ITEM</span>
+</div>
+
+<div id="toast"></div>
+<div id="hitFlash"></div>
+
+<!-- ══ START MODAL -->
+<div class="ov" id="startOv">
+  <div class="modal">
+    <div class="mhd"><i class="fa-solid fa-crosshairs"></i> THE INTERVAL</div>
+    <div class="mbd">
+      <div class="start-logo"><span style="background:var(--txt);color:var(--bg);padding:0 5px">X-ORBIT</span></div>
+      <div class="start-tag">THE INTERVAL</div>
+      <div class="srules">
+        <div class="rule"><i class="fa-solid fa-gun"></i><span>Shoot the opponent or yourself. Blank on yourself = keep your turn.</span></div>
+        <div class="rule"><i class="fa-solid fa-heart"></i><span>Reduce opponent HP to zero to win the round.</span></div>
+        <div class="rule"><i class="fa-solid fa-rotate"></i><span>When chamber empties, items are randomly refreshed and a new batch loads.</span></div>
+        <div class="rule"><i class="fa-solid fa-handcuffs"></i><span>Use items wisely — the opponent AI will also use theirs strategically.</span></div>
+      </div>
+      <div style="font-size:.5rem;letter-spacing:3px;color:var(--gst);text-transform:uppercase;margin-bottom:9px;">Select Difficulty</div>
+      <div class="sdiff">
+        <div class="dbt sel" id="dEasy" onclick="selDiff('easy')"><i class="fa-solid fa-seedling"></i><span>EASY</span><span class="dsub">6 HP · fewer live</span></div>
+        <div class="dbt" id="dMed"  onclick="selDiff('med')"><i class="fa-solid fa-skull-crossbones"></i><span>NORMAL</span><span class="dsub">5 HP · balanced</span></div>
+        <div class="dbt" id="dHard" onclick="selDiff('hard')"><i class="fa-solid fa-radiation"></i><span>HARD</span><span class="dsub">4 HP · more live</span></div>
+      </div>
+      <button class="mbtn" onclick="startGame()"><i class="fa-solid fa-play"></i> BEGIN SESSION</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RECYCLE MODAL -->
+<div class="ov" id="recycleOv">
+  <div class="modal">
+    <div class="mhd"><i class="fa-solid fa-rotate"></i> CHAMBER EMPTY</div>
+    <div class="mbd">
+      <div class="mtitle" style="font-size:1.2rem;letter-spacing:4px;margin-bottom:4px;">RELOADING</div>
+      <div class="msub">All shells expended</div>
+      <div class="rinfo">Your unused items are kept. 1–4 new items will be added until you have 4–6. A new batch of shells is being loaded into the chamber.</div>
+      <button class="mbtn" onclick="confirmRecycle()"><i class="fa-solid fa-rotate"></i> RELOAD CHAMBER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EASTER EGG: KONAMI -->
+<div class="ov" id="konamiOv">
+  <div class="modal">
+    <div class="mhd"><i class="fa-solid fa-gamepad"></i> CHEAT DETECTED</div>
+    <div class="mbd">
+      <div class="mtitle" style="color:var(--ok);letter-spacing:6px;">↑↑↓↓←→←→BA</div>
+      <div class="msub">UNFORTUNATELY, WE DON'T HAVE CHEATS.</div>
+      <div class="rinfo" style="text-align:center;line-height:1.8;">Or do we?<br><br>Try typing <span style="color:var(--fnt);letter-spacing:2px;">GODMODE</span> during your turn.<br><br><span style="color:var(--gst);font-size:.9em;">Easter Egg #3 of 8 found.</span></div>
+      <button class="mbtn" onclick="hide('konamiOv')"><i class="fa-solid fa-xmark"></i> CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EASTER EGG: LORE -->
+<div class="ov" id="loreOv">
+  <div class="modal">
+    <div class="mhd"><i class="fa-solid fa-lock-open"></i> CLASSIFIED — EYES ONLY</div>
+    <div class="mbd">
+      <div class="mtitle">X-ORBIT DOSSIER</div>
+      <div class="msub">ACCESS GRANTED · CLEARANCE UNKNOWN</div>
+      <div class="rinfo" style="line-height:1.9;text-align:left;">
+        X-ORBIT Studios was founded in a server room that technically belonged to someone else. THE INTERVAL is their first published title — inspired by a late-night argument about probability, free will, and whether blank shells count as "winning."<br><br>
+        The Dealer has no contract, no name, and no loyalty. It was here before us. It will be here after.<br><br>
+        The gun has never misfired. That is either reassuring or deeply suspicious.<br><br>
+        <span style="color:var(--gst);font-size:.9em;">Easter Egg #5 of 8 found. This message will not self-destruct. But you might.</span>
+      </div>
+      <button class="mbtn" onclick="hide('loreOv')"><i class="fa-solid fa-lock"></i> RE-CLASSIFY</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOADING SCREEN -->
+<div id="loadingOv">
+
+  <!-- 3D cinematic background scenes -->
+  <div class="ld-bg">
+
+    <!-- Scene 1: Shotgun shell (upper left, tall) -->
+    <div class="ld-scene ld-s1">
+      <svg class="ld-art" viewBox="0 0 60 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="rgba(255,255,255,.75)" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Brass base -->
+        <rect x="8" y="154" width="44" height="40" rx="4" stroke-width="2.5"/>
+        <!-- Extractor groove -->
+        <rect x="6" y="162" width="48" height="6" rx="1" stroke-width="1.5"/>
+        <!-- Primer -->
+        <circle cx="30" cy="183" r="7" stroke-width="2.2"/>
+        <circle cx="30" cy="183" r="3" stroke-width="1.2" stroke-opacity=".5"/>
+        <!-- Hull body -->
+        <rect x="11" y="54" width="38" height="102" rx="1.5" stroke-width="2.5"/>
+        <!-- Hull ribbing -->
+        <line x1="11" y1="82" x2="49" y2="82" stroke-width="1" stroke-opacity=".45"/>
+        <line x1="11" y1="108" x2="49" y2="108" stroke-width="1" stroke-opacity=".45"/>
+        <line x1="11" y1="132" x2="49" y2="132" stroke-width="1" stroke-opacity=".45"/>
+        <!-- Crimp top folds -->
+        <path d="M11 54 C14 36 22 24 30 20 C38 24 46 36 49 54" stroke-width="2.5"/>
+        <line x1="30" y1="20" x2="30" y2="38" stroke-width="1.6" stroke-opacity=".65"/>
+        <line x1="19" y1="26" x2="24" y2="42" stroke-width="1.4" stroke-opacity=".55"/>
+        <line x1="41" y1="26" x2="36" y2="42" stroke-width="1.4" stroke-opacity=".55"/>
+        <line x1="13" y1="40" x2="19" y2="50" stroke-width="1.2" stroke-opacity=".4"/>
+        <line x1="47" y1="40" x2="41" y2="50" stroke-width="1.2" stroke-opacity=".4"/>
+      </svg>
+    </div>
+
+    <!-- Scene 2: SMG side profile (right, wide) -->
+    <div class="ld-scene ld-s2">
+      <svg class="ld-art" viewBox="0 0 420 155" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="rgba(255,255,255,.75)" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Stock (folding, rear) -->
+        <path d="M388 62 L413 50 L413 98 L388 86 Z" stroke-width="2.4"/>
+        <line x1="388" y1="62" x2="388" y2="86" stroke-width="2"/>
+        <line x1="400" y1="52" x2="400" y2="96" stroke-width="1.2" stroke-opacity=".4"/>
+        <!-- Receiver body -->
+        <rect x="168" y="52" width="222" height="36" rx="3" stroke-width="2.5"/>
+        <!-- Top rail -->
+        <line x1="168" y1="57" x2="390" y2="57" stroke-width="1.2" stroke-opacity=".5"/>
+        <!-- Rear sight -->
+        <rect x="358" y="46" width="18" height="9" rx="2" stroke-width="1.8"/>
+        <line x1="367" y1="46" x2="367" y2="40" stroke-width="1.6"/>
+        <!-- Charging handle slot -->
+        <rect x="305" y="48" width="20" height="9" rx="2" stroke-width="1.8"/>
+        <!-- Ejection port -->
+        <rect x="272" y="55" width="30" height="16" rx="1.5" stroke-width="1.6" stroke-opacity=".75"/>
+        <!-- Barrel -->
+        <rect x="28" y="64" width="142" height="12" rx="2" stroke-width="2.5"/>
+        <!-- Suppressor / muzzle device -->
+        <rect x="6" y="58" width="24" height="24" rx="3" stroke-width="2.2"/>
+        <line x1="6" y1="66" x2="30" y2="66" stroke-width="1" stroke-opacity=".4"/>
+        <line x1="6" y1="74" x2="30" y2="74" stroke-width="1" stroke-opacity=".4"/>
+        <!-- Front sight -->
+        <rect x="36" y="55" width="4" height="12" rx="1.2" stroke-width="1.8"/>
+        <!-- Handguard ribbing -->
+        <line x1="70" y1="64" x2="70" y2="76" stroke-width="1" stroke-opacity=".5"/>
+        <line x1="88" y1="64" x2="88" y2="76" stroke-width="1" stroke-opacity=".5"/>
+        <line x1="106" y1="64" x2="106" y2="76" stroke-width="1" stroke-opacity=".5"/>
+        <line x1="124" y1="64" x2="124" y2="76" stroke-width="1" stroke-opacity=".5"/>
+        <line x1="142" y1="64" x2="142" y2="76" stroke-width="1" stroke-opacity=".5"/>
+        <!-- Trigger guard -->
+        <path d="M246 88 Q256 122 278 122 Q300 122 310 88" stroke-width="2"/>
+        <!-- Trigger -->
+        <line x1="270" y1="88" x2="276" y2="114" stroke-width="2.2"/>
+        <!-- Magazine (angled box) -->
+        <path d="M232 88 L244 88 L250 145 L226 145 Z" stroke-width="2.4"/>
+        <line x1="228" y1="108" x2="248" y2="108" stroke-width="1.2" stroke-opacity=".5"/>
+        <line x1="230" y1="124" x2="247" y2="124" stroke-width="1" stroke-opacity=".4"/>
+        <!-- Pistol grip -->
+        <path d="M306 88 L320 88 L324 132 L300 132 Z" stroke-width="2.2"/>
+        <line x1="302" y1="108" x2="322" y2="108" stroke-width="1" stroke-opacity=".4"/>
+      </svg>
+    </div>
+
+    <!-- Scene 3: Person holding gun (lower left, tall) -->
+    <div class="ld-scene ld-s3">
+      <svg class="ld-art" viewBox="0 0 130 310" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="rgba(255,255,255,.75)" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Head -->
+        <circle cx="62" cy="28" r="21" stroke-width="2.5"/>
+        <!-- Ear -->
+        <path d="M41 26 Q36 28 41 34" stroke-width="1.8"/>
+        <!-- Neck -->
+        <line x1="62" y1="49" x2="62" y2="66" stroke-width="2.5"/>
+        <!-- Torso -->
+        <path d="M28 66 L96 66 L88 150 L36 150 Z" stroke-width="2.5"/>
+        <!-- Collar detail -->
+        <path d="M62 66 L55 80 L62 88 L69 80 Z" stroke-width="1.6" stroke-opacity=".6"/>
+        <!-- Belt -->
+        <line x1="30" y1="143" x2="90" y2="143" stroke-width="2"/>
+        <rect x="55" y="140" width="14" height="8" rx="1.5" stroke-width="1.6"/>
+        <!-- Left arm (relaxed, slightly bent) -->
+        <line x1="28" y1="76" x2="10" y2="130" stroke-width="2.5"/>
+        <line x1="10" y1="130" x2="14" y2="160" stroke-width="2.5"/>
+        <!-- Right arm (raised, holding gun out front) -->
+        <line x1="96" y1="76" x2="116" y2="108" stroke-width="2.5"/>
+        <line x1="116" y1="108" x2="120" y2="130" stroke-width="2.5"/>
+        <!-- Pistol in right hand -->
+        <!-- Grip -->
+        <rect x="112" y="128" width="16" height="22" rx="2.5" stroke-width="2"/>
+        <!-- Slide body -->
+        <rect x="100" y="118" width="38" height="12" rx="2" stroke-width="2"/>
+        <!-- Barrel extension -->
+        <rect x="136" y="121" width="18" height="6" rx="1.5" stroke-width="1.8"/>
+        <!-- Trigger guard -->
+        <path d="M118 140 Q122 152 130 140" stroke-width="1.6"/>
+        <!-- Trigger -->
+        <line x1="122" y1="130" x2="124" y2="146" stroke-width="1.8"/>
+        <!-- Left thigh -->
+        <line x1="36" y1="150" x2="26" y2="232" stroke-width="2.5"/>
+        <!-- Right thigh -->
+        <line x1="88" y1="150" x2="96" y2="232" stroke-width="2.5"/>
+        <!-- Left knee -->
+        <ellipse cx="26" cy="232" rx="5" ry="5" stroke-width="1.8"/>
+        <!-- Right knee -->
+        <ellipse cx="96" cy="232" rx="5" ry="5" stroke-width="1.8"/>
+        <!-- Left shin -->
+        <line x1="22" y1="237" x2="16" y2="305" stroke-width="2.5"/>
+        <!-- Right shin -->
+        <line x1="100" y1="237" x2="106" y2="305" stroke-width="2.5"/>
+        <!-- Left boot -->
+        <path d="M16 305 Q8 310 4 308 Q6 300 16 302" stroke-width="2"/>
+        <!-- Right boot -->
+        <path d="M106 305 Q114 310 118 308 Q116 300 106 302" stroke-width="2"/>
+      </svg>
+    </div>
+
+  </div><!-- /.ld-bg -->
+
+  <!-- Vignette darkens edges so scenes don't overpower the text -->
+  <div class="ld-vignette"></div>
+
+  <!-- Foreground loading UI -->
+  <div class="ld-content">
+    <div class="ld-title">LOADING</div>
+    <div class="ld-sub">X-ORBIT STUDIOS · THE INTERVAL</div>
+    <div class="ld-dots">
+      <div class="ld-dot"></div>
+      <div class="ld-dot"></div>
+      <div class="ld-dot"></div>
+    </div>
+    <div class="ld-bar-wrap"><div class="ld-bar-fill" id="ldFill"></div></div>
+    <div class="ld-msg-wrap"><div class="ld-msg" id="ldMsg">Initializing session...</div></div>
+  </div>
+
+</div>
+
+<!-- ══ MATCH RESULT OVERLAY -->
+<div class="match-result-ov" id="matchResultOv">
+  <div class="match-result-box">
+    <div id="mrFlawless" class="mr-flawless" style="display:none;">✦ FLAWLESS ✦</div>
+    <div class="mr-title" id="mrTitle">MATCH OVER</div>
+    <div class="mr-sub" id="mrSub">5 ROUNDS COMPLETE</div>
+    <div class="mr-score" id="mrScore">0—0</div>
+    <div class="mr-score-lbl">YOU — OPPONENT</div>
+    <button class="mbtn" onclick="goMenu()" style="margin-top:16px;"><i class="fa-solid fa-house"></i> MAIN MENU</button>
+  </div>
+</div>
+
+<!-- ══ RESULT MODAL -->
+<div class="ov" id="resultOv">
+  <div class="modal">
+    <div class="mhd" id="resMhd"><i class="fa-solid fa-skull"></i> ROUND RESULT</div>
+    <div class="mbd">
+      <div class="mtitle" id="resTitle">DEFEAT</div>
+      <div class="msub" id="resSub">YOU HAVE FALLEN</div>
+      <div class="mstats" id="resStats"></div>
+      <button class="mbtn" onclick="nextRound()"><i class="fa-solid fa-rotate-right"></i> <span id="resBtnT">RETRY</span></button>
+      <button class="mbtn" onclick="goMenu()" style="border-color:var(--gst);color:var(--gst);"><i class="fa-solid fa-house"></i> MAIN MENU</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHAMBER MODAL -->
+<!-- ══ CUFF BANNER (player restrained — non-blocking top bar) -->
+<div id="cuffOv">
+  <i class="fa-solid fa-handcuffs"></i>
+  <span>RESTRAINED — TURNS REMAINING: <span id="cuffTurnsNum">2</span></span>
+</div>
+
+<div id="chamberOv">
+  <div id="chamberModal">
+    <div class="cm-hd">
+      <div><i class="fa-solid fa-circle-nodes"></i> CHAMBER LOADED</div>
+      <span id="cmRnd" style="font-size:.48rem;color:var(--gst);letter-spacing:2px;">RND --</span>
+    </div>
+    <div class="cm-body">
+      <div class="cm-title">SHELLS LOADED</div>
+      <div class="cm-sub" id="cmSub">Scanning — stand by</div>
+      <div class="cm-slots" id="cmSlots"></div>
+      <div class="cm-tally">
+        <span class="tl"><i class="fa-solid fa-fire-flame-curved"></i> <span id="tLive">--</span> LIVE</span>
+        <div class="tsep"></div>
+        <span class="tb"><i class="fa-regular fa-circle"></i> <span id="tBlnk">--</span> BLANK</span>
+        <div class="tsep"></div>
+        <span class="ttot">TOTAL: <span id="tTot">--</span></span>
+      </div>
+      <div class="ev-banner" id="cmEvBanner">
+        <div class="ev-label">DEALER EVENT</div>
+        <div class="ev-name" id="cmEvName">—</div>
+        <div class="ev-desc" id="cmEvDesc"></div>
+      </div>
+      <button class="cm-cta" id="cmCta" onclick="closeChamber()">
+        <i class="fa-solid fa-play"></i> BEGIN
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════
+// ITEM DEFINITIONS
+// ════════════════════════════════
+const ITEMS = [
+  { id:'apple',      fa:'fa-solid fa-apple-whole',      name:'APPLE',     tip:'Restore 1 HP' },
+  { id:'saw',        fa:'fa-solid fa-saw',               name:'SAW',       tip:'Double next shot damage' },
+  { id:'soda',       fa:'fa-solid fa-mug-saucer',        name:'SODA',      tip:'Eject current shell (reveals it)' },
+  { id:'magnifier',  fa:'fa-solid fa-magnifying-glass',  name:'SCOPE',     tip:'Reveal current shell type' },
+  { id:'handcuffs',  fa:'fa-solid fa-handcuffs',         name:'CUFFS',     tip:"Skip opponent's next turn" },
+  { id:'inverter',   fa:'fa-solid fa-arrows-rotate',     name:'INVERTER',  tip:'Flip current shell (live↔blank)' },
+  { id:'adrenaline', fa:'fa-solid fa-syringe',           name:'ADRENALINE',tip:'Steal a random item from opponent' },
+  { id:'mirror',     fa:'fa-solid fa-shield-halved',     name:'MIRROR',    tip:'Reflect next opponent shot back at them (use on your turn)' },
+];
+// AI cannot use Mirror (reactive item, requires player-turn logic)
+const ITEMS_FOR_AI = ITEMS.filter(x=>x.id!=='mirror');
+
+// ════════════════════════════════
+// DEALER EVENTS
+// ════════════════════════════════
+const DEALER_EVENTS = [
+  { id:'none',        weight:35, name:'STANDARD',     desc:'No special conditions this round.' },
+  { id:'double_dmg',  weight:15, name:'LETHAL ROUND',  desc:'All damage dealt is doubled this round.' },
+  { id:'no_items',    weight:15, name:'CONFISCATED',   desc:'Items have been confiscated. None may be used.' },
+  { id:'overload',    weight:15, name:'OVERLOADED',    desc:'Chamber is overloaded — 2 extra LIVE shells added.' },
+  { id:'medic',       weight:10, name:'MEDIC ROUND',   desc:'Field medic on standby — both players start with +1 HP.' },
+  { id:'blind',       weight:10, name:'BLIND FIRE',    desc:'Shell tracker obscured — you cannot see remaining shells.' },
+];
+// ════════════════════════════════
+// LOADING SCREEN
+// ════════════════════════════════
+const LOAD_MESSAGES = [
+  'TIP: Use SCOPE before shooting to confirm a live shell.',
+  'TIP: SAW on a confirmed live shell is maximum value.',
+  'TIP: Shooting yourself with a blank keeps your turn.',
+  'TIP: CUFFS hit hardest when the opponent has a SAW ready.',
+  'TIP: INVERTER on yourself + blank = free extra turn.',
+  'TIP: MIRROR is most valuable when you are low on HP.',
+  'TIP: ADRENALINE scales with how good your opponent\'s items are.',
+  'TIP: BLIND FIRE rounds — use SCOPE to compensate.',
+  'TIP: On CONFISCATED rounds, raw aim is all you have.',
+  'TIP: OVERLOADED rounds tip the odds — play conservatively.',
+  'TIP: MEDIC rounds give both players +1 HP before items are handed out.',
+  'TIP: The match is 5 rounds. You can afford one loss.',
+  'TIP: ADRENALINE steals from the opponent\'s unused slots only.',
+  'Loading bullets...',
+  'Convincing the dealer to cooperate...',
+  'Polishing the barrel...',
+  'Counting shells (results may vary)...',
+  'The opponent is warming up. So is their ego.',
+  'Calibrating the odds — they are not in your favor.',
+  'Sharpening the saw...',
+  'Reviewing Geneva Convention clauses... skipping.',
+  'The dealer has accepted a bribe. Just kidding.',
+  'Filling the chamber with surprises...',
+  'Your opponent studied the blade. You ate an apple.',
+  'Dealer is shuffling the shells. Audibly.',
+  'Consulting the rulebook (page was torn out).',
+  'Performing pre-session threat assessment...',
+  'Lubricating the mechanism. You do not want to know what with.',
+  'AI opponent is doing push-ups.',
+  'Checking if the gun is loaded. It is.',
+];
+let _ldInterval = null;
+
+function showLoading(onDone) {
+  const ov = g('loadingOv');
+  const msgs = [...LOAD_MESSAGES];
+  // shuffle
+  for (let i = msgs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [msgs[i], msgs[j]] = [msgs[j], msgs[i]];
+  }
+  let idx = 0;
+  const msgEl = g('ldMsg');
+  msgEl.textContent = msgs[idx];
+  msgEl.style.opacity = '1';
+  ov.classList.add('active');
+
+  // Random duration 10–25 seconds
+  const duration = Math.floor(Math.random() * 15000) + 10000;
+
+  // Animate progress bar to match exact duration
+  const fill = g('ldFill');
+  fill.style.transition = 'none'; fill.style.width = '0';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.transition = `width ${duration}ms cubic-bezier(.25,.1,.25,1)`;
+    fill.style.width = '100%';
+  }));
+
+  // Cycle messages every 2.2s with fade
+  _ldInterval = setInterval(() => {
+    msgEl.classList.add('fade');
+    setTimeout(() => {
+      idx = (idx + 1) % msgs.length;
+      msgEl.textContent = msgs[idx];
+      msgEl.classList.remove('fade');
+    }, 350);
+  }, 2200);
+
+  // Done after random duration
+  setTimeout(() => {
+    clearInterval(_ldInterval); _ldInterval = null;
+    ov.classList.remove('active');
+    fill.style.transition = 'none'; fill.style.width = '0';
+    onDone();
+  }, duration);
+}
+
+function pickEvent(){
+  const total=DEALER_EVENTS.reduce((a,e)=>a+e.weight,0);
+  let r=Math.random()*total;
+  for(const e of DEALER_EVENTS){ r-=e.weight; if(r<=0)return e; }
+  return DEALER_EVENTS[0];
+}
+
+// ════════════════════════════════
+// STATE
+// ════════════════════════════════
+let G={}, wins=0, rnd=0, busy=false, diff='easy';
+let matchRnd=0, pMatchWins=0, oMatchWins=0;
+const MATCH_ROUNDS=5;
+let chamberCB=null;
+let bnrTimer=null, itmTimer=null;
+
+// ════════════════════════════════
+// DIFFICULTY
+// ════════════════════════════════
+function selDiff(d){
+  diff=d;
+  ['Easy','Med','Hard'].forEach(k=>g('d'+k).classList.remove('sel'));
+  g('d'+d.charAt(0).toUpperCase()+d.slice(1)).classList.add('sel');
+}
+
+// ════════════════════════════════
+// GAME FLOW
+// ════════════════════════════════
+function startGame(){
+  hideMainMenu(); rnd=0; wins=0; matchRnd=0; pMatchWins=0; oMatchWins=0;
+  g('winLbl').textContent='0';
+  g('matchLbl').textContent='0—0';
+  g('logList').innerHTML=''; logCount=0;
+  // Menu music keeps playing during loading screen
+  showLoading(() => {
+    startGameMusic();
+    initRound();
+  });
+}
+
+function goMenu(){
+  hide('resultOv');
+  g('matchResultOv').classList.remove('show');
+  stopGameMusic(); showMainMenu(); startMenuMusic();
+}
+
+function initRound(){
+  rnd++; matchRnd++; busy=false;
+  const cfg={
+    easy:    {hp:6,lMin:1,lMax:3,bMin:3,bMax:5},
+    med:     {hp:5,lMin:2,lMax:4,bMin:2,bMax:4},
+    hard:    {hp:4,lMin:3,lMax:5,bMin:1,bMax:3},
+    overkill:{hp:6,lMin:3,lMax:5,bMin:1,bMax:3},
+  }[diff];
+  let maxHp=Math.min(cfg.hp+Math.floor(rnd/4),8);
+  const ev=pickEvent();
+  const lN=rnd_(cfg.lMin,Math.min(cfg.lMax+Math.floor(rnd/3),5));
+  let extraLive=ev.id==='overload'?2:0;
+  const bN=rnd_(cfg.bMin,Math.min(cfg.bMax+Math.floor(rnd/3),5));
+  let shells=[...Array(lN+extraLive).fill('live'),...Array(bN).fill('blnk')];
+  shuf(shells); shells=shells.slice(0,8);
+
+  if(ev.id==='medic') maxHp=Math.min(maxHp+1,8);
+
+  G={
+    pHp:maxHp,pMax:maxHp,
+    oHp:maxHp,oMax:maxHp,
+    shells,idx:0,
+    pItems:topUpItems([]),
+    oItems:topUpItems([],true),
+    turn:'player',
+    dbl:false,oCuffed:0,pCuffed:0,rev:-1,
+    mirror:false, event:ev.id,
+  };
+  // Reset cuff UI on new round
+  hide('cuffOv');
+  g('pCuffBadge').classList.remove('on');
+  g('cuffBadge').classList.remove('on');
+  g('mirrorBadge').classList.remove('on');
+
+  g('rnLbl').textContent=pad(rnd);
+  setActions(false);
+  updateUI();
+  showChamber(shells,()=>{
+    const evNote=ev.id!=='none'?` — EVENT: ${ev.name}`:'';
+    log('sys','fa-solid fa-circle-info',`RND ${pad(rnd)} // ${shells.length} shells: ${lN+extraLive} LIVE · ${bN} BLANK${evNote}`);
+    if(ev.id!=='none') log('sys','fa-solid fa-star',`DEALER EVENT — ${ev.name}: ${ev.desc}`);
+    setTurnBar('YOUR TURN',true);
+    showBanner('player');
+    setActions(true); busy=false;
+    tutCheckpoint('chamberDone');
+  });
+}
+
+function randItems(n){
+  let pool=[...ITEMS], out=[];
+  for(let i=0;i<n;i++){
+    if(!pool.length)break;
+    const x=Math.floor(Math.random()*pool.length);
+    out.push({...pool[x],used:false});
+    pool.splice(x,1);
+  }
+  while(out.length<6)out.push(null);
+  return out;
+}
+
+function topUpItems(existing, isAI=false){
+  // Keep active (non-null, non-used) items
+  const active=existing.filter(x=>x&&!x.used);
+  // Target 4-6 total, add 1-4 items
+  const target=Math.min(6, Math.max(4, active.length + rnd_(1,4)));
+  const toAdd=Math.max(0, target - active.length);
+  const pool=(isAI?ITEMS_FOR_AI:ITEMS).filter(x=>!active.some(a=>a.id===x.id));
+  shuf(pool);
+  const additions=pool.slice(0, Math.min(toAdd, pool.length));
+  const result=[...active, ...additions.map(x=>({...x,used:false}))];
+  while(result.length<6)result.push(null);
+  return result;
+}
+
+function showMatchResult(){
+  const pWin=pMatchWins>oMatchWins;
+  const tie=pMatchWins===oMatchWins;
+  const flawless=pMatchWins===MATCH_ROUNDS&&oMatchWins===0;
+  g('mrFlawless').style.display=flawless?'block':'none';
+  g('mrTitle').textContent=flawless?'FLAWLESS VICTORY':tie?'DRAW':pWin?'MATCH VICTORY':'MATCH DEFEAT';
+  g('mrTitle').style.color=flawless?'gold':tie?'var(--wrn)':pWin?'var(--ok)':'var(--err)';
+  g('mrSub').textContent=(flawless?'PERFECT · ':'')+matchRnd+' ROUNDS PLAYED';
+  g('mrScore').textContent=`${pMatchWins}—${oMatchWins}`;
+  g('matchResultOv').classList.add('show');
+}
+
+// ════════════════════════════════
+// SHOOT — player
+// ════════════════════════════════
+function shoot(tgt){
+  if(busy||G.turn!=='player'||_paused)return;
+  tutCheckpoint('shoot'); // advance tutorial when player fires
+  busy=true; setActions(false);
+  const sh=G.shells[G.idx];
+  const evMult=G.event==='double_dmg'?2:1;
+  const dm=(G.dbl?2:1)*evMult; G.dbl=false; updDbl();
+  fireGun();
+  setTimeout(()=>{
+    G.rev=-1;
+    if(sh==='live'){
+      playShot('live');
+      if(tgt==='opp'){
+        G.oHp=Math.max(0,G.oHp-dm); log('live','fa-solid fa-fire-flame-curved',`YOU → OPPONENT: LIVE hit, −${dm}HP`); flash('sOpp',false);
+        G.idx++; updateUI(); if(chkReload())return; if(chkOver())return;
+        toOpp();
+      } else {
+        // Self live-shot: take damage but keep your turn
+        G.pHp=Math.max(0,G.pHp-dm); log('live','fa-solid fa-fire-flame-curved',`YOU → YOU: LIVE hit, −${dm}HP`); flash('sPly',false); playerWasShot();
+        G.idx++; updateUI(); if(chkReload())return; if(chkOver())return;
+        setTurnBar('YOUR TURN',true); showBanner('player'); setActions(true); busy=false;
+      }
+    } else {
+      playShot('blnk');
+      if(tgt==='opp') log('blnk','fa-regular fa-circle','YOU → OPPONENT: BLANK — no damage');
+      else            log('blnk','fa-regular fa-circle','YOU → YOU: BLANK — no damage, keep turn');
+      G.idx++;
+      if(tgt==='self'){
+        updateUI(); if(chkReload())return; if(chkOver())return;
+        setTurnBar('YOUR TURN',true); showBanner('player');
+        setActions(true); busy=false;
+      } else {
+        updateUI(); if(chkReload())return; if(chkOver())return;
+        toOpp();
+      }
+    }
+  },350);
+}
+
+// ════════════════════════════════
+// OPPONENT TURN
+// ════════════════════════════════
+function aiDelay(){ return Math.floor(Math.random()*7000)+3000; }
+
+function toOpp(){
+  G.turn='opp';
+  if(G.oCuffed>0){
+    G.oCuffed--;
+    const rem=G.oCuffed;
+    if(rem===0){
+      g('cuffBadge').classList.remove('on');
+      log('item','fa-solid fa-handcuffs','HANDCUFFS — opponent final turn skipped, cuffs released');
+    } else {
+      log('item','fa-solid fa-handcuffs',`HANDCUFFS — opponent turn skipped (${rem} left)`);
+    }
+    showBanner('player');
+    setTimeout(()=>{ G.turn='player'; setTurnBar('YOUR TURN',true); setActions(true); busy=false; },900);
+  } else {
+    setTurnBar('OPPONENT TURN',false);
+    showBanner('opp');
+    showThink(true);
+    setTimeout(oppTurn,aiDelay());
+  }
+}
+
+function toPlayer(){
+  if(G.pCuffed>0){
+    G.pCuffed--;
+    const rem=G.pCuffed;
+    if(rem===0){
+      hide('cuffOv');
+      g('pCuffBadge').classList.remove('on');
+      log('item','fa-solid fa-handcuffs','HANDCUFFS — your final turn skipped, cuffs released');
+      toast('CUFFS RELEASED');
+    } else {
+      g('cuffTurnsNum').textContent=rem;
+      log('item','fa-solid fa-handcuffs',`HANDCUFFS — your turn skipped (${rem} left)`);
+    }
+    // Skip player turn → opponent acts again
+    G.turn='opp';
+    setTurnBar('OPPONENT TURN',false);
+    showBanner('opp');
+    showThink(true);
+    setTimeout(oppTurn,aiDelay());
+  } else {
+    G.turn='player';
+    setTurnBar('YOUR TURN',true);
+    showBanner('player');
+    setActions(true);
+    busy=false;
+  }
+}
+
+function showCuffModal(n){
+  g('cuffTurnsNum').textContent=n;
+  g('pCuffBadge').classList.add('on');
+  show('cuffOv');
+}
+
+// ════════════════════════════════
+// AI INTELLIGENCE
+// ════════════════════════════════
+function aiRead(){
+  // Returns AI's perceived shell type for the current chamber slot.
+  // Each difficulty can also "panic" and return a completely random guess.
+  const actual=G.shells[G.idx];
+  const rem=G.shells.slice(G.idx);
+  const liveP=rem.filter(s=>s==='live').length/rem.length;
+  const rnd=Math.random;
+  const flip=s=>s==='live'?'blnk':'live';
+  const chaos=()=>rnd()<0.5?'live':'blnk';
+
+  if(diff==='easy'){
+    // Completely blind — might even "stubbornly" guess the same thing twice and be wrong
+    return chaos();
+  }
+  if(diff==='med'){
+    if(rnd()<0.18) return chaos();                           // 18% full panic blunder
+    const probGuess=liveP>=0.5?'live':'blnk';
+    return rnd()<0.62?actual:probGuess;                      // 62% correct, else probability guess
+  }
+  if(diff==='hard'){
+    if(rnd()<0.08) return chaos();                           // 8% sudden panic
+    return rnd()<0.82?actual:flip(actual);                   // 82% accurate
+  }
+  // overkill: almost never wrong, but occasionally overconfident and misreads
+  return rnd()<0.05?flip(actual):actual;                     // 5% rare error
+}
+
+function oppTurn(){
+  if(G.turn!=='opp'||_paused)return;
+  const perceived=aiRead(); // compute once so items + target use same perception
+  const xd=oppItems(perceived);
+  setTimeout(()=>{
+    showThink(false);
+    if(G.turn!=='opp'){busy=false;return;}
+    const sh=G.shells[G.idx];
+    const evMult=G.event==='double_dmg'?2:1;
+    const dm=(G.dbl?2:1)*evMult; G.dbl=false; updDbl();
+    // Re-read perception here so soda ejections in oppItems() don't cause a stale target decision
+    const shotPercv=aiRead();
+    const tgt=shotPercv==='live'?'opp':'self';
+    fireGun();
+    setTimeout(()=>{
+      G.rev=-1;
+      playShot(sh);
+      G.idx++; updateUI();
+      if(tgt==='opp'){
+        // AI shoots player — check mirror
+        if(G.mirror){
+          G.mirror=false; g('mirrorBadge').classList.remove('on');
+          log('item','fa-solid fa-shield-halved','MIRROR — shot reflected back at opponent!');
+          toast('REFLECTED!');
+          if(sh==='live'){
+            G.oHp=Math.max(0,G.oHp-dm);
+            log('live','fa-solid fa-fire-flame-curved',`MIRROR REFLECT: OPPONENT takes LIVE hit, −${dm}HP`); flash('sOpp',false);
+            if(chkReload())return; if(chkOver())return;
+            // Reflection ends opponent turn
+            toPlayer();
+          } else {
+            log('blnk','fa-regular fa-circle','MIRROR REFLECT: BLANK — no damage');
+            if(chkReload())return; if(chkOver())return;
+            toPlayer();
+          }
+        } else if(sh==='live'){
+          G.pHp=Math.max(0,G.pHp-dm);
+          log('live','fa-solid fa-fire-flame-curved',`OPPONENT → YOU: LIVE hit, −${dm}HP`);
+          flash('sPly',false); playerWasShot();
+          if(chkReload())return; if(chkOver())return;
+          toPlayer();
+        } else {
+          log('blnk','fa-regular fa-circle','OPPONENT → YOU: BLANK — turn passes');
+          if(chkReload())return; if(chkOver())return;
+          toPlayer();
+        }
+      } else {
+        // AI shoots self — always keeps AI's turn regardless of shell type
+        if(sh==='live'){
+          G.oHp=Math.max(0,G.oHp-dm);
+          log('live','fa-solid fa-fire-flame-curved',`OPPONENT → OPPONENT: LIVE — self-inflicted, −${dm}HP`);
+          flash('sOpp',false);
+          if(chkReload())return; if(chkOver())return;
+          showThink(true); setTimeout(oppTurn,aiDelay());
+        } else {
+          log('blnk','fa-regular fa-circle','OPPONENT → OPPONENT: BLANK — keeps turn');
+          if(chkReload())return; if(chkOver())return;
+          showThink(true); setTimeout(oppTurn,aiDelay());
+        }
+      }
+    },350);
+  },xd+500);
+}
+
+function oppItems(perceived){
+  let d=0;
+  const actual=G.shells[G.idx];
+  const use=(id,cb)=>{
+    const i=G.oItems.findIndex(x=>x&&!x.used&&x.id===id);
+    if(i===-1)return false;
+    G.oItems[i].used=true; cb(); d+=380; return true;
+  };
+
+  const r=Math.random;
+
+  if(G.event==='no_items') return d;  // Confiscated event — AI can't use items either
+
+  if(diff==='easy'){
+    // Chaotic — randomly uses one item with 30% chance, ignores situation completely.
+    // Also wastes heals at full HP, saws blanks, etc.
+    const pool=['saw','soda','apple','handcuffs','inverter','adrenaline'].filter(id=>G.oItems.some(x=>x&&!x.used&&x.id===id));
+    if(pool.length&&r()<0.30){
+      const id=pool[Math.floor(r()*pool.length)];
+      if(id==='saw') use('saw',()=>{ G.dbl=true; log('oitem','fa-solid fa-saw','OPPONENT used SAW'); showItemBanner('SAW','fa-solid fa-saw'); updDbl(); });
+      else if(id==='soda'){ if(use('soda',()=>{ log('oitem','fa-solid fa-mug-saucer','OPPONENT used SODA — ejected shell'); showItemBanner('SODA','fa-solid fa-mug-saucer'); G.idx++; updateUI(); })) if(chkReload())return 0; }
+      else if(id==='apple') use('apple',()=>{ G.oHp=Math.min(G.oMax,G.oHp+1); log('oitem','fa-solid fa-apple-whole','OPPONENT used APPLE'); showItemBanner('APPLE','fa-solid fa-apple-whole'); flash('sOpp',true); });
+      else if(id==='handcuffs') use('handcuffs',()=>{ G.pCuffed=2; showCuffModal(2); log('oitem','fa-solid fa-handcuffs','OPPONENT used CUFFS — you are restrained for 2 turns'); showItemBanner('CUFFS','fa-solid fa-handcuffs'); });
+      else if(id==='inverter'){ if(use('inverter',()=>{ const f=G.shells[G.idx]==='live'?'blnk':'live'; G.shells[G.idx]=f; log('oitem','fa-solid fa-arrows-rotate',`OPPONENT used INVERTER — shell flipped to ${f.toUpperCase()}`); showItemBanner('INVERTER','fa-solid fa-arrows-rotate'); updateUI(); })) {} }
+      else if(id==='adrenaline'){
+        const pAvail=G.pItems.filter(x=>x&&!x.used);
+        if(pAvail.length) use('adrenaline',()=>{
+          const stl=pAvail[Math.floor(r()*pAvail.length)];
+          const pIdx=G.pItems.findIndex(x=>x&&!x.used&&x.id===stl.id); G.pItems[pIdx].used=true;
+          const oSlot=G.oItems.findIndex(x=>x===null);
+          if(oSlot!==-1){ G.oItems[oSlot]={...stl,used:false}; }
+          log('oitem','fa-solid fa-syringe',`OPPONENT used ADRENALINE — stole your ${stl.name}`); showItemBanner('ADRENALINE','fa-solid fa-syringe'); updateUI();
+        });
+      }
+    }
+    return d;
+  }
+
+  if(diff==='med'){
+    // Probability-based but panics ~15% of the time — may use SAW on a blank or soda on a live
+    const panicking=r()<0.15;
+    const actOn=panicking?perceived==='live'?'blnk':'live':perceived; // flip item logic when panicking
+    if(actOn==='live'&&r()<.48)
+      use('saw',()=>{ G.dbl=true; log('oitem','fa-solid fa-saw','OPPONENT used SAW — ×2 next'); showItemBanner('SAW','fa-solid fa-saw'); updDbl(); });
+    if(actOn==='blnk'&&r()<.48)
+      if(use('soda',()=>{ log('oitem','fa-solid fa-mug-saucer','OPPONENT used SODA — ejected shell'); showItemBanner('SODA','fa-solid fa-mug-saucer'); G.idx++; updateUI(); }))
+        if(chkReload())return 0;
+    // Sometimes wastes a heal when not critically low
+    if(G.oHp<=2&&r()<.60) use('apple',()=>{ G.oHp=Math.min(G.oMax,G.oHp+1); log('oitem','fa-solid fa-apple-whole','OPPONENT used APPLE — +1HP'); showItemBanner('APPLE','fa-solid fa-apple-whole'); flash('sOpp',true); });
+    else if(G.oHp>2&&r()<.08) use('apple',()=>{ G.oHp=Math.min(G.oMax,G.oHp+1); log('oitem','fa-solid fa-apple-whole','OPPONENT used APPLE — panicked'); showItemBanner('APPLE','fa-solid fa-apple-whole'); flash('sOpp',true); });
+    // Inverter: use if shell type is disadvantageous
+    if(actOn==='blnk'&&r()<.30) use('inverter',()=>{ const f='live'; G.shells[G.idx]=f; log('oitem','fa-solid fa-arrows-rotate','OPPONENT used INVERTER'); showItemBanner('INVERTER','fa-solid fa-arrows-rotate'); updateUI(); });
+    return d;
+  }
+
+  if(diff==='hard'){
+    // Mostly sharp but ~8% panic misplay — occasionally saws a blank or sodas a live
+    const misplay=r()<0.08;
+    const actOn=misplay?perceived==='live'?'blnk':'live':perceived;
+    if(actOn==='live'&&r()<.58)
+      use('saw',()=>{ G.dbl=true; log('oitem','fa-solid fa-saw','OPPONENT used SAW — ×2 next'); showItemBanner('SAW','fa-solid fa-saw'); updDbl(); });
+    if(actOn==='blnk'&&r()<.58)
+      if(use('soda',()=>{ log('oitem','fa-solid fa-mug-saucer','OPPONENT used SODA — ejected BLANK'); showItemBanner('SODA','fa-solid fa-mug-saucer'); G.idx++; updateUI(); }))
+        if(chkReload())return 0;
+    if(G.oHp<=3&&r()<.72)
+      use('apple',()=>{ G.oHp=Math.min(G.oMax,G.oHp+1); log('oitem','fa-solid fa-apple-whole','OPPONENT used APPLE — +1HP'); showItemBanner('APPLE','fa-solid fa-apple-whole'); flash('sOpp',true); });
+    if(G.pHp<=2&&r()<.42)
+      use('handcuffs',()=>{ G.pCuffed=2; showCuffModal(2); log('oitem','fa-solid fa-handcuffs','OPPONENT used CUFFS — you are restrained for 2 turns'); showItemBanner('CUFFS','fa-solid fa-handcuffs'); });
+    // Inverter: flip a blank into live when planning to shoot self (keep turn)
+    if(actual==='blnk'&&r()<.40) use('inverter',()=>{ G.shells[G.idx]='live'; log('oitem','fa-solid fa-arrows-rotate','OPPONENT used INVERTER — flipped to LIVE'); showItemBanner('INVERTER','fa-solid fa-arrows-rotate'); updateUI(); });
+    // Adrenaline: steal from player occasionally
+    if(r()<.25){
+      const pAvail=G.pItems.filter(x=>x&&!x.used);
+      if(pAvail.length) use('adrenaline',()=>{
+        const stl=pAvail[Math.floor(r()*pAvail.length)];
+        const pIdx=G.pItems.findIndex(x=>x&&!x.used&&x.id===stl.id); G.pItems[pIdx].used=true;
+        const oSlot=G.oItems.findIndex(x=>x===null);
+        if(oSlot!==-1){ G.oItems[oSlot]={...stl,used:false}; }
+        log('oitem','fa-solid fa-syringe',`OPPONENT used ADRENALINE — stole your ${stl.name}`); showItemBanner('ADRENALINE','fa-solid fa-syringe'); updateUI();
+      });
+    }
+    return d;
+  }
+
+  // ── OVERKILL: omniscient + predictive ──────────────────────────
+  if(actual==='live'&&Math.random()<.65)
+    use('saw',()=>{ G.dbl=true; log('oitem','fa-solid fa-saw','OPPONENT used SAW — ×2 next'); showItemBanner('SAW','fa-solid fa-saw'); updDbl(); });
+  if(actual==='blnk'&&Math.random()<.65)
+    if(use('soda',()=>{ log('oitem','fa-solid fa-mug-saucer','OPPONENT used SODA — ejected BLANK'); showItemBanner('SODA','fa-solid fa-mug-saucer'); G.idx++; updateUI(); }))
+      if(chkReload())return 0;
+  if(G.oHp<=4&&Math.random()<.85)
+    use('apple',()=>{ G.oHp=Math.min(G.oMax,G.oHp+1); log('oitem','fa-solid fa-apple-whole','OPPONENT used APPLE — +1HP'); showItemBanner('APPLE','fa-solid fa-apple-whole'); flash('sOpp',true); });
+  // Predict player threat: AI reads player items and the next shell player will face
+  const playerHasSaw=G.pItems.some(x=>x&&!x.used&&x.id==='saw');
+  const nextForPlayer=G.shells[G.idx+1];
+  const threatHigh=(playerHasSaw&&nextForPlayer==='live')||G.pHp<=2;
+  if(threatHigh&&Math.random()<.75)
+    use('handcuffs',()=>{ G.pCuffed=2; showCuffModal(2); log('oitem','fa-solid fa-handcuffs','OPPONENT PREDICTED YOUR MOVE — CUFFED (2 turns)'); showItemBanner('CUFFS','fa-solid fa-handcuffs'); });
+  else if(Math.random()<.30)
+    use('handcuffs',()=>{ G.pCuffed=2; showCuffModal(2); log('oitem','fa-solid fa-handcuffs','OPPONENT used CUFFS — you are restrained for 2 turns'); showItemBanner('CUFFS','fa-solid fa-handcuffs'); });
+  // Overkill: flip blank to live if shooting self — strategically guaranteed extra turn
+  if(actual==='blnk'&&Math.random()<.55) use('inverter',()=>{ G.shells[G.idx]='live'; log('oitem','fa-solid fa-arrows-rotate','OPPONENT used INVERTER — guaranteed extra turn'); showItemBanner('INVERTER','fa-solid fa-arrows-rotate'); updateUI(); });
+  // Overkill: steal player's best item
+  if(Math.random()<.45){
+    const pAvail=G.pItems.filter(x=>x&&!x.used);
+    if(pAvail.length) use('adrenaline',()=>{
+      const priority=['saw','handcuffs','soda','inverter','apple','magnifier'];
+      const stl=pAvail.sort((a,b)=>priority.indexOf(a.id)-priority.indexOf(b.id))[0];
+      const pIdx=G.pItems.findIndex(x=>x&&!x.used&&x.id===stl.id); G.pItems[pIdx].used=true;
+      const oSlot=G.oItems.findIndex(x=>x===null);
+      if(oSlot!==-1){ G.oItems[oSlot]={...stl,used:false}; }
+      log('oitem','fa-solid fa-syringe',`OPPONENT used ADRENALINE — stole your ${stl.name}`); showItemBanner('ADRENALINE','fa-solid fa-syringe'); updateUI();
+    });
+  }
+  return d;
+}
+
+// ════════════════════════════════
+// PLAYER ITEMS
+// ════════════════════════════════
+function useItem(i){
+  const it=G.pItems[i]; if(!it||it.used)return;
+  if(busy||G.turn!=='player')return;
+  // no_items event: block item use
+  if(G.event==='no_items'){ toast('ITEMS CONFISCATED'); return; }
+  const cur=G.shells[G.idx];
+  switch(it.id){
+    case'apple':
+      if(G.pHp<G.pMax){ G.pHp++; log('heal','fa-solid fa-apple-whole','APPLE: +1 HP'); toast('+1 HP'); flash('sPly',true); }
+      else { toast('HP IS FULL'); log('heal','fa-solid fa-apple-whole','APPLE: already at max HP'); }
+      break;
+    case'saw':
+      G.dbl=true; updDbl();
+      log('item','fa-solid fa-saw','SAW: next shot ×2 damage'); toast('DAMAGE ×2');
+      break;
+    case'soda': {
+      const ej=cur;
+      log('blnk','fa-solid fa-mug-saucer',`SODA: ejected ${ej.toUpperCase()} from chamber`); toast(`EJECTED: ${ej==='live'?'LIVE':'BLANK'}`);
+      it.used=true; G.idx++; updateUI(); if(chkReload())return; return;
+    }
+    case'magnifier':
+      G.rev=G.idx;
+      log('item','fa-solid fa-magnifying-glass',`SCOPE: current shell is ${cur.toUpperCase()}`); toast(`SHELL: ${cur==='live'?'LIVE':'BLANK'}`);
+      break;
+    case'handcuffs':
+      G.oCuffed=2; g('cuffBadge').classList.add('on');
+      log('item','fa-solid fa-handcuffs','CUFFS: opponent will skip 2 turns'); toast('OPPONENT CUFFED');
+      break;
+    case'inverter': {
+      const flipped=cur==='live'?'blnk':'live';
+      G.shells[G.idx]=flipped; G.rev=G.idx;
+      log('item','fa-solid fa-arrows-rotate',`INVERTER: shell flipped to ${flipped.toUpperCase()}`); toast(`SHELL NOW: ${flipped==='live'?'LIVE':'BLANK'}`);
+      break;
+    }
+    case'mirror':
+      G.mirror=true; g('mirrorBadge').classList.add('on');
+      log('item','fa-solid fa-shield-halved','MIRROR: next opponent shot will be reflected back at them'); toast('MIRROR ACTIVE');
+      break;
+    case'adrenaline': {
+      const oppAvail=G.oItems.filter(x=>x&&!x.used);
+      if(!oppAvail.length){ toast('OPPONENT HAS NO ITEMS'); log('item','fa-solid fa-syringe','ADRENALINE: opponent has no items to steal'); break; }
+      const stolen=oppAvail[Math.floor(Math.random()*oppAvail.length)];
+      const oppIdx=G.oItems.findIndex(x=>x&&!x.used&&x.id===stolen.id);
+      G.oItems[oppIdx].used=true;
+      // Add to player inventory if space (find a null slot)
+      const pSlot=G.pItems.findIndex(x=>x===null);
+      if(pSlot!==-1){
+        G.pItems[pSlot]={...stolen,used:false};
+        log('item','fa-solid fa-syringe',`ADRENALINE: stole ${stolen.name} from opponent`); toast(`STOLE: ${stolen.name}`);
+      } else {
+        log('item','fa-solid fa-syringe',`ADRENALINE: stole ${stolen.name} — inventory full, item discarded`); toast(`STOLE+DISCARDED: ${stolen.name}`);
+      }
+      break;
+    }
+  }
+  it.used=true; updateUI();
+}
+
+// ════════════════════════════════
+// RELOAD
+// ════════════════════════════════
+function chkReload(){
+  if(G.idx<G.shells.length)return false;
+  show('recycleOv'); return true;
+}
+
+function confirmRecycle(){
+  hide('recycleOv');
+  const cfg={
+    easy:    {lMin:1,lMax:3,bMin:3,bMax:5},
+    med:     {lMin:2,lMax:4,bMin:2,bMax:4},
+    hard:    {lMin:3,lMax:5,bMin:1,bMax:3},
+    overkill:{lMin:3,lMax:5,bMin:1,bMax:3},
+  }[diff];
+  const lN=rnd_(cfg.lMin,Math.min(cfg.lMax+Math.floor(rnd/3),5));
+  const bN=rnd_(cfg.bMin,Math.min(cfg.bMax+Math.floor(rnd/3),5));
+  let s=[...Array(lN).fill('live'),...Array(bN).fill('blnk')];
+  shuf(s); s=s.slice(0,8);
+  G.shells=s; G.idx=0; G.rev=-1;
+  G.pItems=topUpItems(G.pItems);
+  G.oItems=topUpItems(G.oItems,true);
+  updateUI();
+  showChamber(s,()=>{
+    log('sys','fa-solid fa-circle-info',`Reloaded: ${lN} LIVE · ${bN} BLANK — unused items kept, new items added`);
+    toast('CHAMBER RELOADED');
+    if(G.turn==='player'){ setTurnBar('YOUR TURN',true); showBanner('player'); setActions(true); busy=false; }
+    else{ showThink(true); setTimeout(oppTurn,aiDelay()); }
+  });
+}
+
+// ════════════════════════════════
+// GAME OVER
+// ════════════════════════════════
+function chkOver(){
+  if(G.pHp<=0){
+    oMatchWins++;
+    g('matchLbl').textContent=`${pMatchWins}—${oMatchWins}`;
+    showResult(false); return true;
+  }
+  if(G.oHp<=0){
+    wins++; pMatchWins++;
+    g('winLbl').textContent=wins;
+    g('matchLbl').textContent=`${pMatchWins}—${oMatchWins}`;
+    showResult(true); return true;
+  }
+  return false;
+}
+
+function showResult(win){
+  setActions(false); busy=true;
+  const isMatchRound=matchRnd<=MATCH_ROUNDS;
+  const matchDone=matchRnd>=MATCH_ROUNDS;
+  const ic=win?'fa-solid fa-trophy':'fa-solid fa-skull';
+  g('resMhd').innerHTML=`<i class="${ic}"></i> ${win?'ROUND CLEAR':'ROUND LOST'}`;
+  g('resTitle').textContent=win?'VICTORY':'DEFEAT';
+  g('resTitle').style.color=win?'var(--ok)':'var(--err)';
+  g('resSub').textContent=win?'OPPONENT ELIMINATED':'YOU HAVE FALLEN';
+  g('resStats').innerHTML=`
+    <div class="ms"><div class="msl">Round</div><div class="msv">${pad(rnd)}</div></div>
+    <div class="ms"><div class="msl">Match</div><div class="msv">${pMatchWins}—${oMatchWins}</div></div>
+    <div class="ms"><div class="msl">Rounds Left</div><div class="msv">${Math.max(0,MATCH_ROUNDS-matchRnd)}</div></div>
+    <div class="ms"><div class="msl">Your HP</div><div class="msv">${G.pHp}</div></div>`;
+  const btnTxt=matchDone?'SEE RESULTS':(win?'NEXT ROUND':'NEXT ROUND');
+  g('resBtnT').textContent=btnTxt;
+  show('resultOv');
+}
+
+function nextRound(){
+  hide('resultOv');
+  g('logList').innerHTML=''; logCount=0;
+  g('logCount').textContent='0 entries';
+  if(matchRnd>=MATCH_ROUNDS){
+    // Check if there's a winner or need tiebreaker
+    if(pMatchWins!==oMatchWins){
+      showMatchResult();
+    } else {
+      // Tiebreaker round (safety net — mathematically unreachable with 5 rounds)
+      log('sys','fa-solid fa-circle-info','TIEBREAKER ROUND — match score is tied!');
+      initRound();
+    }
+  } else {
+    initRound();
+  }
+}
+
+// ════════════════════════════════
+// CHAMBER REVEAL MODAL
+// ════════════════════════════════
+function showChamber(shells,cb){
+  chamberCB=cb;
+  const ov=g('chamberOv'), slots=g('cmSlots'), cta=g('cmCta');
+  g('cmRnd').textContent=`RND ${pad(rnd)}`;
+  g('tLive').textContent='--'; g('tBlnk').textContent='--'; g('tTot').textContent='--';
+  g('cmSub').textContent='Scanning chamber — stand by';
+  cta.classList.remove('rdy');
+
+  // Count without revealing order
+  const lC=shells.filter(s=>s==='live').length;
+  const bC=shells.filter(s=>s==='blnk').length;
+
+  // Display order: all blanks first, then all lives — hides the firing sequence
+  const display=[...Array(bC).fill('blnk'),...Array(lC).fill('live')];
+
+  // Build 8 slots
+  slots.innerHTML='';
+  const padded=[...display];
+  while(padded.length<8)padded.push(null);
+  padded.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='csl wait'; d.id='cs'+i;
+    if(s===null){
+      d.style.opacity='.15';
+      d.innerHTML='<i class="sico fa-solid fa-minus" style="font-size:.6rem;color:var(--ded)"></i><div class="snum">'+(i+1)+'</div>';
+    } else {
+      d.innerHTML=`<i class="sico ${s==='live'?'fa-solid fa-fire-flame-curved':'fa-regular fa-circle'}"></i><div class="snum">${i+1}</div>`;
+    }
+    slots.appendChild(d);
+  });
+
+  // Show overlay
+  ov.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
+
+  // Animate blanks first, then lives
+  display.forEach((s,i)=>{
+    setTimeout(()=>{
+      const el=g('cs'+i); if(!el)return;
+      el.classList.remove('wait');
+      el.classList.add('rev',s==='live'?'s-live':'s-blnk');
+      if(i===display.length-1){
+        setTimeout(()=>{
+          g('tLive').textContent=lC;
+          g('tBlnk').textContent=bC;
+          g('tTot').textContent=shells.length;
+          g('cmSub').textContent=`${bC} blank · ${lC} live — good luck`;
+  // Event display
+  const ev=DEALER_EVENTS.find(e=>e.id===G.event)||DEALER_EVENTS[0];
+  g('cmEvName').textContent=ev.name;
+  g('cmEvName').className='ev-name ev-'+ev.id;
+  g('cmEvDesc').textContent=ev.desc;
+          cta.classList.add('rdy');
+        },180);
+      }
+    },160+i*125);
+  });
+}
+
+function closeChamber(){
+  const ov=g('chamberOv');
+  ov.classList.remove('show');
+  setTimeout(()=>{ ov.style.display='none'; if(chamberCB){chamberCB();chamberCB=null;} },360);
+}
+
+// ════════════════════════════════
+// UI
+// ════════════════════════════════
+function updateUI(){
+  renderSeat('Opp',G.oHp,G.oMax,G.turn==='opp');
+  renderSeat('Ply',G.pHp,G.pMax,G.turn==='player');
+
+  // shells
+  const track=g('shellTrack'); track.innerHTML='';
+  const blind=G.event==='blind';
+  G.shells.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='sh';
+    if(i<G.idx){ d.classList.add('used'); d.innerHTML='<i class="fa-solid fa-xmark" style="font-size:.45rem"></i>'; }
+    else if(i===G.idx){
+      d.classList.add('cur');
+      if(!blind&&i===G.rev){ d.classList.add(s); d.innerHTML=s==='live'?'<i class="fa-solid fa-fire-flame-curved" style="font-size:.68rem"></i>':'<i class="fa-regular fa-circle" style="font-size:.62rem"></i>'; }
+      else { d.classList.add('unknown'); d.innerHTML='<i class="fa-solid fa-question" style="font-size:.58rem"></i>'; }
+    } else {
+      if(!blind&&i===G.rev){ d.classList.add(s); d.innerHTML=s==='live'?'<i class="fa-solid fa-fire-flame-curved" style="font-size:.6rem"></i>':'<i class="fa-regular fa-circle" style="font-size:.55rem"></i>'; }
+      else { d.classList.add('unknown'); d.innerHTML='<i class="fa-solid fa-minus" style="font-size:.4rem;color:var(--ded)"></i>'; }
+    }
+    track.appendChild(d);
+  });
+
+  // odds
+  const rem=G.shells.slice(G.idx);
+  const lR=rem.filter(s=>s==='live').length, bR=rem.filter(s=>s==='blnk').length, tot=rem.length;
+  const lP=tot>0?Math.round(lR/tot*100):0;
+  g('oLt').textContent=`${lR} (${lP}%)`;
+  g('oBt').textContent=`${bR} (${100-lP}%)`;
+  g('oFill').style.width=lP+'%';
+  g('oRem').textContent=tot;
+
+  renderItems('pItems',G.pItems);
+}
+
+function renderSeat(who,hp,max,active){
+  const hEl=g('h'+who), tEl=g('ht'+who), avEl=g('av'+who), sEl=g('s'+who);
+  hEl.innerHTML='';
+  for(let i=0;i<max;i++){
+    const s=document.createElement('span'); s.className='hh '+(i<hp?'f':'e');
+    s.innerHTML=`<i class="fa-${i<hp?'solid':'regular'} fa-heart"></i>`; hEl.appendChild(s);
+  }
+  tEl.textContent=`HP ${hp}/${max}`;
+  avEl.className='av'+(active?' active':'')+(hp<=0?' dead-av':'');
+  const icon=who==='Opp'?'fa-solid fa-person':'fa-solid fa-user-secret';
+  avEl.innerHTML=`<i class="${icon}"></i>${active?'<div class="tdot"></div>':''}`;
+  sEl.classList.toggle('dead',hp<=0);
+}
+
+function renderItems(id,items){
+  const grid=g(id); grid.innerHTML='';
+  const isPlayer=id==='pItems';
+  items.forEach((it,i)=>{
+    const sl=document.createElement('div');
+    sl.className='isl'+(!it?' empty':it.used?' used':'');
+    // Always attach onclick for player items — useItem() enforces all turn/state guards
+    if(isPlayer&&it&&!it.used) sl.onclick=()=>useItem(i);
+    if(it)sl.innerHTML=`<i class="${it.fa}"></i><div class="in">${it.name}</div><div class="itip">${it.tip}</div>`;
+    grid.appendChild(sl);
+  });
+}
+
+function updDbl(){ g('dmgBadge').style.display=G.dbl?'flex':'none'; }
+function setActions(on){
+  if(_tutActive && _tutFreezeActions && on) return; // frozen during tutorial info steps
+  g('btnOpp').disabled=!on; g('btnSelf').disabled=!on;
+}
+function setTurnBar(txt,ply){
+  const c=ply?'var(--ok)':'var(--wrn)';
+  g('turnMsg').innerHTML=`<i class="fa-solid fa-circle-dot" style="color:${c}"></i> ${txt}`;
+}
+function showThink(on){ g('thinkDots').style.display=on?'flex':'none'; }
+function fireGun(){ const s=g('gunSvg'); s.classList.remove('fire'); void s.offsetWidth; s.classList.add('fire'); }
+function flash(id,heal){
+  const e=g(id); e.classList.remove('fdmg','fheal'); void e.offsetWidth;
+  e.classList.add(heal?'fheal':'fdmg');
+}
+
+// ════════════════════════════════
+// BANNERS
+// ════════════════════════════════
+function showBanner(who){
+  const b=g('turnBanner');
+  clearTimeout(bnrTimer);
+  b.classList.remove('show','your','opp');
+  void b.offsetWidth;
+  b.classList.add(who==='player'?'your':'opp');
+  g('tbIcon').className=who==='player'?'fa-solid fa-crosshairs':'fa-solid fa-skull';
+  g('tbText').textContent=who==='player'?'YOUR TURN':"OPPONENT'S TURN";
+  b.classList.add('show');
+  bnrTimer=setTimeout(()=>b.classList.remove('show'),1900);
+}
+
+function showItemBanner(name,icon){
+  const b=g('itemBanner');
+  clearTimeout(itmTimer);
+  b.classList.remove('show'); void b.offsetWidth;
+  g('ibIcon').className=icon;
+  g('ibText').textContent=`OPPONENT USED ${name}`;
+  b.classList.add('show');
+  itmTimer=setTimeout(()=>b.classList.remove('show'),2400);
+}
+
+// ════════════════════════════════
+// LOG
+// ════════════════════════════════
+let logCount=0;
+function log(type,icon,msg){
+  const ul=g('logList'), sc=g('logScroll');
+  logCount++;
+  const now=new Date();
+  const ts=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+  const li=document.createElement('li');
+  li.className=type+' new';
+  li.innerHTML=`<i class="${icon}"></i><span class="lmsg">${msg}</span><span class="lts">${ts}</span>`;
+  setTimeout(()=>li.classList.remove('new'),250);
+  ul.insertBefore(li,ul.firstChild);
+  while(ul.children.length>100)ul.removeChild(ul.lastChild);
+  const cnt=g('logCount'); if(cnt)cnt.textContent=`${ul.children.length} entries`;
+}
+
+// ════════════════════════════════
+// HELPERS
+// ════════════════════════════════
+let tT;
+function toast(msg){ const t=g('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('show'),1900); }
+function show(id){ g(id).classList.add('show'); }
+function hide(id){ g(id).classList.remove('show'); }
+function g(id){ return document.getElementById(id); }
+function pad(n){ return n.toString().padStart(2,'0'); }
+function rnd_(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function shuf(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
+
+// ════════════════════════════════
+// INTRO SEQUENCE
+// ════════════════════════════════
+const _delay = ms => new Promise(r => setTimeout(r, ms));
+
+function _fadePhase(el, inDur, holdDur, outDur) {
+  return new Promise(resolve => {
+    el.classList.add('showing');
+    el.style.animation = `intIn ${inDur}ms ease forwards`;
+    setTimeout(() => {
+      el.style.animation = `intOut ${outDur}ms ease forwards`;
+      setTimeout(() => {
+        el.classList.remove('showing');
+        el.style.animation = '';
+        resolve();
+      }, outDur);
+    }, inDur + holdDur);
+  });
+}
+
+async function runIntro() {
+  const overlay = g('introOverlay');
+  overlay.classList.add('active');
+
+  await _fadePhase(g('intP1'), 600, 3800, 600);
+  await _delay(150);
+  await _fadePhase(g('intP2'), 600, 1400, 600);
+  await _delay(200);
+
+  // Phase 3: fullscreen prompt — stays until user clicks a button
+  const p3 = g('intP3');
+  p3.classList.add('showing');
+  p3.style.animation = 'intIn 600ms ease forwards';
+}
+
+function _finishIntro() {
+  g('introOverlay').classList.remove('active');
+  showMainMenu();
+  startMenuMusic();
+}
+
+function introGoFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  _finishIntro();
+}
+
+function introContinue() {
+  _finishIntro();
+}
+
+// ════════════════════════════════
+// MAIN MENU
+// ════════════════════════════════
+// ════════════════════════════════
+// SLUG RAIN
+// ════════════════════════════════
+const SLUG_IMG = 'https://codehs.com/uploads/7aee0b9c5b916efd6c99002dd7849d78';
+let _slugsReady = false;
+
+function initSlugRain() {
+  if (_slugsReady) return;
+  _slugsReady = true;
+
+  const container = g('mmSlugs');
+  const N = 45;
+
+  for (let i = 0; i < N; i++) {
+    const el  = document.createElement('img');
+    el.src        = SLUG_IMG;
+    el.className  = 'mm-slug';
+    el.draggable  = false;
+
+    const size    = Math.random() * 72 + 18;          // 18 – 90 px
+    const x       = Math.random() * 108 - 4;          // -4% to 104% viewport
+    const rotS    = Math.random() * 360;               // random start angle
+    const spin    = (Math.random() * 560 + 80)        // 80 – 640° of rotation
+                  * (Math.random() < 0.5 ? 1 : -1);   // clockwise or counter
+    const rotE    = rotS + spin;
+    const dur     = Math.random() * 9000 + 5000;      // 5 – 14 s per loop
+    const delay   = Math.random() * -14000;            // phase offset so they're spread out
+    const opacity = Math.random() * 0.2 + 0.05;       // 0.05 – 0.25
+
+    el.style.cssText = `
+      width:${size}px;height:auto;
+      left:${x}%;
+      opacity:${opacity};
+      animation-duration:${dur}ms;
+      animation-delay:${delay}ms;
+      --fall-s:-${size + 30}px;
+      --fall-e:calc(100vh + ${size + 30}px);
+      --rot-s:${rotS}deg;
+      --rot-e:${rotE}deg;
+    `;
+
+    container.appendChild(el);
+  }
+}
+
+function showMainMenu() {
+  stopGameMusic();
+  initSlugRain();
+  g('mmRnd').textContent  = rnd  > 0 ? pad(rnd)  : '--';
+  g('mmWins').textContent = wins > 0 ? String(wins) : '--';
+  // Show "Continue" button if there's an active session
+  const hasSess = rnd > 0;
+  g('mmContinueBtn').style.display = hasSess ? 'flex' : 'none';
+  g('mainMenu').classList.add('active');
+}
+
+function hideMainMenu() {
+  g('mainMenu').classList.remove('active');
+}
+
+let _diffOpen = false;
+function mmToggleDiff() {
+  _diffOpen = !_diffOpen;
+  g('mmDiffPanel').classList.toggle('open', _diffOpen);
+  g('mmDiffBtn').classList.toggle('mm-active', _diffOpen);
+}
+
+function mmSelDiff(d) {
+  diff = d;
+  ['easy','med','hard','overkill'].forEach(k => g('mmDiff_'+k).classList.remove('sel'));
+  g('mmDiff_'+d).classList.add('sel');
+  const lbl = {easy:'EASY', med:'NORMAL', hard:'HARD', overkill:'OVERKILL'};
+  g('mmDiffLabel').textContent = lbl[d] || d.toUpperCase();
+  // Close panel after selection
+  _diffOpen = false;
+  g('mmDiffPanel').classList.remove('open');
+  g('mmDiffBtn').classList.remove('mm-active');
+}
+
+function mmPlay() {
+  // First-ever click: start tutorial on main menu
+  if(isTutorialNeeded() && !_tutActive){
+    startTutorial();
+    return;
+  }
+  // Tutorial is active and waiting for player to click NEW GAME (step 2)
+  if(_tutActive && _tutWaiting && _tutWaitFor==='mmPlay'){
+    tutCheckpoint('mmPlay');
+    return;
+  }
+  hideMainMenu();
+  startGame();
+}
+
+function mmContinue() {
+  // Return to game in progress without restarting
+  hideMainMenu();
+  stopMenuMusic();
+  startGameMusic();
+}
+
+function mmHighlightRules() {
+  const box = g('mmRulesBox');
+  box.style.transition = 'border-color .3s ease';
+  box.style.borderColor = 'rgba(255,255,255,.3)';
+  setTimeout(() => { box.style.borderColor = ''; }, 900);
+}
+
+// ════════════════════════════════
+// SETTINGS
+// ════════════════════════════════
+const SETTINGS_KEY = 'xorbit_interval_settings';
+const DEFAULT_CFG = {
+  menuVol:75, menuOn:true,
+  gameVol:75, gameOn:true, gameShuf:true,
+  sfxVol:100, sfxOn:true,
+  scanlines:true, flash:true, banners:true, vignette:true,
+};
+let CFG = {...DEFAULT_CFG};
+
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (saved) CFG = {...DEFAULT_CFG, ...saved};
+  } catch(_) {}
+  _syncSettingsUI();
+  _applyVisuals();
+}
+
+function saveSettings() {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(CFG));
+}
+
+function _syncSettingsUI() {
+  g('sMenuVol').value = CFG.menuVol; g('sMenuPct').textContent = CFG.menuVol;
+  g('sGameVol').value = CFG.gameVol; g('sGamePct').textContent = CFG.gameVol;
+  g('sSfxVol').value  = CFG.sfxVol;  g('sSfxPct').textContent  = CFG.sfxVol;
+  g('sMenuOn').checked   = CFG.menuOn;
+  g('sGameOn').checked   = CFG.gameOn;
+  g('sGameShuf').checked = CFG.gameShuf;
+  g('sSfxOn').checked    = CFG.sfxOn;
+  g('vScanlines').checked = CFG.scanlines;
+  g('vFlash').checked     = CFG.flash;
+  g('vBanners').checked   = CFG.banners;
+  g('vVignette').checked  = CFG.vignette;
+}
+
+function _applyVisuals() {
+  document.body.classList.toggle('no-scanlines', !CFG.scanlines);
+  document.body.classList.toggle('no-flash',     !CFG.flash);
+  document.body.classList.toggle('no-banners',   !CFG.banners);
+  document.body.classList.toggle('no-vignette',  !CFG.vignette);
+}
+
+function applySettings() {
+  CFG.menuVol = parseInt(g('sMenuVol').value);
+  CFG.menuOn  = g('sMenuOn').checked;
+  CFG.gameVol  = parseInt(g('sGameVol').value);
+  CFG.gameOn   = g('sGameOn').checked;
+  CFG.gameShuf = g('sGameShuf').checked;
+  CFG.sfxVol   = parseInt(g('sSfxVol').value);
+  CFG.sfxOn   = g('sSfxOn').checked;
+  CFG.scanlines = g('vScanlines').checked;
+  CFG.flash     = g('vFlash').checked;
+  CFG.banners   = g('vBanners').checked;
+  CFG.vignette  = g('vVignette').checked;
+
+  // Update percentage labels
+  g('sMenuPct').textContent = CFG.menuVol;
+  g('sGamePct').textContent = CFG.gameVol;
+  g('sSfxPct').textContent  = CFG.sfxVol;
+
+  // Apply audio volumes live
+  if (_menuAudio) {
+    _menuAudio.volume = CFG.menuOn ? CFG.menuVol / 100 : 0;
+    const onMenu = g('mainMenu').classList.contains('active') || g('loadingOv').classList.contains('active');
+    if (CFG.menuOn && _menuAudio.paused && onMenu) _menuAudio.play().catch(() => {});
+    if (!CFG.menuOn && !_menuAudio.paused) _menuAudio.pause();
+  }
+  if (_gameAudio) {
+    _gameAudio.volume = CFG.gameOn ? CFG.gameVol / 100 : 0;
+  }
+
+  _applyVisuals();
+  saveSettings();
+}
+
+function openSettings()  { g('settingsOv').classList.add('active'); }
+function closeSettings() { g('settingsOv').classList.remove('active'); }
+
+// ════════════════════════════════
+// AUDIO
+// ════════════════════════════════
+const MENU_TRACKS = [
+  'https://codehs.com/uploads/7bd51758f9847cc26147387fee66cc2a',
+  'https://codehs.com/uploads/15cd58ad9880a591f3459714dbd262db',
+  'https://codehs.com/uploads/47a4efa29bcb99a7c9cc39b48ed19ad7',
+];
+let _menuTrackIdx = Math.floor(Math.random() * MENU_TRACKS.length);
+const GAME_TRACKS = [
+  'https://codehs.com/uploads/ca4418ebedce6c97d754341ead1eb546',
+  'https://codehs.com/uploads/a56c00e64af35679832e2cc6fb457a0a',
+  'https://codehs.com/uploads/d32a738374b0cfbcd051595e5e7ddbe1',
+];
+const SFX_LIVE = 'https://codehs.com/uploads/e3eb023cc88974e085860efcede1877d';
+const SFX_BLNK = 'https://codehs.com/uploads/654b0636e6f354cc9c3b4fe9372522ee';
+
+// Pre-loaded SFX pool — avoids fetch/decode lag on every shot
+const _sfxPool = {};
+function _initPool(key, url, n = 4) {
+  _sfxPool[key] = Array.from({ length: n }, () => {
+    const a = new Audio(url);
+    a.preload = 'auto';
+    return a;
+  });
+}
+function _playPool(key, vol) {
+  const pool = _sfxPool[key];
+  if (!pool) return;
+  // Find a slot that has finished (or force-reuse first slot)
+  const a = pool.find(x => x.paused || x.ended) || pool[0];
+  a.volume = Math.max(0, Math.min(1, vol));
+  a.currentTime = 0;
+  a.play().catch(() => {});
+}
+
+function playShot(type) {
+  if (!CFG.sfxOn) return;
+  _playPool(type === 'live' ? 'sfx_live' : 'sfx_blnk', CFG.sfxVol / 100);
+}
+
+let _menuAudio   = null;
+let _gameAudio   = null;
+let _gamePlaylist = [];
+let _gamePlayIdx  = 0;
+
+function _buildPlaylist() {
+  _gamePlaylist = GAME_TRACKS.map((_, i) => i);
+  if (CFG.gameShuf) {
+    for (let i = _gamePlaylist.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [_gamePlaylist[i], _gamePlaylist[j]] = [_gamePlaylist[j], _gamePlaylist[i]];
+    }
+  }
+  _gamePlayIdx = 0;
+}
+
+function startMenuMusic() {
+  stopGameMusic();
+  if (!CFG.menuOn) return;
+  _playMenuTrack();
+}
+
+function _playMenuTrack() {
+  if (_menuAudio) { _menuAudio.pause(); _menuAudio.onended = null; }
+  _menuAudio = new Audio(MENU_TRACKS[_menuTrackIdx]);
+  _menuAudio.volume = CFG.menuVol / 100;
+  _menuAudio.onended = () => {
+    _menuTrackIdx = (_menuTrackIdx + 1) % MENU_TRACKS.length;
+    _playMenuTrack();
+  };
+  _menuAudio.play().catch(() => {});
+}
+
+function stopMenuMusic() {
+  if (_menuAudio) { _menuAudio.pause(); _menuAudio.currentTime = 0; _menuAudio.onended = null; }
+}
+
+function startGameMusic() {
+  stopMenuMusic();
+  if (!CFG.gameOn) return;
+  _buildPlaylist();
+  _playGameTrack();
+}
+
+function _playGameTrack() {
+  if (_gameAudio) { _gameAudio.pause(); _gameAudio.onended = null; }
+  _gameAudio = new Audio(GAME_TRACKS[_gamePlaylist[_gamePlayIdx]]);
+  _gameAudio.volume  = CFG.gameOn ? CFG.gameVol / 100 : 0;
+  _gameAudio.onended = () => {
+    _gamePlayIdx++;
+    if (_gamePlayIdx >= _gamePlaylist.length) _buildPlaylist(); // reshuffle when exhausted
+    _playGameTrack();
+  };
+  _gameAudio.play().catch(() => {});
+}
+
+function stopGameMusic() {
+  if (_gameAudio) {
+    _gameAudio.pause();
+    _gameAudio.onended = null;
+    _gameAudio = null;
+  }
+}
+
+// ════════════════════════════════
+// PLAYER HIT EFFECT
+// ════════════════════════════════
+const HIT_SFX_URL = 'https://codehs.com/uploads/f7faaafee03f9b7ce29acc7adaa98261';
+
+function _fadeAudio(audio, fromVol, toVol, ms, onDone) {
+  if (!audio) { if (onDone) onDone(); return; }
+  const steps    = 25;
+  const interval = ms / steps;
+  const delta    = (toVol - fromVol) / steps;
+  let   step     = 0;
+  const id = setInterval(() => {
+    step++;
+    audio.volume = Math.min(1, Math.max(0, fromVol + delta * step));
+    if (step >= steps) {
+      clearInterval(id);
+      audio.volume = Math.max(0, toVol);
+      if (onDone) onDone();
+    }
+  }, interval);
+  return id;
+}
+
+function _fadeRate(audio, fromRate, toRate, ms) {
+  if (!audio) return;
+  const steps    = 25;
+  const interval = ms / steps;
+  const delta    = (toRate - fromRate) / steps;
+  let   step     = 0;
+  const id = setInterval(() => {
+    step++;
+    audio.playbackRate = Math.min(2, Math.max(0.1, fromRate + delta * step));
+    if (step >= steps) {
+      clearInterval(id);
+      audio.playbackRate = toRate;
+    }
+  }, interval);
+  return id;
+}
+
+function playerWasShot() {
+  // 1. Screen flash
+  const hf = g('hitFlash');
+  hf.classList.remove('flash');
+  void hf.offsetWidth;
+  hf.classList.add('flash');
+
+  // 2. Play heartbeat over the music for 1 second, then cut it
+  const pool = _sfxPool['sfx_hit'];
+  if (pool) {
+    const hitSfx = pool.find(x => x.paused || x.ended) || pool[0];
+    hitSfx.volume = CFG.sfxOn ? CFG.sfxVol / 100 : 0.8;
+    hitSfx.currentTime = 0;
+    hitSfx.play().catch(() => {});
+    setTimeout(() => { hitSfx.pause(); hitSfx.currentTime = 0; }, 1000);
+  }
+}
+
+// ════════════════════════════════
+// PAUSE
+// ════════════════════════════════
+let _paused = false;
+
+function pauseGame() {
+  if (_paused) return;
+  _paused = true;
+  setActions(false);
+  const diffLabels = { easy:'EASY', med:'NORMAL', hard:'HARD', overkill:'OVERKILL' };
+  g('pauseRnd').textContent  = rnd > 0 ? pad(rnd) : '--';
+  g('pauseWins').textContent = wins;
+  g('pauseDiff').textContent = diffLabels[diff] || diff.toUpperCase();
+  if (_gameAudio) _fadeAudio(_gameAudio, _gameAudio.volume, 0.05, 400);
+  g('pauseOv').classList.add('active');
+}
+
+function resumeGame() {
+  if (!_paused) return;
+  _paused = false;
+  g('pauseOv').classList.remove('active');
+  if (_gameAudio) {
+    const targetVol = CFG.gameOn ? CFG.gameVol / 100 : 0;
+    _fadeAudio(_gameAudio, _gameAudio.volume, targetVol, 400);
+  }
+  // Re-enable buttons only if it's the player's turn and not mid-action
+  if (G.turn === 'player' && !busy) setActions(true);
+}
+
+function pauseToMenu() {
+  _paused = false;
+  g('pauseOv').classList.remove('active');
+  if (_gameAudio) _gameAudio.playbackRate = 1.0;
+  goMenu();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'p' && e.key !== 'P') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  // Only fire during active gameplay — not on any menu/overlay
+  if (g('mainMenu').classList.contains('active'))    return;
+  if (g('introOverlay').classList.contains('active')) return;
+  if (g('settingsOv').classList.contains('active'))  return;
+  if (g('startOv').classList.contains('show'))       return;
+  if (g('resultOv').classList.contains('show'))      return;
+  if (g('recycleOv').classList.contains('show'))     return;
+  if (g('chamberOv').classList.contains('show'))     return;
+  _paused ? resumeGame() : pauseGame();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Pre-load SFX pools so shots play instantly
+  _initPool('sfx_live', SFX_LIVE, 4);
+  _initPool('sfx_blnk', SFX_BLNK, 4);
+  _initPool('sfx_hit',  HIT_SFX_URL, 2);
+  loadSettings();
+  runIntro();
+});
+
+// ════════════════════════════════
+// TUTORIAL ENGINE
+// ════════════════════════════════
+const TUT_KEY = 'xorbit_interval_played';
+let _tutActive = false;
+let _tutStep   = 0;
+let _tutWaiting = false;
+let _tutWaitFor = null;
+let _tutFreezeActions = false;
+let _tutPrevLit = null;
+let _tutOpenedPause = false;
+
+function isTutorialNeeded(){ return !localStorage.getItem(TUT_KEY); }
+
+const TUT = [
+  // 0 – Welcome (main menu)
+  {
+    target:null,
+    title:'WELCOME — FIRST BRIEFING',
+    body:'This is your first time entering <b>The Interval</b>. This briefing will walk you through every mechanic — from selecting your difficulty to mastering chamber strategy.<br><br>Click <b>NEXT</b> to advance each step. You can <b>SKIP</b> at any time.',
+    next:'click'
+  },
+  // 1 – Difficulty (main menu)
+  {
+    target:'mmDiffBtn',
+    title:'SELECTING DIFFICULTY',
+    body:'This button opens the difficulty panel. Choose carefully before starting:<br><br><b>EASY</b> — More blanks, AI guesses randomly. Ideal for learning.<br><b>NORMAL</b> — Balanced odds, AI occasionally panics.<br><b>HARD</b> — Fewer blanks, AI is sharp and aggressive.<br><b>OVERKILL</b> — AI reads your decisions. Not for beginners.',
+    next:'click'
+  },
+  // 2 – Click NEW GAME (main menu, action)
+  {
+    target:'mmPlayBtn',
+    title:'START YOUR FIRST GAME',
+    body:'Pick a difficulty (EASY is recommended for first runs), then click <b>NEW GAME</b> to begin. The tutorial will continue inside the game with your first round.',
+    next:'action', action:'mmPlay'
+  },
+  // 3 – Chamber reveal
+  {
+    target:'chamberOv',
+    title:'THE CHAMBER',
+    body:'Before each round the dealer reveals the chamber. You see exactly how many <b>LIVE</b> and <b>BLANK</b> shells are loaded — but <b>not their order</b>.<br><br>Memorise these counts. They are the foundation of every decision. Click <b>BEGIN</b> in the chamber to continue.',
+    next:'action', action:'chamberDone'
+  },
+  // 4 – Shell tracker
+  {
+    target:'shellTrack',
+    title:'SHELL TRACKER',
+    body:'This row tracks the chamber in real time. Each slot reveals its type as it is fired. Use it to maintain a running count of remaining live vs. blank shells — this count directly drives your shot decisions.',
+    next:'click'
+  },
+  // 5 – Odds bar
+  {
+    target:'sidebar',
+    title:'SHELL ANALYSIS',
+    body:'This panel shows the live vs. blank breakdown with a live probability bar. As shells fire, values update instantly.<br><br>Rule of thumb: if <b>blanks outnumber lives</b>, self-shooting is free tempo. If <b>lives dominate</b>, target the opponent.',
+    next:'click'
+  },
+  // 6 – Opponent zone
+  {
+    target:'sOpp',
+    title:'YOUR OPPONENT',
+    body:'This is your opponent. Their HP is shown as hearts. Reduce it to zero to win the round.<br><br>The AI\'s accuracy scales with difficulty — on EASY it guesses blindly, on OVERKILL it predicts your next move.',
+    next:'click'
+  },
+  // 7 – Player zone
+  {
+    target:'sPly',
+    title:'YOU',
+    body:'This is your character. If your HP hits zero, you lose the round. Track your HP alongside the opponent\'s — knowing both counts shapes your risk tolerance.',
+    next:'click'
+  },
+  // 8 – Items: SAW + Apple
+  {
+    target:'pItems',
+    title:'ITEMS — DAMAGE &amp; HEALING',
+    body:'Each round you receive up to 3 random items. Click an item to use it <b>before</b> shooting — you can use multiple in sequence.<br><br><b>SAW</b> — Doubles your next shot\'s damage (1 HP → 2 HP). The ×2 badge lights up. Use it when you know a live shell is next.<br><b>APPLE</b> — Restores 1 HP. Use when you\'re low and confident a blank is coming.',
+    next:'click'
+  },
+  // 9 – Items: Soda + Scope
+  {
+    target:'pItems',
+    title:'ITEMS — INFORMATION',
+    body:'<b>SODA</b> — Ejects and publicly reveals the current shell. The shell is discarded. Use when odds are unclear and you need certainty before deciding.<br><br><b>SCOPE</b> — Reveals the current shell privately (only you see it). Shell stays in the chamber. The safest way to guarantee your next decision without losing a shell.',
+    next:'click'
+  },
+  // 10 – Items: Cuffs
+  {
+    target:'pItems',
+    title:'ITEMS — HANDCUFFS',
+    body:'<b>CUFFS</b> — Restrains your opponent for <b>2 turns</b>. Their turns are skipped completely — no shooting, no items. A CUFFED badge appears on their avatar.<br><br>Best used when you are low on HP, know a live shell is next, or want to chain self-shots without retaliation.',
+    next:'click'
+  },
+  // 11 – Shoot Opponent
+  {
+    target:'btnOpp',
+    title:'SHOOT OPPONENT',
+    body:'Fire the shotgun at your opponent. <b>LIVE</b> = they take damage (1 HP, or 2 HP with SAW active). <b>BLANK</b> = nothing happens and your turn ends.<br><br>Only use this when you have high confidence or confirmed knowledge of a live shell.',
+    next:'click'
+  },
+  // 12 – Shoot Self
+  {
+    target:'btnSelf',
+    title:'SHOOT SELF',
+    body:'Shoot yourself. This is <b>often the optimal play</b>, not a last resort.<br><br><b>BLANK</b> = you take no damage and keep your turn (free extra action).<br><b>LIVE</b> = you take damage and your turn ends.<br><br>When blanks outnumber lives, self-shooting chains free turns and burns the chamber on your clock — not the opponent\'s.',
+    next:'click'
+  },
+  // 13 – Log
+  {
+    target:'logPanel',
+    title:'EVENT LOG',
+    body:'Every action is recorded here — shots, item use, shell reveals, damage, system events. This is your memory.<br><br>Review it to verify your shell count, track opponent item usage, and audit your own decisions. Experienced players check it constantly.',
+    next:'click'
+  },
+  // 14 – Core strategy
+  {
+    target:null,
+    title:'MASTER STRATEGY',
+    body:'The core insight: <b>blank self-shots are free turns</b>. When blanks outnumber lives, self-shooting gives you extra actions and tempo.<br><br>Strong combos:<br>· <b>SCOPE → SAW → shoot opponent</b> — confirmed lethal<br>· <b>CUFFS → chain self-shots → execute</b> — dominant tempo play<br><br>Probability is your weapon. Always check the odds bar before deciding.',
+    next:'click'
+  },
+  // 15 – Pause intro
+  {
+    target:null,
+    title:'PAUSING THE GAME',
+    body:'Press <b>P</b> at any time during a round to pause the game. The game will freeze — no turns will progress while paused.<br><br>From the pause menu you can access <b>SETTINGS</b> and return to the <b>MAIN MENU</b>. Both are also available on the main menu itself.',
+    next:'click'
+  },
+  // 16 – Pause controls (pause overlay shown)
+  {
+    target:'pauseActions',
+    title:'PAUSE MENU CONTROLS',
+    body:'<b>RESUME</b> — return to the active round (also press P).<br><b>SETTINGS</b> — adjust music, SFX volume, and visual options. These persist across sessions.<br><b>MAIN MENU</b> — exit the current run and return to the title screen.<br><br>Settings are also accessible from the main menu before starting a game.',
+    next:'click'
+  },
+  // 17 – Interactive: take your first shot
+  {
+    target:'actionRow',
+    title:'YOUR FIRST SHOT',
+    body:'The game is live. Use any items you have, then make your decision — <b>shoot the opponent</b> or <b>shoot yourself</b>.<br><br>Apply everything from this briefing. The tutorial ends after your shot.',
+    next:'action', action:'shoot'
+  },
+  // 18 – Outro
+  {
+    target:null,
+    title:'BRIEFING COMPLETE',
+    body:'You are ready. Every round escalates — more shells, tighter odds, a sharper opponent.<br><br>Trust the probabilities. Count the shells. Good luck, operator.',
+    next:'end'
+  },
+];
+
+function _tutLit(id){
+  if(_tutPrevLit){
+    const prev=g(_tutPrevLit);
+    if(prev) prev.classList.remove('tut-lit');
+    _tutPrevLit=null;
+  }
+  if(id){
+    const el=g(id);
+    if(el){ el.classList.add('tut-lit'); _tutPrevLit=id; }
+  }
+}
+
+function _posPanel(targetId){
+  const p=g('tutPanel');
+  const fallback=()=>{ p.style.cssText='position:fixed;bottom:24px;top:auto;left:50%;right:auto;transform:translateX(-50%)'; };
+  if(!targetId){ fallback(); return; }
+  const el=g(targetId);
+  if(!el){ fallback(); return; }
+  const r=el.getBoundingClientRect();
+  const pw=Math.min(360,window.innerWidth*0.92);
+  const ph=p.offsetHeight||220;
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const GAP=14;
+  // helpers to clamp horizontal/vertical centers
+  const cx=r=>Math.max(GAP,Math.min(vw-pw-GAP, r.left+r.width/2-pw/2));
+  const cy=r=>Math.max(GAP,Math.min(vh-ph-GAP, r.top+r.height/2-ph/2));
+  let css='position:fixed;transform:none;';
+  if(r.right+GAP+pw<=vw){                     // right
+    css+=`left:${r.right+GAP}px;top:${cy(r)}px;bottom:auto;right:auto;`;
+  } else if(r.left-GAP-pw>=0){                // left
+    css+=`left:${r.left-GAP-pw}px;top:${cy(r)}px;bottom:auto;right:auto;`;
+  } else if(r.bottom+GAP+ph<=vh){             // below
+    css+=`top:${r.bottom+GAP}px;left:${cx(r)}px;bottom:auto;right:auto;`;
+  } else if(r.top-GAP-ph>=0){                 // above
+    css+=`top:${r.top-GAP-ph}px;left:${cx(r)}px;bottom:auto;right:auto;`;
+  } else {                                     // fallback center-bottom
+    fallback(); return;
+  }
+  p.style.cssText=css;
+}
+
+function _showTutStep(n){
+  const step=TUT[n];
+  if(!step) return;
+  _tutStep=n;
+  g('tutHead').textContent=step.title;
+  g('tutBody').innerHTML=step.body;
+  g('tutStep').textContent=`${n+1} / ${TUT.length}`;
+  // Make visible before measuring so offsetHeight is accurate
+  g('tutPanel').classList.add('vis');
+  _tutLit(step.target);
+  _posPanel(step.target);
+  const nb=g('tutNext');
+  if(step.next==='click'){
+    nb.style.display=''; nb.textContent='NEXT →';
+    nb.onclick=tutNext;
+    _tutWaiting=false; _tutWaitFor=null;
+  } else if(step.next==='end'){
+    nb.style.display=''; nb.textContent='DONE ✓';
+    nb.onclick=endTutorial;
+    _tutWaiting=false; _tutWaitFor=null;
+  } else if(step.next==='action'){
+    nb.style.display='none';
+    _tutWaiting=true; _tutWaitFor=step.action;
+  }
+  // Open pause overlay for tutorial step 16, then re-position panel next to target
+  if(n===16){
+    _tutOpenedPause=true;
+    _paused=true;
+    const dl={easy:'EASY',med:'NORMAL',hard:'HARD',overkill:'OVERKILL'};
+    g('pauseRnd').textContent  = rnd>0 ? pad(rnd) : '--';
+    g('pauseWins').textContent = wins||0;
+    g('pauseDiff').textContent = dl[diff]||diff.toUpperCase();
+    if(_gameAudio) _fadeAudio(_gameAudio,_gameAudio.volume,0.05,400);
+    g('pauseOv').classList.add('active');
+    // Re-position now that pauseActions is visible
+    requestAnimationFrame(()=>_posPanel('pauseActions'));
+  }
+  // Close pause overlay and unfreeze actions at interactive shot step 17
+  if(n===17){
+    if(_tutOpenedPause){
+      _tutOpenedPause=false;
+      _paused=false;
+      g('pauseOv').classList.remove('active');
+      if(_gameAudio){
+        const tv=CFG.gameOn?CFG.gameVol/100:0;
+        _fadeAudio(_gameAudio,_gameAudio.volume,tv,400);
+      }
+    }
+    _tutFreezeActions=false;
+    g('btnOpp').disabled=false;
+    g('btnSelf').disabled=false;
+  }
+}
+
+function tutNext(){
+  if(_tutWaiting) return;
+  const step=TUT[_tutStep];
+  if(!step) return;
+  if(step.next==='end'){ endTutorial(); return; }
+  _showTutStep(_tutStep+1);
+}
+
+function tutCheckpoint(event){
+  if(!_tutActive) return;
+  if(!_tutWaiting||_tutWaitFor!==event) return;
+  _tutWaiting=false; _tutWaitFor=null;
+  if(event==='mmPlay'){
+    _tutFreezeActions=true;
+    hideMainMenu();
+    startGame();
+    // step 3 (chamber) will show after chamber opens in _showTutStep path
+    _showTutStep(_tutStep+1);
+  } else {
+    _showTutStep(_tutStep+1);
+  }
+}
+
+function endTutorial(){
+  _tutActive=false;
+  _tutFreezeActions=false;
+  _tutWaiting=false; _tutWaitFor=null;
+  _tutLit(null);
+  g('tutPanel').classList.remove('vis');
+  localStorage.setItem(TUT_KEY,'1');
+  // Close pause overlay if tutorial opened it
+  if(_tutOpenedPause){
+    _tutOpenedPause=false;
+    _paused=false;
+    g('pauseOv').classList.remove('active');
+    if(_gameAudio){
+      const tv=CFG.gameOn?CFG.gameVol/100:0;
+      _fadeAudio(_gameAudio,_gameAudio.volume,tv,400);
+    }
+  }
+  // Re-enable actions if currently in-game
+  if(!g('mainMenu').classList.contains('active')){
+    g('btnOpp').disabled=false;
+    g('btnSelf').disabled=false;
+  }
+}
+
+function mmHowToPlay(){
+  g('tutConfirmOv').classList.add('active');
+}
+function closeTutConfirm(){
+  g('tutConfirmOv').classList.remove('active');
+}
+function mmHowToPlayConfirm(){
+  closeTutConfirm();
+  if(_tutActive) endTutorial();
+  localStorage.removeItem(TUT_KEY);
+  startTutorial();
+}
+
+function startTutorial(){
+  _tutActive=true;
+  _tutFreezeActions=false;
+  _tutStep=0;
+  _showTutStep(0);
+}
+
+// ════════════════════════════════
+// EASTER EGGS
+// ════════════════════════════════
+
+// #1 — Click the dealer 5 times (EASY)
+let _eggDealer=0, _eggDealerT=null;
+function _eggDealerClick(){
+  clearTimeout(_eggDealerT);
+  _eggDealer++;
+  if(_eggDealer>=5){
+    _eggDealer=0;
+    const msgs=['THE DEALER IS NOT PAID ENOUGH FOR THIS.','PLEASE STOP CLICKING ME.','I AM UNIONIZED.','CONSULTING LEGAL.','THIS IS HARASSMENT. GOODBYE.'];
+    toast(msgs[Math.floor(Math.random()*msgs.length)]);
+    if(G&&G.shells) log('sys','fa-solid fa-robot','[DEALER] THIS BEHAVIOR HAS BEEN NOTED.');
+  }
+  _eggDealerT=setTimeout(()=>_eggDealer=0,1800);
+}
+
+// #2 — Click the gun during gameplay (EASY)
+function _eggGunClick(){
+  const svg=g('gunSvg');
+  svg.classList.remove('gun-wobble');
+  void svg.offsetWidth;
+  svg.classList.add('gun-wobble');
+  setTimeout(()=>svg.classList.remove('gun-wobble'),600);
+  toast('CAREFUL — THAT\'S LOADED');
+}
+
+// #4 — Click the header logo 7 times (MEDIUM)
+let _eggLogo=0, _eggLogoT=null;
+function _eggLogoClick(){
+  clearTimeout(_eggLogoT);
+  _eggLogo++;
+  if(_eggLogo>=7){
+    _eggLogo=0;
+    toast('BUILT ON SPITE AND BAD DECISIONS. — THE TEAM');
+  }
+  _eggLogoT=setTimeout(()=>_eggLogo=0,2000);
+}
+
+// #8 — Click the "Remaining:" shells counter 10 times (HARD — hidden interaction)
+let _eggRem=0, _eggRemT=null;
+function _eggRemClick(){
+  clearTimeout(_eggRemT);
+  _eggRem++;
+  if(_eggRem>=10){
+    _eggRem=0;
+    toast('YOU FOUND THE NUMBERS. THEY DON\'T HELP.');
+    if(G&&G.shells) log('sys','fa-solid fa-hashtag','[HIDDEN] You clicked the void. It did not click back.');
+  }
+  _eggRemT=setTimeout(()=>_eggRem=0,3500);
+}
+
+// #3, #5, #7 — Keyboard sequence detection (MEDIUM / HARD / HARD)
+const _KONAMI =['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let _keyBuf=[];
+document.addEventListener('keydown',e=>{
+  _keyBuf.push(e.key);
+  if(_keyBuf.length>12) _keyBuf.shift();
+
+  // #3 Konami code (MEDIUM)
+  if(_keyBuf.length>=_KONAMI.length){
+    const tail=_keyBuf.slice(-_KONAMI.length);
+    if(tail.every((k,i)=>k===_KONAMI[i])){ _keyBuf=[]; show('konamiOv'); return; }
+  }
+
+  // #5 Type "XORBIT" (HARD)
+  if(_keyBuf.length>=6){
+    if(_keyBuf.slice(-6).join('').toLowerCase()==='xorbit'){ _keyBuf=[]; show('loreOv'); return; }
+  }
+
+  // #7 Type "GODMODE" during active player turn (HARD)
+  if(_keyBuf.length>=7){
+    if(_keyBuf.slice(-7).join('').toLowerCase()==='godmode'){
+      _keyBuf=[];
+      if(G&&G.pHp!==undefined&&G.turn==='player'&&!busy){
+        G.pHp=Math.min(G.pHp+5,G.pMax);
+        updateUI(); flash('sPly',true);
+        toast('G0DM0DE: +5 HP — DON\'T TELL THE DEALER');
+        log('sys','fa-solid fa-skull-crossbones','[GODMODE] The dealer looked away. Somehow.');
+      } else {
+        toast('GODMODE REQUIRES YOUR TURN');
+      }
+      return;
+    }
+  }
+});
+// #6 — Win 5-0 (HARD, skill-based) — handled in showMatchResult()
+</script>
+
+<!-- TUTORIAL CONFIRM OVERLAY -->
+<div id="tutConfirmOv">
+  <div id="tutConfirmBox">
+    <div id="tutConfirmTitle">REPLAY TUTORIAL?</div>
+    <div id="tutConfirmBody">This will walk you through The Interval from the beginning, covering all mechanics, items, and strategy.</div>
+    <div id="tutConfirmBtns">
+      <button class="tut-btn" id="tutConfirmNo" onclick="closeTutConfirm()">CANCEL</button>
+      <button class="tut-btn" onclick="mmHowToPlayConfirm()">YES, REPLAY</button>
+    </div>
+  </div>
+</div>
+
+<!-- TUTORIAL PANEL -->
+<div id="tutPanel">
+  <div id="tutHead">TUTORIAL</div>
+  <div id="tutBody"></div>
+  <div id="tutFoot">
+    <span id="tutStep"></span>
+    <div id="tutBtns">
+      <button class="tut-btn" id="tutSkip" onclick="endTutorial()">SKIP</button>
+      <button class="tut-btn" id="tutNext">NEXT →</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
