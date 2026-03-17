@@ -984,6 +984,90 @@
             min-height: 100px;
             font-family: 'Share Tech Mono', monospace;
         }
+        /* ════ FORM CARDS IN CHAT ════ */
+        .form-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-hi);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .form-card-action { flex-direction: column; align-items: flex-start; }
+        .form-card-title { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .form-card-body  { color: var(--text-muted); font-size: 11px; margin-top: 3px; }
+        .form-card-btn {
+            margin-top: 10px;
+            background: var(--border-hi);
+            border: 1px solid #333;
+            color: var(--text);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .form-card-btn:hover { background: #2a2a2a; }
+        .form-card-approved { border-color: var(--success); color: var(--success); }
+        .form-card-denied   { border-color: var(--error);   color: var(--error); }
+        .form-card-pending  { border-color: var(--warning);  color: var(--warning); }
+
+        /* ════ ACCOUNT FORM MODAL ════ */
+        #accountFormModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; align-items: center; justify-content: center; }
+        #accountFormModal.active { display: flex; }
+        .acct-modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border-hi);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 440px;
+            padding: 28px;
+        }
+        .acct-modal-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; }
+        .acct-form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .acct-form-group label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        .acct-form-group input[type="text"],
+        .acct-form-group input[type="email"],
+        .acct-form-group input[type="password"] {
+            background: var(--surface-2);
+            border: 1px solid var(--border-hi);
+            color: var(--text);
+            padding: 9px 12px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 13px;
+            width: 100%;
+        }
+        .acct-form-group input:focus { outline: none; border-color: #555; }
+        .acct-tos-row { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: var(--text-dim); margin-bottom: 18px; }
+        .acct-tos-row input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; }
+        .acct-tos-row a { color: var(--text-dim); }
+        .acct-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+        .acct-cancel-btn {
+            background: transparent;
+            border: 1px solid var(--border-hi);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .acct-submit-btn {
+            background: var(--border-hi);
+            border: 1px solid #444;
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .acct-submit-btn:hover { background: #2a2a2a; }
+        .acct-error { color: var(--error); font-size: 11px; margin-bottom: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -1240,6 +1324,38 @@
                     <i class="fas fa-plus"></i> Create Ticket
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Account Creation Form Modal -->
+    <div id="accountFormModal">
+        <div class="acct-modal-box">
+            <div class="acct-modal-title">Account Creation Request</div>
+            <div class="acct-error" id="acctFormError"></div>
+            <div class="acct-form-group">
+                <label>Full Name</label>
+                <input type="text" id="acctName" placeholder="Your full name">
+            </div>
+            <div class="acct-form-group">
+                <label>Email Address</label>
+                <input type="email" id="acctEmail" placeholder="you@example.com">
+            </div>
+            <div class="acct-form-group">
+                <label>Requested Password</label>
+                <input type="password" id="acctPassword" placeholder="Choose a password">
+            </div>
+            <div class="acct-form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="acctPasswordConfirm" placeholder="Repeat your password">
+            </div>
+            <div class="acct-tos-row">
+                <input type="checkbox" id="acctTos">
+                <label for="acctTos">I agree to the <a href="tos.html" target="_blank">Terms of Service</a> and <a href="privacy-policy.html" target="_blank">Privacy Policy</a>.</label>
+            </div>
+            <div class="acct-modal-actions">
+                <button class="acct-cancel-btn" onclick="closeAccountFormModal()">Cancel</button>
+                <button class="acct-submit-btn" onclick="submitAccountForm()"><i class="fas fa-paper-plane"></i> Submit</button>
+            </div>
         </div>
     </div>
 
@@ -1619,7 +1735,7 @@
             document.getElementById('chatTicketStatus').textContent = ticket.status.replace('_', ' ').toUpperCase();
             document.getElementById('chatTicketStatus').className = `ticket-status status-${ticket.status}`;
 
-            if (ticket.status === 'resolved' || ticket.status === 'closed') {
+            if (ticket.status === 'resolved' || ticket.status === 'closed' || ticket.status === 'inactive') {
                 document.getElementById('ticketClosedMessage').style.display = 'flex';
                 document.getElementById('chatMessagesArea').style.display = 'none';
 
@@ -1633,6 +1749,12 @@
                     document.getElementById('closedTitle').textContent = 'Ticket Resolved';
                     document.getElementById('closedMessage').textContent =
                         'This ticket has been marked as resolved. If you\'re still experiencing issues, you can reopen it below.';
+                } else if (ticket.status === 'inactive') {
+                    modalContent.classList.add('closed-status');
+                    icon.className = 'fas fa-moon status-icon';
+                    document.getElementById('closedTitle').textContent = 'Ticket Inactive';
+                    document.getElementById('closedMessage').textContent =
+                        'This ticket has been marked as inactive due to inactivity. You can reopen it to continue the conversation.';
                 } else {
                     modalContent.classList.add('closed-status');
                     icon.className = 'fas fa-lock status-icon';
@@ -1713,11 +1835,13 @@
 
                 // CRITICAL FIX: Always ensure chat area is visible for open tickets
                 // Check the fresh ticket status, not stale data
-                if (currentTicket && ticketData && ticketData.status !== 'resolved' && ticketData.status !== 'closed') {
+                const isLocked = currentTicket && ticketData &&
+                    (ticketData.status === 'resolved' || ticketData.status === 'closed' || ticketData.status === 'inactive');
+
+                if (currentTicket && ticketData && !isLocked) {
                     document.getElementById('ticketClosedMessage').style.display = 'none';
                     document.getElementById('chatMessagesArea').style.display = 'flex';
-                } else if (currentTicket && ticketData && (ticketData.status === 'resolved' || ticketData.status === 'closed')) {
-                    // Ticket was closed/resolved, show the closed message
+                } else if (isLocked) {
                     document.getElementById('ticketClosedMessage').style.display = 'flex';
                     document.getElementById('chatMessagesArea').style.display = 'none';
 
@@ -1731,6 +1855,12 @@
                         document.getElementById('closedTitle').textContent = 'Ticket Resolved';
                         document.getElementById('closedMessage').textContent =
                             'This ticket has been marked as resolved. If you\'re still experiencing issues, you can reopen it below.';
+                    } else if (ticketData.status === 'inactive') {
+                        modalContent.classList.add('closed-status');
+                        icon.className = 'fas fa-moon status-icon';
+                        document.getElementById('closedTitle').textContent = 'Ticket Inactive';
+                        document.getElementById('closedMessage').textContent =
+                            'This ticket has been marked as inactive due to inactivity. You can reopen it to continue the conversation.';
                     } else {
                         modalContent.classList.add('closed-status');
                         icon.className = 'fas fa-lock status-icon';
@@ -1751,6 +1881,27 @@
             }
         }
 
+        function renderUserFormCard(data) {
+            if (data.type === 'account_form_request') {
+                return `
+                    <div class="form-card form-card-action">
+                        <div class="form-card-title"><i class="fas fa-user-plus"></i> Account Creation Form</div>
+                        <div class="form-card-body">An admin has sent you an account creation form. Fill it out to request your account.</div>
+                        <button class="form-card-btn" onclick="openAccountFormModal()"><i class="fas fa-edit"></i> Fill Out Form</button>
+                    </div>`;
+            }
+            if (data.type === 'account_form_submission') {
+                return `<div class="form-card form-card-pending"><i class="fas fa-clock"></i>&nbsp;Account form submitted — awaiting admin review.</div>`;
+            }
+            if (data.type === 'account_form_approved') {
+                return `<div class="form-card form-card-approved"><i class="fas fa-check-circle"></i>&nbsp;Your account has been approved! You can now log in.</div>`;
+            }
+            if (data.type === 'account_form_denied') {
+                return `<div class="form-card form-card-denied"><i class="fas fa-times-circle"></i>&nbsp;Your account request was denied.${data.reason ? ' Reason: ' + escapeHtml(data.reason) : ''}</div>`;
+            }
+            return '';
+        }
+
         function displayMessages(messages) {
             const container = document.getElementById('messagesContainer');
 
@@ -1765,6 +1916,13 @@
             }
 
             container.innerHTML = messages.map(msg => {
+                if (msg.message && msg.message.startsWith('__XORBIT_FORM__')) {
+                    try {
+                        const data = JSON.parse(msg.message.slice('__XORBIT_FORM__'.length));
+                        const card = renderUserFormCard(data);
+                        if (card) return `<div class="message ${msg.is_staff ? 'staff' : 'user'}">${card}<div class="message-time">${formatTime(msg.created_at)}</div></div>`;
+                    } catch(e) {}
+                }
                 if (msg.sender_email === 'system@xorbit.org') {
                     return `
                         <div class="message system">
@@ -2012,6 +2170,68 @@
             } catch (error) {
                 console.error('Error deleting ticket:', error);
                 alert('Failed to delete ticket. Please try again or contact support.');
+            }
+        }
+
+        function openAccountFormModal() {
+            document.getElementById('acctName').value = currentUser ? currentUser.name : '';
+            document.getElementById('acctEmail').value = currentUser ? currentUser.email : '';
+            document.getElementById('acctPassword').value = '';
+            document.getElementById('acctPasswordConfirm').value = '';
+            document.getElementById('acctTos').checked = false;
+            const errEl = document.getElementById('acctFormError');
+            errEl.style.display = 'none';
+            document.getElementById('accountFormModal').classList.add('active');
+        }
+
+        function closeAccountFormModal() {
+            document.getElementById('accountFormModal').classList.remove('active');
+        }
+
+        async function submitAccountForm() {
+            const name     = document.getElementById('acctName').value.trim();
+            const email    = document.getElementById('acctEmail').value.trim();
+            const password = document.getElementById('acctPassword').value;
+            const confirm  = document.getElementById('acctPasswordConfirm').value;
+            const tos      = document.getElementById('acctTos').checked;
+            const errEl    = document.getElementById('acctFormError');
+
+            errEl.style.display = 'none';
+
+            if (!name || !email || !password) {
+                errEl.textContent = 'Please fill in all fields.';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (password !== confirm) {
+                errEl.textContent = 'Passwords do not match.';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (!tos) {
+                errEl.textContent = 'You must agree to the Terms of Service and Privacy Policy.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const { data: conversation } = await supabaseClient
+                    .from('conversations').select('id').eq('ticket_id', currentTicket.id).single();
+
+                await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: currentUser.name,
+                    sender_email: currentUser.email,
+                    is_staff: false,
+                    message: '__XORBIT_FORM__' + JSON.stringify({ type: 'account_form_submission', name, email, password })
+                }]);
+
+                closeAccountFormModal();
+                await loadMessages(currentTicket.id);
+            } catch (err) {
+                console.error('Error submitting account form:', err);
+                errEl.textContent = 'Failed to submit. Please try again.';
+                errEl.style.display = 'block';
             }
         }
 
