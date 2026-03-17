@@ -1032,6 +1032,67 @@
             border-color: rgba(248,113,113,0.3);
             background: rgba(248,113,113,0.06);
         }
+        /* ════ TICKET OPTIONS BAR ════ */
+        .ticket-options-bar {
+            display: flex;
+            gap: 8px;
+            padding: 6px 12px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+        }
+        .option-btn {
+            background: transparent;
+            border: 1px solid var(--border-hi);
+            color: var(--text-dim);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: border-color .15s, color .15s;
+        }
+        .option-btn:hover { border-color: #fff; color: #fff; }
+
+        /* ════ FORM CARDS IN CHAT ════ */
+        .form-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-hi);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .form-card-submission { flex-direction: column; align-items: flex-start; }
+        .form-card-title { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .form-card-body { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+        .form-card-btn {
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid var(--border-hi);
+            color: var(--text-dim);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .form-card-btn:hover { border-color:#fff; color:#fff; }
+        .form-card-approved { border-color: #6ee7b7; color: #6ee7b7; }
+        .form-card-denied   { border-color: #f87171; color: #f87171; }
+
+        /* ════ REVIEW MODAL ════ */
+        .review-modal-actions { display: flex; gap: 8px; margin-top: 4px; }
+        .deny-btn { background: #7f1d1d !important; }
+        .deny-btn:hover { background: #991b1b !important; }
     </style>
 </head>
 <body>
@@ -1197,6 +1258,7 @@
                                 <option value="waiting_response">Waiting Response</option>
                                 <option value="resolved">Resolved</option>
                                 <option value="closed">Closed</option>
+                                <option value="inactive">Inactive</option>
                             </select>
                             <select class="action-select" id="prioritySelect" onchange="updateTicketPriority()">
                                 <option value="low">Low Priority</option>
@@ -1208,6 +1270,15 @@
                     </div>
 
                     <div class="messages-container" id="messagesContainer"></div>
+
+                    <div id="ticketOptions" class="ticket-options-bar">
+                        <button class="option-btn" id="accountFormBtn" onclick="sendAccountFormRequest()">
+                            <i class="fas fa-user-plus"></i> Account Form
+                        </button>
+                        <button class="option-btn" onclick="openMarkInactiveModal()">
+                            <i class="fas fa-moon"></i> Mark Inactive
+                        </button>
+                    </div>
 
                     <div class="message-input-area">
                         <div class="input-hint">Enter to send · Shift+Enter for new line</div>
@@ -1331,13 +1402,74 @@
                 </div>
                 <div class="admin-form-group">
                     <label>Block Reason <span style="color:var(--text-ghost);font-size:0.58rem;">(if blocked)</span></label>
-                    <input type="text" id="editBanReason" placeholder="Reason…">
+                    <textarea id="editBanReason" placeholder="Reason…" rows="3" style="width:100%;resize:vertical;background:var(--surface-2);color:var(--text);border:1px solid var(--border-hi);border-radius:4px;padding:10px 12px;font-family:inherit;font-size:inherit;"></textarea>
+                </div>
+                <div class="admin-form-group">
+                    <label>Warnings</label>
+                    <textarea id="editWarnings" placeholder="Warning message…" rows="3" style="width:100%;resize:vertical;background:var(--surface-2);color:var(--text);border:1px solid var(--border-hi);border-radius:4px;padding:10px 12px;font-family:inherit;font-size:inherit;"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <div class="create-msg" id="editClientMsg"></div>
                 <button class="admin-create-btn" onclick="saveClientEdit()" id="saveClientBtn">
                     <i class="fas fa-check"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Account Form Modal -->
+    <div id="reviewFormModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:460px;">
+            <div class="modal-header">
+                <span class="modal-title">Review Account Form</span>
+                <button class="modal-close" onclick="closeReviewModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="admin-form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="reviewName" style="width:100%;">
+                </div>
+                <div class="admin-form-group">
+                    <label>Email</label>
+                    <input type="email" id="reviewEmail" style="width:100%;">
+                </div>
+                <div class="admin-form-group">
+                    <label>Requested Password</label>
+                    <input type="text" id="reviewPassword" style="width:100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="create-msg" id="reviewFormMsg"></div>
+                <div class="review-modal-actions">
+                    <button class="admin-create-btn deny-btn" onclick="denyAccountForm()">
+                        <i class="fas fa-times"></i> Deny
+                    </button>
+                    <button class="admin-create-btn" onclick="approveAccountForm()">
+                        <i class="fas fa-check"></i> Approve & Create Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mark Inactive Modal -->
+    <div id="markInactiveModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:420px;">
+            <div class="modal-header">
+                <span class="modal-title">Mark Ticket as Inactive</span>
+                <button class="modal-close" onclick="closeMarkInactiveModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="admin-form-group">
+                    <label>Reason for marking inactive</label>
+                    <textarea id="inactiveReason" rows="4" placeholder="e.g. No response from user after 7 days…" style="width:100%;resize:vertical;background:var(--surface-2);color:var(--text);border:1px solid var(--border-hi);border-radius:4px;padding:10px 12px;font-family:inherit;font-size:inherit;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="create-msg" id="inactiveMsg"></div>
+                <button class="admin-create-btn" onclick="confirmMarkInactive()">
+                    <i class="fas fa-moon"></i> Mark Inactive
                 </button>
             </div>
         </div>
@@ -1621,10 +1753,47 @@
             }
         }
 
+        function escapeHtmlAdmin(text) {
+            const d = document.createElement('div');
+            d.textContent = String(text);
+            return d.innerHTML;
+        }
+
+        function renderAdminFormCard(data) {
+            if (data.type === 'account_form_request') {
+                return `<div class="form-card"><i class="fas fa-user-plus"></i><span>Account creation form sent to user.</span></div>`;
+            }
+            if (data.type === 'account_form_submission') {
+                const safe = encodeURIComponent(JSON.stringify(data));
+                return `
+                    <div class="form-card form-card-submission">
+                        <div class="form-card-title"><i class="fas fa-file-alt"></i> Account Form Submitted</div>
+                        <div class="form-card-body">Review the submitted information, then approve or deny.</div>
+                        <button class="form-card-btn" onclick="openReviewModal(decodeURIComponent('${safe}'))">
+                            <i class="fas fa-eye"></i> Review Information
+                        </button>
+                    </div>`;
+            }
+            if (data.type === 'account_form_approved') {
+                return `<div class="form-card form-card-approved"><i class="fas fa-check-circle"></i>&nbsp;Account approved and created for ${escapeHtmlAdmin(data.name)}.</div>`;
+            }
+            if (data.type === 'account_form_denied') {
+                return `<div class="form-card form-card-denied"><i class="fas fa-times-circle"></i>&nbsp;Account request denied.${data.reason ? ' Reason: ' + escapeHtmlAdmin(data.reason) : ''}</div>`;
+            }
+            return '';
+        }
+
         function displayMessages(messages) {
             const container = document.getElementById('messagesContainer');
 
             container.innerHTML = messages.map(msg => {
+                if (msg.message && msg.message.startsWith('__XORBIT_FORM__')) {
+                    try {
+                        const data = JSON.parse(msg.message.slice('__XORBIT_FORM__'.length));
+                        const card = renderAdminFormCard(data);
+                        if (card) return `<div class="message ${msg.is_staff ? 'staff' : 'user'}">${card}<div class="msg-time">${formatTime(msg.created_at)}</div></div>`;
+                    } catch(e) {}
+                }
                 if (msg.sender_email === 'system@xorbit.org') {
                     return `
                         <div class="message system">
@@ -1890,7 +2059,6 @@
 
                 if (existing) throw new Error(`An account with that email already exists`);
 
-                const hashedPassword = await hashPassword(password);
                 const dmCode = generateDmCode();
 
                 const { error } = await supabaseClient
@@ -1898,7 +2066,7 @@
                     .insert([{
                         name,
                         email,
-                        password:   hashedPassword,
+                        password,
                         phone,
                         role,
                         blocked:    false,
@@ -1976,7 +2144,7 @@
             try {
                 const { data: users, error } = await supabaseClient
                     .from('clients')
-                    .select('id, name, email, phone, role, blocked, ban_reason, created_at')
+                    .select('id, name, email, phone, role, blocked, ban_reason, warnings, created_at')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
@@ -2019,6 +2187,7 @@
             document.getElementById('editRole').value       = user.role || 'standard';
             document.getElementById('editBlocked').value    = user.blocked ? 'true' : 'false';
             document.getElementById('editBanReason').value  = user.ban_reason || '';
+            document.getElementById('editWarnings').value   = user.warnings ?? 0;
 
             const msgEl = document.getElementById('editClientMsg');
             msgEl.style.display = 'none';
@@ -2039,6 +2208,7 @@
             const role      = document.getElementById('editRole').value;
             const blocked   = document.getElementById('editBlocked').value === 'true';
             const banReason = document.getElementById('editBanReason').value.trim() || null;
+            const warnings  = document.getElementById('editWarnings').value.trim() || null;
 
             const btn   = document.getElementById('saveClientBtn');
             const msgEl = document.getElementById('editClientMsg');
@@ -2051,7 +2221,7 @@
             try {
                 const { error } = await supabaseClient
                     .from('clients')
-                    .update({ name, email, phone, role, blocked, ban_reason: banReason })
+                    .update({ name, email, phone, role, blocked, ban_reason: banReason, warnings })
                     .eq('id', id);
 
                 if (error) throw error;
@@ -2070,6 +2240,170 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-check"></i> Save Changes';
+            }
+        }
+
+        function openMarkInactiveModal() {
+            document.getElementById('inactiveReason').value = '';
+            const msgEl = document.getElementById('inactiveMsg');
+            msgEl.style.display = 'none';
+            msgEl.className = 'create-msg';
+            document.getElementById('markInactiveModal').style.display = 'flex';
+        }
+
+        function closeMarkInactiveModal() {
+            document.getElementById('markInactiveModal').style.display = 'none';
+        }
+
+        async function confirmMarkInactive() {
+            if (!currentTicket) return;
+            const reason = document.getElementById('inactiveReason').value.trim();
+            const msgEl  = document.getElementById('inactiveMsg');
+
+            if (!reason) {
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = 'Please enter a reason.';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const { error: statusErr } = await supabaseClient
+                    .from('support_tickets')
+                    .update({ status: 'inactive' })
+                    .eq('id', currentTicket.id);
+                if (statusErr) throw statusErr;
+
+                const { data: conversation } = await supabaseClient
+                    .from('conversations').select('id').eq('ticket_id', currentTicket.id).single();
+                await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: 'X-ORBIT Support System',
+                    sender_email: 'system@xorbit.org',
+                    is_staff: true,
+                    message: `This ticket has been marked as inactive. Reason: ${reason}`
+                }]);
+
+                currentTicket.status = 'inactive';
+                document.getElementById('statusSelect').value = 'inactive';
+                closeMarkInactiveModal();
+                await loadTickets();
+                await loadStats();
+                await loadMessages(currentTicket.id);
+            } catch (err) {
+                console.error('Error marking inactive:', err);
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = err.message || 'Failed to update ticket.';
+                msgEl.style.display = 'block';
+            }
+        }
+
+        async function sendAccountFormRequest() {
+            if (!currentTicket) return;
+            try {
+                const { data: conversation } = await supabaseClient
+                    .from('conversations').select('id').eq('ticket_id', currentTicket.id).single();
+                await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: currentAdmin.full_name,
+                    sender_email: currentAdmin.email,
+                    sender_admin_id: currentAdmin.id,
+                    is_staff: true,
+                    message: '__XORBIT_FORM__' + JSON.stringify({ type: 'account_form_request' })
+                }]);
+                await loadMessages(currentTicket.id);
+            } catch (err) {
+                console.error('Error sending account form request:', err);
+                alert('Failed to send account form.');
+            }
+        }
+
+        let _reviewData = null;
+
+        function openReviewModal(dataJson) {
+            _reviewData = typeof dataJson === 'string' ? JSON.parse(dataJson) : dataJson;
+            document.getElementById('reviewName').value     = _reviewData.name || '';
+            document.getElementById('reviewEmail').value    = _reviewData.email || '';
+            document.getElementById('reviewPassword').value = _reviewData.password || '';
+            const msgEl = document.getElementById('reviewFormMsg');
+            msgEl.style.display = 'none';
+            msgEl.className = 'create-msg';
+            document.getElementById('reviewFormModal').style.display = 'flex';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewFormModal').style.display = 'none';
+            _reviewData = null;
+        }
+
+        async function approveAccountForm() {
+            if (!currentTicket) return;
+            const name     = document.getElementById('reviewName').value.trim();
+            const email    = document.getElementById('reviewEmail').value.trim();
+            const password = document.getElementById('reviewPassword').value.trim();
+            const msgEl    = document.getElementById('reviewFormMsg');
+
+            if (!name || !email || !password) {
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = 'Name, email, and password are required.';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const { data: existing } = await supabaseClient.from('clients')
+                    .select('id').eq('email', email).maybeSingle();
+                if (existing) throw new Error('An account with that email already exists.');
+
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let dmCode = '';
+                for (let i = 0; i < 8; i++) dmCode += chars[Math.floor(Math.random() * chars.length)];
+
+                const { error: createErr } = await supabaseClient.from('clients').insert([{
+                    name, email, password, role: 'standard', blocked: false, ban_reason: null, dm_code: dmCode
+                }]);
+                if (createErr) throw createErr;
+
+                const { data: conversation } = await supabaseClient
+                    .from('conversations').select('id').eq('ticket_id', currentTicket.id).single();
+                await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: currentAdmin.full_name,
+                    sender_email: currentAdmin.email,
+                    sender_admin_id: currentAdmin.id,
+                    is_staff: true,
+                    message: '__XORBIT_FORM__' + JSON.stringify({ type: 'account_form_approved', name, email })
+                }]);
+
+                closeReviewModal();
+                await loadMessages(currentTicket.id);
+                await loadClients();
+            } catch (err) {
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = err.message || 'Failed to create account.';
+                msgEl.style.display = 'block';
+            }
+        }
+
+        async function denyAccountForm() {
+            if (!currentTicket) return;
+            const reason = prompt('Reason for denial (optional):') ?? '';
+            try {
+                const { data: conversation } = await supabaseClient
+                    .from('conversations').select('id').eq('ticket_id', currentTicket.id).single();
+                await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: currentAdmin.full_name,
+                    sender_email: currentAdmin.email,
+                    sender_admin_id: currentAdmin.id,
+                    is_staff: true,
+                    message: '__XORBIT_FORM__' + JSON.stringify({ type: 'account_form_denied', reason })
+                }]);
+                closeReviewModal();
+                await loadMessages(currentTicket.id);
+            } catch (err) {
+                console.error('Error denying form:', err);
+                alert('Failed to send denial.');
             }
         }
 
