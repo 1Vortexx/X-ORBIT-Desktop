@@ -1016,8 +1016,8 @@
         .form-card-pending  { border-color: var(--warning);  color: var(--warning); }
 
         /* ════ ACCOUNT FORM MODAL ════ */
-        #accountFormModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; align-items: center; justify-content: center; }
-        #accountFormModal.active { display: flex; }
+        #accountFormModal, #userSetPasswordModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; align-items: center; justify-content: center; }
+        #accountFormModal.active, #userSetPasswordModal.active { display: flex; }
         .acct-modal-box {
             background: var(--surface);
             border: 1px solid var(--border-hi);
@@ -1324,6 +1324,26 @@
                     <i class="fas fa-plus"></i> Create Ticket
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- User Set Password Modal -->
+    <div id="userSetPasswordModal">
+        <div class="acct-modal-box">
+            <div class="acct-modal-title"><i class="fas fa-lock" style="margin-right:8px;"></i>Set New Password</div>
+            <div class="acct-error" id="setPwError"></div>
+            <div class="acct-form-group">
+                <label>New Password</label>
+                <input type="password" id="newPwInput" placeholder="Enter new password">
+            </div>
+            <div class="acct-form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="newPwConfirm" placeholder="Repeat new password">
+            </div>
+            <div class="acct-modal-actions">
+                <button class="acct-cancel-btn" onclick="closeUserSetPasswordModal()">Cancel</button>
+                <button class="acct-submit-btn" onclick="submitUserSetPassword()"><i class="fas fa-check"></i> Update Password</button>
+            </div>
         </div>
     </div>
 
@@ -1899,6 +1919,28 @@
             if (data.type === 'account_form_denied') {
                 return `<div class="form-card form-card-denied"><i class="fas fa-times-circle"></i>&nbsp;Your account request was denied.${data.reason ? ' Reason: ' + escapeHtml(data.reason) : ''}</div>`;
             }
+            if (data.type === 'password_reset') {
+                return `
+                    <div class="form-card form-card-action">
+                        <div class="form-card-title"><i class="fas fa-key"></i> Password Reset</div>
+                        <div class="form-card-body">Your password has been reset. Use the temporary password below to log in, then click the <strong>X-ORBIT</strong> button in the top-left corner, go to <strong>Account Information</strong>, enter this temporary password, and set a new one.</div>
+                        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;">
+                            <code style="background:rgba(255,255,255,0.06);padding:6px 10px;border-radius:4px;font-size:13px;letter-spacing:0.05em;">${escapeHtml(data.tempPassword)}</code>
+                            <button class="form-card-btn" style="margin-top:0;" data-pw="${escapeHtml(data.tempPassword)}" onclick="navigator.clipboard.writeText(this.dataset.pw)"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                    </div>`;
+            }
+            if (data.type === 'password_reset_request') {
+                return `
+                    <div class="form-card form-card-action">
+                        <div class="form-card-title"><i class="fas fa-user-edit"></i> Set New Password</div>
+                        <div class="form-card-body">An admin has initiated a password reset. Enter and confirm your new password below.</div>
+                        <button class="form-card-btn" onclick="openUserSetPasswordModal()"><i class="fas fa-lock"></i> Set New Password</button>
+                    </div>`;
+            }
+            if (data.type === 'password_reset_complete') {
+                return `<div class="form-card form-card-approved"><i class="fas fa-check-circle"></i>&nbsp;Your password has been updated successfully.</div>`;
+            }
             return '';
         }
 
@@ -2165,11 +2207,65 @@
 
                 if (error) throw error;
 
-                alert('Ticket deleted successfully.');
                 backToTickets();
             } catch (error) {
                 console.error('Error deleting ticket:', error);
-                alert('Failed to delete ticket. Please try again or contact support.');
+                alert('Failed to delete ticket: ' + (error.message || 'Unknown error'));
+            }
+        }
+
+        function openUserSetPasswordModal() {
+            document.getElementById('newPwInput').value = '';
+            document.getElementById('newPwConfirm').value = '';
+            const errEl = document.getElementById('setPwError');
+            errEl.style.display = 'none';
+            document.getElementById('userSetPasswordModal').classList.add('active');
+        }
+
+        function closeUserSetPasswordModal() {
+            document.getElementById('userSetPasswordModal').classList.remove('active');
+        }
+
+        async function submitUserSetPassword() {
+            const newPw   = document.getElementById('newPwInput').value;
+            const confirm = document.getElementById('newPwConfirm').value;
+            const errEl   = document.getElementById('setPwError');
+            errEl.style.display = 'none';
+
+            if (!newPw) {
+                errEl.textContent = 'Please enter a new password.';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (newPw !== confirm) {
+                errEl.textContent = 'Passwords do not match.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const { error: updateErr } = await supabaseClient
+                    .from('clients')
+                    .update({ password: newPw })
+                    .eq('email', currentUser.email);
+                if (updateErr) throw updateErr;
+
+                const { data: conversation } = await supabaseClient
+                    .from('conversations').select('id').eq('ticket_id', currentTicket.id).single();
+                await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: currentUser.name,
+                    sender_email: currentUser.email,
+                    is_staff: false,
+                    message: '__XORBIT_FORM__' + JSON.stringify({ type: 'password_reset_complete' })
+                }]);
+
+                closeUserSetPasswordModal();
+                await loadMessages(currentTicket.id);
+            } catch (err) {
+                console.error('Error updating password:', err);
+                errEl.textContent = err.message || 'Failed to update password.';
+                errEl.style.display = 'block';
             }
         }
 
