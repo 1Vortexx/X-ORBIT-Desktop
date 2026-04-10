@@ -2385,7 +2385,7 @@
       <div class="startup-content">
         <i class="fas fa-globe startup-icon"></i>
         <div class="startup-text">X-ORBIT</div>
-        <div class="startup-version">v5.4.6B Ventas</div>
+        <div class="startup-version">v5.4.7 Ventas</div>
         <div class="startup-progress-container">
           <div class="startup-progress-bar" id="startupProgress"></div>
         </div>
@@ -3637,6 +3637,39 @@
       }
       // ─────────────────────────────────────────────────────────────────
 
+      let _presenceInterval = null;
+
+      function _setIndexPresence(online) {
+        if (!currentUser.email) return;
+        if (!supabaseClient) initSupabaseClient();
+        if (!supabaseClient) return;
+        supabaseClient
+          .from("clients")
+          .update({
+            is_online:    online,
+            last_seen:    new Date().toISOString(),
+            current_page: online ? "index" : null,
+          })
+          .eq("email", currentUser.email)
+          .then(() => {});
+      }
+
+      function startIndexPresence() {
+        if (!currentUser.email) return;
+        _setIndexPresence(true);
+        if (_presenceInterval) clearInterval(_presenceInterval);
+        _presenceInterval = setInterval(() => {
+          if (currentUser.email) _setIndexPresence(true);
+        }, 30000);
+      }
+
+      function stopIndexPresence() {
+        if (_presenceInterval) { clearInterval(_presenceInterval); _presenceInterval = null; }
+        _setIndexPresence(false);
+      }
+
+      window.addEventListener("beforeunload", () => stopIndexPresence());
+
       function loadUserData() {
         try {
           const authData =
@@ -3650,6 +3683,7 @@
             updateUserDisplay();
             fetchAndSetTopbarAvatar();
             startDMPolling();
+            startIndexPresence();
           }
         } catch (e) {
           console.warn("Could not load user data:", e);
@@ -5680,7 +5714,7 @@
                         <i class="fas fa-check" style="animation:updateSuccess 2.5s ease-in-out infinite;"></i>
                       </div>
                       <div class="upd-title upd-title-ok">You're up to date!</div>
-                      <div class="upd-subtitle">X-ORBIT Desktop v5.4.6B Ventas &mdash; latest version installed</div>
+                      <div class="upd-subtitle">X-ORBIT Desktop v5.4.7 Ventas &mdash; latest version installed</div>
                     </div>
                   </div>
                   <div class="upd-actions-single">
@@ -6051,7 +6085,7 @@
           <div class="about-hero">
             <div class="about-logo-ring"><i class="fas fa-globe"></i></div>
             <div class="about-os-name">X-ORBIT Desktop</div>
-            <div class="about-version-badge"><i class="fas fa-tag"></i> v5.4.6B Ventas</div>
+            <div class="about-version-badge"><i class="fas fa-tag"></i> v5.4.7 Ventas</div>
             <div class="about-description">
               X-ORBIT Desktop is a web-based proxy OS built for students. X-ORBIT allows students and people around the world to browse the world wide web without restrictions or data leaks.
             </div>
@@ -6060,7 +6094,7 @@
           <div class="about-info-grid">
             <div class="about-info-card">
               <div class="about-info-label">Version</div>
-              <div class="about-info-value">v5.4.6B Ventas</div>
+              <div class="about-info-value">v5.4.7 Ventas</div>
             </div>
             <div class="about-info-card">
               <div class="about-info-label">Build</div>
@@ -7904,7 +7938,7 @@
               <i class="fas fa-check" style="color:#34c759;font-size:1rem;"></i>
             </div>
             <div style="font-size:0.9rem;font-weight:600;color:#34c759;letter-spacing:-0.01em;">You're up to date</div>
-            <div style="font-size:0.76rem;color:rgba(160,148,210,0.7);">X-ORBIT Desktop v5.4.6B Ventas is the latest version.</div>
+            <div style="font-size:0.76rem;color:rgba(160,148,210,0.7);">X-ORBIT Desktop v5.4.7 Ventas is the latest version.</div>
           </div>
         `;
             }
@@ -7941,6 +7975,7 @@
         document.getElementById("xorbitDropdown").classList.remove("show");
 
         function doLogout() {
+          stopIndexPresence();
           stopBanChecking();
           stopAutomaticUpdateChecking();
           activeWindows.forEach((windowId) => {
@@ -8467,8 +8502,8 @@
       // ============================================
 
       // Add these global variables at the top with your other global variables:
-      const CURRENT_VERSION = "v5.4.6B";
-      const CURRENT_VERSION_NAME = "X-ORBIT Desktop v5.4.6B Ventas";
+      const CURRENT_VERSION = "v5.4.7";
+      const CURRENT_VERSION_NAME = "X-ORBIT Desktop v5.4.7 Ventas";
       let pendingUpdateOnClose = false;
       let latestUpdateData = null;
 
@@ -9002,6 +9037,7 @@
             "Are you sure you want to logout? All unsaved work will be lost."
           )
         ) {
+          stopIndexPresence();
           stopBanChecking();
           activeWindows.forEach((windowId) => {
             const windowEl = document.getElementById(windowId);
