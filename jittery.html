@@ -849,6 +849,7 @@
         .profile-tag.staff         { color: #f87171; border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.08); }
         .profile-tag.beta_tester   { color: #a78bfa; border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.08); }
         .profile-tag.early_supporter { color: #67e8f9; border-color: rgba(103,232,249,0.4); background: rgba(103,232,249,0.08); }
+        .profile-tag.premium       { color: #34d399; border-color: rgba(52,211,153,0.4);  background: rgba(52,211,153,0.08); }
 
         .profile-status-row {
             display: flex;
@@ -5840,7 +5841,7 @@
         return `Last seen ${day}d ago`;
     }
 
-    const TAG_LABELS = { founder: 'Founder', staff: 'Staff', beta_tester: 'Beta Tester', early_supporter: 'Early Supporter' };
+    const TAG_LABELS = { founder: 'Founder', staff: 'Staff', beta_tester: 'Beta Tester', early_supporter: 'Early Supporter', premium: 'Premium' };
 
     function tagsHTML(tags) {
         if (!Array.isArray(tags) || tags.length === 0) return '';
