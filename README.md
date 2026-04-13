@@ -6,12 +6,12 @@
 
 **A full desktop operating system experience — running entirely in the browser.**
 
-[![Release](https://img.shields.io/badge/release-5.1.0%20Nova-7c3aed?style=flat-square)](https://github.com/1Vortexx/hammerspoon/releases)
+[![Release](https://img.shields.io/badge/release-5.5.7%20Ventas-7c3aed?style=flat-square)](https://github.com/1Vortexx/hammerspoon/releases)
 [![Status](https://img.shields.io/badge/status-stable-22c55e?style=flat-square)](https://xorbit.org)
 [![Built With](https://img.shields.io/badge/built%20with-HTML%20%2F%20CSS%20%2F%20JS-a855f7?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-proprietary-475569?style=flat-square)](#)
 
-[Live Demo](https://xorbit.org) · [Support Portal](https://xorbit.org/support) · [Changelogs](https://xorbit.org/changelogs) · [Admin Dashboard](https://xorbit.org/admin/dashboard)
+[Live Demo](https://xorbit.org) · [Support Portal](https://xorbit.org/support) · [Changelogs](https://xorbit.org/changelogs)
 
 </div>
 
