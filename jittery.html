@@ -1440,6 +1440,98 @@
             margin-bottom: 6px;
         }
 
+        /* ── TYPING BUBBLE ────────────────────────────── */
+        .typing-bubble-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 2px 16px 6px;
+            opacity: 0;
+            transform: translateY(10px) scale(0.94);
+            transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+            pointer-events: none;
+            align-self: flex-start;
+        }
+        .typing-bubble-wrap.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .typing-bubble-wrap .tb-avatar {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: var(--surface-3);
+            border: 1px solid var(--border-hi);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.58rem; font-weight: 700;
+            color: var(--text-muted); text-transform: uppercase;
+            flex-shrink: 0; overflow: hidden;
+        }
+        .typing-bubble-wrap .tb-avatar img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .typing-bubble {
+            background: var(--surface-2);
+            border: 1px solid var(--border-hi);
+            border-radius: var(--r-lg);
+            border-bottom-left-radius: var(--r-sm);
+            padding: 11px 16px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .typing-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: typingBounce 1.1s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.18s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.36s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        /* ── SEEN RECEIPT ─────────────────────────────── */
+        .message.mine.is-seen .message-bubble {
+            box-shadow: 0 0 22px rgba(124,106,247,0.18), 0 0 0 1px rgba(124,106,247,0.13);
+            transition: box-shadow 1s ease;
+        }
+        .seen-receipt {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 5px;
+            opacity: 0;
+            animation: seenFade 0.6s ease 0.2s forwards;
+        }
+        @keyframes seenFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .seen-receipt-line {
+            width: 52px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(124,106,247,0.45));
+            flex-shrink: 0;
+        }
+        .seen-receipt-name {
+            font-size: 0.51rem;
+            color: var(--accent);
+            opacity: 0.82;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .sent-receipt {
+            text-align: right;
+            padding: 2px 0 0;
+            font-size: 0.55rem;
+            color: var(--text-ghost);
+            opacity: 0.35;
+        }
+
         .input-hint {
             font-size: 0.55rem;
             color: var(--text-ghost);
@@ -1972,6 +2064,32 @@
             flex: 1;
             overflow: hidden;
             min-height: 0;
+        }
+
+        .dm-section-label {
+            padding: 8px 16px 5px;
+            font-size: 0.57rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-ghost);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dm-section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 0 2px;
+            flex-shrink: 0;
+        }
+
+        .dm-friends-list {
+            flex: 0 1 auto;
+            overflow-y: auto;
+            max-height: 220px;
         }
 
         .group-name-wrap {
@@ -2938,6 +3056,77 @@
 
         .freq-decline-btn:hover { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.3); color: var(--error); }
 
+        /* ─── FRIEND REQUEST NOTIFICATION ────────────── */
+        #friendReqNotif {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface-2);
+            border: 1px solid rgba(124,106,247,0.4);
+            border-radius: var(--r-lg);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(124,106,247,0.1);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-16px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            max-width: 290px;
+        }
+        #friendReqNotif.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .freq-notif-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(124,106,247,0.12);
+            border: 1px solid rgba(124,106,247,0.25);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .freq-notif-body { flex: 1; min-width: 0; }
+        .freq-notif-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        .freq-notif-sub {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+        }
+        .freq-notif-view {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--r-sm);
+            padding: 5px 10px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+        }
+        .freq-notif-view:hover { filter: brightness(1.1); }
+        .freq-notif-dismiss {
+            background: none;
+            border: none;
+            color: var(--text-ghost);
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            flex-shrink: 0;
+        }
+        .freq-notif-dismiss:hover { color: var(--text-muted); }
+
         /* ─── TOAST ───────────────────────────────────── */
         #toast {
             position: fixed;
@@ -3176,6 +3365,15 @@
 
                 <div class="messages-container" id="messagesContainer"></div>
 
+                <div class="typing-bubble-wrap" id="typingIndicator">
+                    <div class="tb-avatar" id="typingAvatar"></div>
+                    <div class="typing-bubble">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+
                 <div class="message-input-area">
                     <div id="replyBar" class="reply-bar" style="display:none">
                         <div class="reply-bar-accent"></div>
@@ -3196,6 +3394,7 @@
                             placeholder="Write a message…"
                             rows="1"
                             onkeydown="handleMessageKeydown(event)"
+                            oninput="broadcastTyping()"
                         ></textarea>
                         <button class="send-btn" onclick="sendMessage()" id="sendBtn">
                             <i class="fas fa-paper-plane"></i>
@@ -3228,18 +3427,19 @@
         </div>
         <!-- Direct panel -->
         <div id="panelDirect" class="dm-panel">
+            <div class="dm-section-label"><i class="fas fa-user-friends"></i> Friends</div>
+            <div class="dm-friends-list" id="dmFriendsList">
+                <div class="search-hint"><i class="fas fa-spinner fa-spin"></i><p>Loading…</p></div>
+            </div>
+            <div class="dm-section-divider"></div>
+            <div class="dm-section-label"><i class="fas fa-user-plus"></i> Add a Friend</div>
             <div class="modal-search-wrap">
-                <i class="fas fa-search modal-search-icon"></i>
-                <input type="text" id="userSearchInput" class="modal-search"
-                    placeholder="Search by name, username, or email…"
-                    oninput="handleUserSearch(this.value)" autocomplete="off">
+                <i class="fas fa-at modal-search-icon"></i>
+                <input type="text" id="addFriendInput" class="modal-search"
+                    placeholder="Search by @username…"
+                    oninput="handleAddFriendSearch(this.value)" autocomplete="off">
             </div>
-            <div class="search-results" id="searchResults">
-                <div class="search-hint">
-                    <i class="fas fa-users"></i>
-                    <p>Type to search members</p>
-                </div>
-            </div>
+            <div class="search-results" id="addFriendResults"></div>
         </div>
         <!-- Group panel -->
         <div id="panelGroup" class="dm-panel" style="display:none">
@@ -3629,6 +3829,17 @@
     </div>
 </div>
 
+<!-- ══ FRIEND REQUEST NOTIFICATION ════════════════════ -->
+<div id="friendReqNotif">
+    <div class="freq-notif-icon"><i class="fas fa-user-plus"></i></div>
+    <div class="freq-notif-body">
+        <div class="freq-notif-title">Friend Request</div>
+        <div class="freq-notif-sub" id="friendReqNotifText"></div>
+    </div>
+    <button class="freq-notif-view" onclick="openFriendRequestsModal(); hideFriendReqNotif()">View</button>
+    <button class="freq-notif-dismiss" onclick="hideFriendReqNotif()" title="Dismiss"><i class="fas fa-times"></i></button>
+</div>
+
 <!-- ══ TOAST ═══════════════════════════════════════════ -->
 <div id="toast"></div>
 
@@ -3654,7 +3865,10 @@
     let messagesSubscription = null;
     let convSubscription     = null;
     let presenceSubscription = null;
-    let searchDebounceTimer  = null;
+    let typingChannel        = null;
+    let typingClearTimer     = null;
+    let searchDebounceTimer     = null;
+    let addFriendDebounceTimer  = null;
     let ctxConvId            = null;
     let blockedEmails        = new Set(); // emails I have blocked
     let blockedByEmails      = new Set(); // emails that have blocked me
@@ -3664,6 +3878,7 @@
     const lastSeenCache      = {}; // email -> ISO timestamp string
     const tagsCache          = {}; // email -> string[]
     const usernameCache      = {}; // email -> username string
+    const displayNameCache   = {}; // email -> display_name string or null
     const friendsSet         = new Set(); // accepted friend emails
     const sentSet            = new Set(); // emails I sent a pending request to
     const receivedSet        = new Set(); // emails that sent me a pending request
@@ -3803,7 +4018,7 @@
             if (error || !data) throw new Error('Invalid email or password.');
             if (data.blocked) throw new Error('Your account has been suspended.');
 
-            currentUser = { id: data.id, name: data.name, email: data.email, username: data.username || null };
+            currentUser = { id: data.id, name: data.name, email: data.email, username: data.username || null, display_name: data.display_name || null };
             usernameCache[data.email] = data.username || null;
             localStorage.setItem('xorbit_dm_user', JSON.stringify(currentUser));
             await showDashboard();
@@ -3859,6 +4074,7 @@
         if (convSubscription)     { convSubscription.unsubscribe();     convSubscription     = null; }
         if (presenceSubscription) { presenceSubscription.unsubscribe(); presenceSubscription = null; }
         if (friendshipSub)        { friendshipSub.unsubscribe();        friendshipSub        = null; }
+        if (typingChannel)        { typingChannel.unsubscribe();        typingChannel        = null; }
     }
 
     /* ──────────────────────────────────────────────────
@@ -3950,11 +4166,12 @@
         try {
             const { data: uRow } = await sb
                 .from('clients')
-                .select('username')
+                .select('username, display_name')
                 .eq('email', currentUser.email)
                 .single();
             if (uRow) {
                 currentUser.username      = uRow.username || null;
+                currentUser.display_name  = uRow.display_name || null;
                 usernameCache[currentUser.email] = uRow.username || null;
             }
         } catch (_) {}
@@ -3973,8 +4190,8 @@
         document.getElementById('usernameSetup').style.display = 'none';
         document.getElementById('dmDashboard').style.display   = 'flex';
         restoreSidebarState();
-        document.getElementById('headerUserName').textContent = currentUser.name;
-        document.getElementById('headerAvatarInitials').textContent = getInitials(currentUser.name);
+        document.getElementById('headerUserName').textContent = currentUser.display_name || currentUser.username;
+        document.getElementById('headerAvatarInitials').textContent = getInitials(currentUser.display_name || currentUser.username || currentUser.name);
 
         // Check premium status
         try {
@@ -3994,6 +4211,7 @@
         setOnlineStatus(true);
         setInterval(() => { if (currentUser) setOnlineStatus(true); }, 30000);
         await Promise.all([loadBlockedUsers(), loadBlockedByUsers(), loadFriendships()]);
+        showFriendReqNotif();
         await loadConversations();
         subscribeToConversations();
         subscribeToPresence();
@@ -4045,6 +4263,7 @@
             await loadAvatarsForEmails(otherEmails);
             renderConversations(conversations);
             refreshActiveChatHeader();
+            updateSeenTick();
         } catch (err) {
             console.error('Error loading conversations:', err);
             renderConversationsError();
@@ -4163,9 +4382,11 @@
         document.getElementById('emptyState').style.display = 'none';
         document.getElementById('chatArea').style.display   = 'flex';
 
+        hideTypingIndicator();
         await markAsRead(convId);
         await loadMessages(convId);
         subscribeToMessages(convId);
+        subscribeToTyping(convId);
     }
 
     function hideChatArea() {
@@ -4257,7 +4478,7 @@
                    </div>`
                 : `<div class="message-bubble">${replyQuote}${escHtml(msg.message)}</div>`;
             html += `
-                <div class="message ${isMine ? 'mine' : 'theirs'}">
+                <div class="message ${isMine ? 'mine' : 'theirs'}" data-created-at="${msg.created_at}">
                     <div class="msg-avatar" onclick="openProfile('${escAttr(msg.sender_email)}')">${avatarHTML(msg.sender_name, msg.sender_email)}</div>
                     <div class="msg-content">
                         <div class="message-header">${escHtml(msg.sender_name)}</div>
@@ -4270,6 +4491,7 @@
 
         container.innerHTML = html;
         container.scrollTop = container.scrollHeight;
+        updateSeenTick();
     }
 
     function subscribeToMessages(convId) {
@@ -4332,6 +4554,7 @@
             await sb.from('dm_conversations').update(convUpdate).eq('id', activeConvId);
 
             input.value = '';
+            hideTypingIndicator();
             cancelReply();
             await loadMessages(activeConvId);
 
@@ -5050,6 +5273,14 @@
                 .eq('conversation_id', convId)
                 .neq('sender_email', currentUser.email)
                 .eq('is_read', false);
+
+            const conv = conversations.find(c => c.id === convId);
+            if (conv && !conv.is_group) {
+                const field = conv.participant_1_email === currentUser.email ? 'p1_last_read_at' : 'p2_last_read_at';
+                const now = new Date().toISOString();
+                await sb.from('dm_conversations').update({ [field]: now }).eq('id', convId);
+                conv[field] = now;
+            }
         } catch { /* non-critical */ }
     }
 
@@ -5059,19 +5290,15 @@
     function openNewDMModal() {
         document.getElementById('newDMModal').classList.add('active');
         switchDMTab('direct');
-        document.getElementById('userSearchInput').value = '';
-        document.getElementById('searchResults').innerHTML = `
-            <div class="search-hint">
-                <i class="fas fa-users"></i>
-                <p>Type to search members</p>
-            </div>
-        `;
-        setTimeout(() => document.getElementById('userSearchInput').focus(), 80);
+        document.getElementById('addFriendInput').value = '';
+        document.getElementById('addFriendResults').innerHTML = '';
+        renderFriendsList();
     }
 
     function closeNewDMModal() {
         document.getElementById('newDMModal').classList.remove('active');
         clearTimeout(searchDebounceTimer);
+        clearTimeout(addFriendDebounceTimer);
         clearTimeout(groupSearchDebounceTimer);
         groupSelectedMembers = [];
     }
@@ -5225,67 +5452,109 @@
         if (e.target === this) closeProfileModal();
     });
 
-    function handleUserSearch(query) {
-        clearTimeout(searchDebounceTimer);
-        const q = query.trim();
-        if (q.length < 2) {
-            document.getElementById('searchResults').innerHTML = `
-                <div class="search-hint">
-                    <i class="fas fa-users"></i>
-                    <p>Type at least 2 characters</p>
-                </div>
-            `;
+    async function renderFriendsList() {
+        const el = document.getElementById('dmFriendsList');
+        const emails = [...friendsSet].filter(e => !blockedEmails.has(e));
+
+        if (emails.length === 0) {
+            el.innerHTML = `<div class="search-hint"><i class="fas fa-user-slash"></i><p>No friends yet — add someone below</p></div>`;
             return;
         }
-        searchDebounceTimer = setTimeout(() => searchUsers(q), 300);
+
+        el.innerHTML = `<div class="search-hint"><i class="fas fa-spinner fa-spin"></i><p>Loading…</p></div>`;
+
+        try {
+            const { data } = await sb.from('clients')
+                .select('id, name, email, username, display_name, avatar_url')
+                .in('email', emails);
+
+            if (!data || data.length === 0) {
+                el.innerHTML = `<div class="search-hint"><i class="fas fa-user-slash"></i><p>Could not load friends</p></div>`;
+                return;
+            }
+
+            data.forEach(u => {
+                avatarCache[u.email]      = u.avatar_url   || null;
+                usernameCache[u.email]    = u.username     || null;
+                displayNameCache[u.email] = u.display_name || null;
+            });
+
+            el.innerHTML = data.map(user => {
+                const name = user.display_name || user.username || user.name;
+                const sub  = user.username ? `@${escHtml(user.username)}` : escHtml(user.email);
+                const st   = effectiveStatus(user.email);
+                return `
+                    <div class="search-result-item" onclick="startDMWith('${escAttr(user.id)}','${escAttr(name)}','${escAttr(user.email)}')" style="cursor:pointer">
+                        <div class="result-avatar" style="position:relative">
+                            ${avatarHTML(name, user.email)}
+                            <span class="status-dot ${st}" style="position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;border:2px solid var(--surface-2)"></span>
+                        </div>
+                        <div class="result-info">
+                            <div class="result-name">${escHtml(name)}</div>
+                            <div class="result-email">${sub}</div>
+                        </div>
+                        <div class="result-action msg">Message →</div>
+                    </div>`;
+            }).join('');
+        } catch (_) {
+            el.innerHTML = `<div class="search-hint"><i class="fas fa-exclamation-triangle"></i><p>Failed to load friends</p></div>`;
+        }
     }
 
-    async function searchUsers(query) {
-        const resultsEl = document.getElementById('searchResults');
+    function handleAddFriendSearch(value) {
+        clearTimeout(addFriendDebounceTimer);
+        const q = value.trim().replace(/^@/, '');
+        if (q.length < 2) {
+            document.getElementById('addFriendResults').innerHTML = '';
+            return;
+        }
+        addFriendDebounceTimer = setTimeout(() => searchByUsername(q), 300);
+    }
+
+    async function searchByUsername(query) {
+        const resultsEl = document.getElementById('addFriendResults');
         resultsEl.innerHTML = `<div class="search-hint"><i class="fas fa-spinner fa-spin"></i><p>Searching…</p></div>`;
 
         try {
             const { data, error } = await sb
                 .from('clients')
-                .select('id, name, email, username, avatar_url')
-                .or(`name.ilike.%${query}%,email.ilike.%${query}%,username.ilike.%${query}%`)
+                .select('id, name, email, username, display_name, avatar_url')
+                .ilike('username', `%${query}%`)
                 .neq('email', currentUser.email)
-                .limit(20);
+                .limit(10);
 
             if (error) throw error;
 
             if (!data || data.length === 0) {
-                resultsEl.innerHTML = `<div class="search-hint"><i class="fas fa-user-slash"></i><p>No members found</p></div>`;
+                resultsEl.innerHTML = `<div class="search-hint"><i class="fas fa-user-slash"></i><p>No users found</p></div>`;
                 return;
             }
 
-            data.forEach(user => {
-                avatarCache[user.email]   = user.avatar_url || null;
-                usernameCache[user.email] = user.username   || null;
+            data.forEach(u => {
+                avatarCache[u.email]      = u.avatar_url   || null;
+                usernameCache[u.email]    = u.username     || null;
+                displayNameCache[u.email] = u.display_name || null;
             });
 
             resultsEl.innerHTML = data.map(user => {
+                const name   = user.display_name || user.username || user.name;
+                const sub    = user.username ? `@${escHtml(user.username)}` : escHtml(user.email);
                 const status = getFriendStatus(user.email);
-                let actionHtml, clickAttr;
+                let actionHtml;
                 if (status === 'accepted') {
-                    actionHtml = `<div class="result-action msg">Message →</div>`;
-                    clickAttr  = `onclick="startDMWith('${escAttr(user.id)}','${escAttr(user.name)}','${escAttr(user.email)}')"`;
+                    actionHtml = `<div class="result-action msg" onclick="startDMWith('${escAttr(user.id)}','${escAttr(name)}','${escAttr(user.email)}')">Message →</div>`;
                 } else if (status === 'pending_sent') {
                     actionHtml = `<div class="result-action sent">Pending…</div>`;
-                    clickAttr  = '';
                 } else if (status === 'pending_received') {
-                    actionHtml = `<div class="result-action accept" onclick="event.stopPropagation();acceptFriendFromSearch('${escAttr(user.email)}')">Accept ✓</div>`;
-                    clickAttr  = '';
+                    actionHtml = `<div class="result-action accept" onclick="acceptFriendFromSearch('${escAttr(user.email)}')">Accept ✓</div>`;
                 } else {
-                    actionHtml = `<div class="result-action add" onclick="event.stopPropagation();sendFriendRequestFromSearch('${escAttr(user.id)}','${escAttr(user.name)}','${escAttr(user.email)}',this)">Add Friend +</div>`;
-                    clickAttr  = '';
+                    actionHtml = `<div class="result-action add" onclick="sendFriendRequestFromSearch('${escAttr(user.id)}','${escAttr(user.name)}','${escAttr(user.email)}',this)">Add Friend +</div>`;
                 }
-                const sub = user.username ? `@${escHtml(user.username)}` : escHtml(user.email);
                 return `
-                    <div class="search-result-item" ${clickAttr} style="${clickAttr ? 'cursor:pointer' : ''}">
-                        <div class="result-avatar">${avatarHTML(user.name, user.email)}</div>
+                    <div class="search-result-item">
+                        <div class="result-avatar">${avatarHTML(name, user.email)}</div>
                         <div class="result-info">
-                            <div class="result-name">${escHtml(user.name)}</div>
+                            <div class="result-name">${escHtml(name)}</div>
                             <div class="result-email">${sub}</div>
                         </div>
                         ${actionHtml}
@@ -5293,7 +5562,6 @@
             }).join('');
 
         } catch (err) {
-            console.error('User search error:', err);
             resultsEl.innerHTML = `<div class="search-hint"><i class="fas fa-exclamation-triangle"></i><p>Search failed. Try again.</p></div>`;
         }
     }
@@ -5308,9 +5576,9 @@
     async function acceptFriendFromSearch(userEmail) {
         const req = pendingIncoming.find(r => r.requester_email === userEmail);
         if (req) await acceptFriendRequest(req.id);
-        // re-run search to refresh action buttons
-        const q = document.getElementById('userSearchInput').value.trim();
-        if (q.length >= 2) searchUsers(q);
+        const q = document.getElementById('addFriendInput').value.trim().replace(/^@/, '');
+        if (q.length >= 2) searchByUsername(q);
+        renderFriendsList();
     }
 
     async function startDMWith(userId, userName, userEmail) {
@@ -5370,9 +5638,13 @@
     ────────────────────────────────────────────────── */
     function getOtherName(conv) {
         if (conv.is_group) return conv.group_name || 'Group';
-        return conv.participant_1_email === currentUser.email
+        const otherEmail = conv.participant_1_email === currentUser.email
+            ? conv.participant_2_email
+            : conv.participant_1_email;
+        const fallback = conv.participant_1_email === currentUser.email
             ? conv.participant_2_name
             : conv.participant_1_name;
+        return displayNameCache[otherEmail] || usernameCache[otherEmail] || fallback;
     }
 
     function getOtherEmail(conv) {
@@ -5380,6 +5652,104 @@
         return conv.participant_1_email === currentUser.email
             ? conv.participant_2_email
             : conv.participant_1_email;
+    }
+
+    /* ──────────────────────────────────────────────────
+       TYPING INDICATORS
+    ────────────────────────────────────────────────── */
+    function subscribeToTyping(convId) {
+        if (typingChannel) { typingChannel.unsubscribe(); typingChannel = null; }
+        const conv = conversations.find(c => c.id === convId);
+        if (!conv || conv.is_group) return;
+
+        typingChannel = sb.channel(`typing:${convId}`)
+            .on('broadcast', { event: 'typing' }, ({ payload }) => {
+                if (payload.email === currentUser.email) return;
+                showTypingIndicator(payload.name, payload.email);
+            })
+            .subscribe();
+    }
+
+    function broadcastTyping() {
+        if (!typingChannel || !activeConvId) return;
+        const conv = conversations.find(c => c.id === activeConvId);
+        if (!conv || conv.is_group) return;
+        typingChannel.send({
+            type: 'broadcast', event: 'typing',
+            payload: { email: currentUser.email, name: currentUser.display_name || currentUser.username || currentUser.name }
+        });
+        clearTimeout(typingClearTimer);
+        typingClearTimer = setTimeout(hideTypingIndicator, 2500);
+    }
+
+    function showTypingIndicator(name, email) {
+        clearTimeout(typingClearTimer);
+        const wrap = document.getElementById('typingIndicator');
+        const avatarEl = document.getElementById('typingAvatar');
+
+        const url = email ? avatarCache[email] : null;
+        if (url) {
+            avatarEl.innerHTML = `<img src="${url.replace(/"/g,'&quot;')}" alt="${escHtml(name)}">`;
+        } else {
+            avatarEl.textContent = getInitials(name);
+        }
+
+        wrap.classList.add('visible');
+        const container = document.getElementById('messagesContainer');
+        if (container) container.scrollTop = container.scrollHeight + 200;
+        typingClearTimer = setTimeout(hideTypingIndicator, 3000);
+    }
+
+    function hideTypingIndicator() {
+        clearTimeout(typingClearTimer);
+        const el = document.getElementById('typingIndicator');
+        if (el) el.classList.remove('visible');
+    }
+
+    /* ──────────────────────────────────────────────────
+       SEEN RECEIPT
+    ────────────────────────────────────────────────── */
+    function updateSeenTick() {
+        document.querySelectorAll('.seen-receipt, .sent-receipt').forEach(el => el.remove());
+        document.querySelectorAll('.message.mine.is-seen').forEach(el => el.classList.remove('is-seen'));
+
+        if (!activeConvId) return;
+        const conv = conversations.find(c => c.id === activeConvId);
+        if (!conv || conv.is_group) return;
+
+        const isP1          = conv.participant_1_email === currentUser.email;
+        const otherLastRead = isP1 ? conv.p2_last_read_at : conv.p1_last_read_at;
+        const otherEmail    = isP1 ? conv.participant_2_email : conv.participant_1_email;
+
+        const container = document.getElementById('messagesContainer');
+        if (!container) return;
+        const myMsgs = container.querySelectorAll('.message.mine');
+        if (myMsgs.length === 0) return;
+
+        const lastMine  = myMsgs[myMsgs.length - 1];
+        const createdAt = lastMine.dataset.createdAt;
+        const isSeen    = otherLastRead && createdAt && new Date(otherLastRead) >= new Date(createdAt);
+        const content   = lastMine.querySelector('.msg-content');
+        if (!content) return;
+
+        if (isSeen) {
+            lastMine.classList.add('is-seen');
+            const otherName = displayNameCache[otherEmail] || usernameCache[otherEmail] || '';
+            const label     = otherName ? `@${otherName}` : 'seen';
+            const seenTime  = fmtTime(otherLastRead);
+            const receipt   = document.createElement('div');
+            receipt.className = 'seen-receipt';
+            receipt.innerHTML = `
+                <div class="seen-receipt-line"></div>
+                <span class="seen-receipt-name">Seen</span>
+            `;
+            content.appendChild(receipt);
+        } else {
+            const receipt = document.createElement('div');
+            receipt.className = 'sent-receipt';
+            receipt.innerHTML = '<i class="fas fa-check"></i>';
+            content.appendChild(receipt);
+        }
     }
 
     function getInitials(name) {
@@ -5440,14 +5810,15 @@
         try {
             const { data } = await sb
                 .from('clients')
-                .select('email, avatar_url, last_seen, current_page, username')
+                .select('email, avatar_url, last_seen, current_page, username, display_name')
                 .in('email', missing);
             if (data) data.forEach(row => {
-                avatarCache[row.email]    = row.avatar_url || null;
-                onlineCache[row.email]    = isRecentlySeen(row.last_seen);
-                pageCache[row.email]      = row.current_page || null;
-                lastSeenCache[row.email]  = row.last_seen || null;
-                usernameCache[row.email]  = row.username || null;
+                avatarCache[row.email]      = row.avatar_url || null;
+                onlineCache[row.email]      = isRecentlySeen(row.last_seen);
+                pageCache[row.email]        = row.current_page || null;
+                lastSeenCache[row.email]    = row.last_seen || null;
+                usernameCache[row.email]    = row.username || null;
+                displayNameCache[row.email] = row.display_name || null;
             });
             missing.forEach(e => {
                 if (!(e in avatarCache))   avatarCache[e]   = null;
@@ -5475,7 +5846,7 @@
         if (url) {
             el.innerHTML = `<img src="${url.replace(/"/g, '&quot;')}" alt="You"><div class="header-avatar-overlay"><i class="fas fa-camera"></i></div>`;
         } else {
-            el.innerHTML = `<span id="headerAvatarInitials">${getInitials(currentUser.name)}</span><div class="header-avatar-overlay"><i class="fas fa-camera"></i></div>`;
+            el.innerHTML = `<span id="headerAvatarInitials">${getInitials(currentUser.display_name || currentUser.username || currentUser.name)}</span><div class="header-avatar-overlay"><i class="fas fa-camera"></i></div>`;
         }
     }
 
@@ -5556,11 +5927,13 @@
                 .single();
             if (error) throw error;
             profile = data;
-            profileCache[email] = profile;
-            avatarCache[email]  = data.avatar_url || null;
-            onlineCache[email]   = isRecentlySeen(data.last_seen);
-            pageCache[email]     = data.current_page || null;
-            lastSeenCache[email] = data.last_seen || null;
+            profileCache[email]     = profile;
+            avatarCache[email]      = data.avatar_url || null;
+            onlineCache[email]      = isRecentlySeen(data.last_seen);
+            pageCache[email]        = data.current_page || null;
+            lastSeenCache[email]    = data.last_seen || null;
+            usernameCache[email]    = data.username || null;
+            displayNameCache[email] = data.display_name || null;
         } catch (err) {
             console.error('Profile load error:', err);
             showToast('Could not load profile.');
@@ -5817,6 +6190,11 @@
                 cached.show_email = showEmail;
             }
 
+            currentUser.display_name = displayName || null;
+            displayNameCache[currentUser.email] = displayName || null;
+            localStorage.setItem('xorbit_dm_user', JSON.stringify(currentUser));
+            document.getElementById('headerUserName').textContent = currentUser.display_name || currentUser.username;
+            document.getElementById('headerAvatarInitials').textContent = getInitials(currentUser.display_name || currentUser.username || currentUser.name);
             updateProfilePreview();
             showToast('Profile saved.');
         } catch (err) {
@@ -6077,7 +6455,9 @@
         if (friendshipSub) friendshipSub.unsubscribe();
         friendshipSub = sb.channel('friendships_changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, async () => {
+                const prevCount = pendingIncoming.length;
                 await loadFriendships();
+                if (pendingIncoming.length > prevCount) showFriendReqNotif();
                 // Refresh open profile modal if it's for a relevant user
                 const modal = document.getElementById('profileModal');
                 if (modal.classList.contains('active')) {
@@ -6094,11 +6474,12 @@
                         }
                     }
                 }
-                // Refresh search results if modal is open
+                // Refresh modal if open
                 const dmModal = document.getElementById('newDMModal');
                 if (dmModal.classList.contains('active')) {
-                    const q = document.getElementById('userSearchInput').value.trim();
-                    if (q.length >= 2) searchUsers(q);
+                    renderFriendsList();
+                    const q = document.getElementById('addFriendInput').value.trim().replace(/^@/, '');
+                    if (q.length >= 2) searchByUsername(q);
                 }
             })
             .subscribe();
@@ -6179,6 +6560,23 @@
     function updateFriendRequestBadge() {
         const badge = document.getElementById('friendReqBadge');
         if (badge) badge.classList.toggle('show', pendingIncoming.length > 0);
+    }
+
+    let _friendReqNotifTimer = null;
+    function showFriendReqNotif() {
+        if (pendingIncoming.length === 0) return;
+        const count = pendingIncoming.length;
+        document.getElementById('friendReqNotifText').textContent =
+            count === 1 ? 'You have 1 pending friend request.' : `You have ${count} pending friend requests.`;
+        const el = document.getElementById('friendReqNotif');
+        el.classList.add('show');
+        clearTimeout(_friendReqNotifTimer);
+        _friendReqNotifTimer = setTimeout(hideFriendReqNotif, 7000);
+    }
+
+    function hideFriendReqNotif() {
+        clearTimeout(_friendReqNotifTimer);
+        document.getElementById('friendReqNotif').classList.remove('show');
     }
 
     function openFriendRequestsModal() {
