@@ -53,20 +53,12 @@ Designed and built solo by **Demitri Burns**, X-ORBIT is a passion project pushi
 | App | Description |
 |-----|-------------|
 | **Browser** | Full in-OS web browser with Ultraviolet and Rammerhead proxy support for unrestricted browsing |
-| **Music** | Integrated music player (Spotify-style interface) |
-| **Minecraft** | Playable Minecraft via browser embed |
-| **Jitter** | Built-in Jitter.video client |
-| **Notification Center** | Browse and manage OS-level notifications |
+| **Music** | Integrated music player linked to a proxies Spotify SDK thorugh Monochrome |
+| **Minecraft** | Playable Minecraft via Eaglecraft 1.12 |
+| **Jitter** | Built-in X-ORBIT messaging platform to DM your friends |
 | **Changelog** | In-OS release notes viewer |
 | **Support** | Help & support portal access |
 | **Settings** | OS configuration and personalization |
-| **Terminal** | Web-based terminal emulator |
-| **Studios** | X-ORBIT Studios hub |
-
-### Admin
-- Dedicated admin dashboard at 
-- Live alert system (downtime, maintenance, feature, info, update) fetched from Supabase and displayed on the login screen
-- Login attempt logging with device UUID, user agent, and timestamp tracking
 
 ---
 
