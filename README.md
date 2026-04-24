@@ -25,7 +25,7 @@
 
 X-ORBIT Desktop is a browser-based operating system built entirely in HTML, CSS, and JavaScript. It delivers a full windowed desktop environment — complete with a dock, menu bar, notification center, and native-feeling apps — from any modern web browser, with nothing to install.
 
-Designed and built solo by **Demitri Burns**, X-ORBIT is a passion project pushing the boundaries of what the web can do.
+X-ORBIT is a passion project pushing the boundaries of what the web can do.
 
 ---
 
