@@ -128,7 +128,7 @@
         gap: 0.7rem;
         cursor: pointer;
         user-select: none;
-        max-width: 300px;
+        max-width: 320px;
         transition: transform 0.2s ease, opacity 0.38s ease, max-width 0.38s ease;
         overflow: hidden;
       }
@@ -648,6 +648,90 @@
       .notice-bar i { color: var(--p-dim); }
       .notice-bar strong { color: var(--p-bright); }
 
+      /* ── Shutdown view (inline, like signup) ── */
+      .shutdown-view {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.55rem;
+      }
+      .shutdown-view.active { display: flex; }
+
+      .shutdown-panel {
+        background: rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(249,115,22,0.25);
+        border-radius: 10px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .shutdown-panel.visible { opacity: 1; transform: translateY(0); }
+
+      .shutdown-panel-icon {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #f97316;
+      }
+
+      .shutdown-panel-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #fdba74;
+        text-align: center;
+        text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+      }
+
+      .shutdown-panel-desc {
+        font-size: 0.74rem;
+        color: rgba(255,255,255,0.7);
+        line-height: 1.55;
+        text-align: center;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      }
+
+      .shutdown-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        background: rgba(249,115,22,0.1);
+        border: 1px solid rgba(249,115,22,0.2);
+        border-radius: 6px;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.71rem;
+        color: #fdba74;
+        line-height: 1.5;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      }
+
+      .shutdown-links {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .shutdown-link-btn {
+        flex: 1;
+        padding: 0.55rem 0.5rem;
+        border-radius: 6px;
+        border: 1px solid rgba(192,132,252,0.25);
+        background: rgba(192,132,252,0.1);
+        color: #c084fc;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        transition: all 0.2s ease;
+      }
+      .shutdown-link-btn:hover { background: rgba(192,132,252,0.2); border-color: rgba(192,132,252,0.45); }
+
       /* ── Warning Modal ── */
       .warning-overlay {
         position: fixed;
@@ -1118,6 +1202,26 @@
           </div>
         </div>
 
+        <!-- Shutdown view: login disabled site-wide -->
+        <div class="shutdown-view" id="shutdownView">
+          <div class="shutdown-panel" id="shutdownPanel">
+            <div class="shutdown-panel-icon"><i class="fas fa-ban"></i></div>
+            <div class="shutdown-panel-title">Logins Temporarily Disabled</div>
+            <div class="shutdown-panel-desc">The login system is shut down site-wide — this is not related to your account.</div>
+            <div class="shutdown-note">
+              <i class="fas fa-circle-info" style="flex-shrink:0;margin-top:1px"></i>
+              <span>Your account and data are unaffected. Logins will be re-enabled once the maintenance window is complete.</span>
+            </div>
+            <div class="shutdown-links">
+              <a href="status/status.html" class="shutdown-link-btn"><i class="fas fa-signal"></i> Status Page</a>
+              <a href="blog/yearly-shutdown" class="shutdown-link-btn"><i class="fas fa-newspaper"></i> Blog Post</a>
+            </div>
+            <button class="signup-back-btn" onclick="goBackToCircles()">
+              <i class="fas fa-chevron-left"></i> Back
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1398,6 +1502,10 @@
           if (sv) sv.classList.remove("active");
           const sp = document.getElementById("signupPanel");
           if (sp) sp.classList.remove("visible");
+          const dv = document.getElementById("shutdownView");
+          if (dv) dv.classList.remove("active");
+          const dp = document.getElementById("shutdownPanel");
+          if (dp) dp.classList.remove("visible");
         }, 370);
       }
 
@@ -1419,7 +1527,7 @@
         setTimeout(() => { if (pw) pw.focus(); }, 420);
       }
 
-      function selectOtherUser() {
+      async function selectOtherUser() {
         document.getElementById("accountItemOther").classList.add("selected");
         document.getElementById("accountItemOther").classList.remove("faded-out");
         const userItem = document.getElementById("accountItemUser");
@@ -1432,7 +1540,7 @@
         document.getElementById("osView").classList.remove("active");
         ["usernameOrEmail","password"].forEach(id => {
           const el = document.getElementById(id);
-          if (el) { el.value = ""; el.classList.remove("error","banned"); }
+          if (el) { el.value = ""; el.classList.remove("error","banned","shutdown"); el.removeAttribute("readonly"); }
         });
         ["usernameWrap","passwordWrap"].forEach(id => {
           const el = document.getElementById(id);
@@ -1442,6 +1550,12 @@
         resetBtn("loginButton");
         fadeInForm();
         showBackBtn();
+
+        if (supabaseClient && await isLoginShutdown()) {
+          showShutdownView();
+          return;
+        }
+
         setTimeout(() => { const u = document.getElementById("usernameOrEmail"); if (u) u.focus(); }, 420);
       }
 
@@ -1579,10 +1693,40 @@
         }, 1000);
       }
 
+      // ── Shutdown view ──────────────────────────────────────────────
+      function showShutdownView() {
+        const otherCircleIcon  = document.querySelector("#accountItemOther .mac-circle i");
+        const otherCircleLabel = document.querySelector("#accountItemOther .mac-label");
+        if (otherCircleIcon)  otherCircleIcon.className = "fas fa-ban";
+        if (otherCircleLabel) otherCircleLabel.textContent = "Unavailable";
+
+        document.getElementById("regularView").classList.add("hidden");
+        document.getElementById("signupView").classList.remove("active");
+        document.getElementById("shutdownView").classList.add("active");
+        setTimeout(() => document.getElementById("shutdownPanel").classList.add("visible"), 50);
+      }
+
+      // ── Shutdown check ─────────────────────────────────────────────
+      async function isLoginShutdown() {
+        try {
+          const { data, error } = await supabaseClient
+            .from("service_components")
+            .select("status")
+            .eq("component_id", "auth-login")
+            .single();
+          if (error || !data) return false;
+          return data.status === "shutdown";
+        } catch { return false; }
+      }
+
       // ── Login (regular / Other User) ───────────────────────────────
       async function login() {
         if (!supabaseClient) {
           document.getElementById("loginStatus").innerHTML = "❌ System error. Please refresh.";
+          return;
+        }
+        if (await isLoginShutdown()) {
+          showShutdownView();
           return;
         }
 
@@ -1701,6 +1845,10 @@
         if (!supabaseClient || !rememberedUser) {
           document.getElementById("osLoginStatus").innerHTML = "❌ Session expired. Please try again.";
           showRegularMode(false);
+          return;
+        }
+        if (await isLoginShutdown()) {
+          showShutdownView();
           return;
         }
 
