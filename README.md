@@ -78,7 +78,7 @@ X-ORBIT is a passion project pushing the boundaries of what the web can do.
 
 ## Getting Started
 
-X-ORBIT is account-gated. To get access:
+X-ORBIT is account-gated to prevent abuse. To get access:
 
 1. Visit the [Support Portal](https://xorbit.org/support)
 2. Register for an Account Services account
@@ -87,36 +87,18 @@ X-ORBIT is account-gated. To get access:
 
 Once you have credentials, log in at [xorbit.org](https://xorbit.org).
 
----
-
-## Releases
-
-| Version | Codename | Status | Date |
-|---------|----------|--------|------|
-| 5.1.0 | Nova | ✅ Stable | Apr 2026 |
-| 5.0.1B | Ventas | 🧪 Beta | Feb 2026 |
-| 4.6.1 | Astra | ✅ Stable | Feb 2026 |
-
-Full release notes: [GitHub Releases](https://github.com/1Vortexx/hammerspoon/releases)
-
----
-
 ## Project Structure
 
 ```
 xorbit-main/
-├── index.html              # Main desktop OS shell
+├── index.html              # Landing page
+├── app.html                # Main desktop OS shell
 ├── auth.html               # Login screen
 ├── browser.html            # In-OS web browser
 ├── terminal.html           # Terminal emulator
-├── notification-center.html
 ├── changelogs.html
-├── spotify-player.html     # Music app
-├── X-MUSIC.html
-├── studios.html
+├── X-MUSIC.html            # Music app
 ├── support.html
-├── account.html
-├── admin/                  # Admin dashboard
 ├── manifest.json           # PWA manifest
 ├── sw.js                   # Service worker
 ├── theme-minimalist.css
@@ -133,7 +115,6 @@ xorbit-main/
     <td align="center">
       <strong>Demitri Burns</strong><br/>
       <sub>Founder · Lead Developer · Designer</sub><br/>
-      <sub>Every line of code. Every pixel.</sub>
     </td>
   </tr>
 </table>
