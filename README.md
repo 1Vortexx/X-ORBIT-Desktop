@@ -142,7 +142,7 @@ xorbit-main/
 
 <div align="center">
 
-**X-ORBIT** — All systems operational.
+**X-ORBIT** — All systems operational. This repository only includes front-end web code. The backend of X-ORBIT is closed-source and is not within this repo.
 
 [xorbit.org](https://xorbit.org) · [Support](https://xorbit.org/support) · [Terms](https://xorbit.org/tos) · [Privacy](https://xorbit.org/privacy)
 
