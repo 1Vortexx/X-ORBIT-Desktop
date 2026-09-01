@@ -6,99 +6,112 @@
   <title>X-ORBIT Proxy Services Terms of Service</title>
   <script src="audioStop.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      margin: 0;
-      padding: 20px;
-      background-color: #121212;
-      color: #f0f0f0;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.65;
+      padding: 32px 20px;
+      background: #000;
+      color: rgba(255,255,255,0.65);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
     }
     .container {
-      max-width: 900px;
-      background: #1e1e1e;
-      padding: 30px 40px;
+      max-width: 860px;
+      width: 100%;
+      background: #0a0a0a;
+      padding: 40px 48px;
       border-radius: 8px;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
-      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,0.08);
     }
-    h1, h2, h3 {
-      color: #ffffff;
-      font-weight: 700;
-    }
+    h1, h2, h3 { color: #fff; font-weight: 700; }
     h1 {
-      font-size: 2.5rem;
-      border-bottom: 3px solid #00c3ff;
-      padding-bottom: 8px;
-      margin-bottom: 30px;
+      font-size: 1.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+      letter-spacing: -0.02em;
     }
     h2 {
-      font-size: 1.8rem;
+      font-size: 0.8rem;
       margin-top: 40px;
-      margin-bottom: 20px;
-      color: #00c3ff;
+      margin-bottom: 14px;
+      color: #4f8aff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
     }
     h3 {
-      font-size: 1.3rem;
-      margin-top: 30px;
-      margin-bottom: 12px;
-      color: #00c3ff;
+      font-size: 0.875rem;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 600;
     }
     p {
-      font-size: 1rem;
-      font-weight: 400;
-      margin-bottom: 18px;
-      color: #dddddd;
+      font-size: 0.875rem;
+      margin-bottom: 14px;
+      color: rgba(255,255,255,0.55);
     }
+    ul, ol { color: rgba(255,255,255,0.55); margin-bottom: 14px; padding-left: 20px; }
+    li { margin-bottom: 6px; font-size: 0.875rem; }
     .notice {
-      font-weight: 700;
-      color: #ff6b6b;
-      background: rgba(255, 107, 107, 0.1);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #ef4444;
+      background: rgba(239,68,68,0.06);
       padding: 12px 16px;
-      border-left: 5px solid #ff6b6b;
-      border-radius: 5px;
-      margin: 25px 0;
+      border-left: 3px solid #ef4444;
+      border-radius: 4px;
+      margin: 20px 0;
     }
-    a {
-      color: #00c3ff;
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
+    .warning-box {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #f59e0b;
+      background: rgba(245,158,11,0.06);
+      padding: 12px 16px;
+      border-left: 3px solid #f59e0b;
+      border-radius: 4px;
+      margin: 20px 0;
     }
-    a:hover, a:focus {
-      color: #0077b6;
-      text-decoration: underline;
-      outline: none;
+    .info-box {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+      background: rgba(79,138,255,0.06);
+      padding: 12px 16px;
+      border-left: 3px solid #4f8aff;
+      border-radius: 4px;
+      margin: 20px 0;
     }
+    a { color: #4f8aff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
     .footer {
-      font-size: 0.9rem;
-      color: #aaaaaa;
-      margin-top: 50px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.2);
+      margin-top: 48px;
       text-align: center;
-      border-top: 1px solid #333;
-      padding-top: 15px;
-      user-select: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 20px;
     }
+    .toc {
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .toc h3 { margin-top: 0; margin-bottom: 12px; color: #fff; font-size: 0.875rem; }
+    .toc ol { margin: 0; }
+    .toc li { margin-bottom: 4px; font-size: 0.8rem; }
     @media (max-width: 600px) {
-      body {
-        padding: 20px 15px;
-      }
-      .container {
-        padding: 20px 20px;
-      }
-      h1 {
-        font-size: 2rem;
-      }
-      h2 {
-        font-size: 1.4rem;
-      }
-      h3 {
-        font-size: 1.1rem;
-      }
+      body { padding: 20px 12px; }
+      .container { padding: 24px 20px; }
     }
   </style>
 </head>
@@ -106,57 +119,217 @@
   <div class="container">
     <h1>X-ORBIT Proxy Services Terms of Service</h1>
     <p><strong>Effective Date:</strong> 09/10/25</p>
-    <p>Welcome to X-ORBIT Proxy Services! By using our services, you agree to comply with and be bound by the following Terms of Service ("Terms"). If you do not agree to these Terms, please discontinue use of our services.</p>
+    <p>Welcome to X-ORBIT Proxy Services. By accessing, registering for, or using any of our services, platforms, dashboards, or related tools, you acknowledge that you have read, understood, and agree to be legally bound by the following Terms of Service ("Terms" or "Agreement"). These Terms constitute a binding legal agreement between you ("Client," "User," or "you") and X-ORBIT Proxy Services ("X-ORBIT," "we," "us," or "our").</p>
+    <p>If you do not agree to these Terms in their entirety, you must immediately discontinue all use of our services, close any active sessions, and cease accessing any X-ORBIT systems, portals, or infrastructure. Continued use of any X-ORBIT service after any modification to these Terms constitutes your acceptance of those modifications. We reserve the right to update these Terms at any time, and it is your responsibility to review them periodically.</p>
+    <p>These Terms apply to all users of X-ORBIT services, including but not limited to those on free trials, paid plans, or those accessing services through third-party integrations or referral programs. By using X-ORBIT, you also represent and warrant that you are of legal age in your jurisdiction to enter into a binding agreement, and that you have the legal authority to accept these Terms on behalf of yourself or any entity you represent.</p>
 
-    <h2>1. Scope of Services</h2>
+    <div class="toc">
+      <h3>Table of Contents</h3>
+      <ol>
+        <li><a href="#section-1">Scope of Services</a></li>
+        <li><a href="#section-2">Ownership and Rights</a></li>
+        <li><a href="#section-3">Account Security and Prohibited Sharing</a></li>
+        <li><a href="#section-4">Device Fingerprinting, Tracking, and Data Collection</a></li>
+        <li><a href="#section-5">Prohibited Uses and Circumvention Policy</a></li>
+        <li><a href="#section-6">Usage Limitations and Fair Use</a></li>
+        <li><a href="#section-7">Compensation and Billing</a></li>
+        <li><a href="#section-8">Confidentiality</a></li>
+        <li><a href="#section-9">Term and Termination</a></li>
+        <li><a href="#section-10">Limitation of Liability</a></li>
+        <li><a href="#section-11">Indemnification</a></li>
+        <li><a href="#section-12">Disputes and Governing Law</a></li>
+        <li><a href="#section-13">Severability</a></li>
+        <li><a href="#section-14">Miscellaneous</a></li>
+      </ol>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-1">1. Scope of Services</h2>
+
     <h3>1.1 Proxy and Network Services</h3>
-    <p>X-ORBIT provides proxy services, secure browsing tools, and related network access. The specific services you subscribe to will be detailed in your service plan. Clients receive login credentials or access tokens required to use the proxy systems, and the sharing of access credentials with unauthorized parties is strictly prohibited. While we strive for maximum uptime, occasional downtime may occur due to maintenance, upgrades, or unexpected technical issues. As part of your service, you will receive a secure proxy connection, an account dashboard and management portal, usage documentation, and optional add-ons such as rotating IPs or advanced security filters.</p>
+    <p>X-ORBIT provides proxy services, secure browsing tools, and related network access infrastructure. The specific services available to you will be detailed in your chosen service plan at the time of subscription. Clients receive login credentials and, where applicable, access tokens required to authenticate with and use the X-ORBIT proxy systems. These credentials are strictly personal and non-transferable, as outlined in greater detail in Section 3 of this Agreement.</p>
+    <p>While X-ORBIT strives for maximum uptime across all service tiers, we do not guarantee uninterrupted availability. Occasional downtime may occur due to scheduled maintenance, infrastructure upgrades, emergency patches, or unexpected technical issues beyond our control. X-ORBIT will make reasonable efforts to notify affected users in advance of planned maintenance windows via in-platform alerts or other communication channels. As part of your subscription, you may receive a secure proxy connection, an account dashboard and management portal, usage documentation, and optional add-ons such as rotating IP addresses or advanced security filters, depending on your plan.</p>
+    <p>X-ORBIT reserves the right to modify, update, replace, or discontinue any component of its service infrastructure at any time and without prior notice, provided that such changes do not materially reduce the core service offering available to active subscribers without appropriate notice. In cases where a service is discontinued entirely, X-ORBIT will endeavor to provide reasonable advance notice and, where applicable, issue pro-rated refunds for unused service periods.</p>
 
-    <h3>1.2 Service Modifications</h3>
-    <p>Any modifications to your subscribed services must be formally requested and may incur additional fees. All requested modifications must be approved before implementation to ensure compliance with system requirements and security protocols.</p>
+    <h3>1.2 Service Modifications and Add-Ons</h3>
+    <p>Any modifications to your subscribed services, including plan upgrades, downgrades, or the addition of supplemental features, must be formally requested through official X-ORBIT channels and may incur additional fees. All requested modifications must be reviewed and approved by X-ORBIT before implementation to ensure compatibility with existing system requirements, security protocols, and infrastructure constraints. X-ORBIT is not obligated to fulfill modification requests that cannot be accommodated within current technical capabilities or that would violate these Terms.</p>
+    <p>Certain add-ons, such as dedicated IP addresses, increased bandwidth allocations, or priority routing, may be subject to availability and may require separate agreements or addenda to this Agreement. The terms governing any such add-ons will be provided at the time of purchase and are incorporated by reference into these Terms.</p>
 
-    <h2>2. Ownership and Rights</h2>
+    <h3>1.3 Service Availability by Region</h3>
+    <p>X-ORBIT services may not be available in all geographic regions, and access to certain servers, exit nodes, or service features may be restricted based on your physical location, applicable local laws, or X-ORBIT's operational decisions. X-ORBIT makes no representation that its services are appropriate or available for use in any particular location. Users accessing X-ORBIT from restricted jurisdictions do so at their own risk and are solely responsible for compliance with all applicable local laws and regulations.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-2">2. Ownership and Rights</h2>
+
     <h3>2.1 Intellectual Property Rights</h3>
-    <p>All intellectual property, including but not limited to software, systems, and documentation, belongs to X-ORBIT Proxy Services. Clients are granted a limited, non-transferable license to use the services for personal or business purposes during the term of this Agreement.</p>
+    <p>All intellectual property associated with X-ORBIT Proxy Services, including but not limited to software code, interface designs, system architecture, algorithms, documentation, branding materials, trademarks, service marks, logos, and proprietary network configurations, is the exclusive property of X-ORBIT Proxy Services and its creator. No ownership interest in any X-ORBIT intellectual property is transferred to the Client under this Agreement or through the use of any X-ORBIT service. Any unauthorized reproduction, distribution, modification, reverse engineering, decompilation, or disassembly of X-ORBIT software or systems is strictly prohibited and may result in immediate account termination and legal action.</p>
+    <p>Clients are granted a limited, personal, non-exclusive, non-transferable, revocable license to access and use the X-ORBIT services strictly for their own personal or business purposes during the active term of their subscription. This license does not include the right to sublicense, resell, redistribute, or otherwise make X-ORBIT services available to third parties unless a separate reseller agreement has been executed in writing. Any use of X-ORBIT services outside the scope of this limited license is a material breach of this Agreement.</p>
 
     <h3>2.2 Service Provider Rights</h3>
-    <p>X-ORBIT retains the right to manage network settings and performance to maintain stability and security. We also reserve the right to restrict or terminate activity deemed abusive, illegal, or harmful to our network and users.</p>
+    <p>X-ORBIT retains the absolute right to manage all network settings, routing configurations, and performance parameters across its infrastructure at any time and for any reason, including but not limited to maintaining stability, ensuring equitable access for all users, responding to security incidents, or complying with legal obligations. X-ORBIT further reserves the right to restrict, throttle, suspend, or permanently terminate any account or connection that is found to be engaging in activity that is abusive, illegal, harmful to the network or its users, or otherwise in violation of these Terms.</p>
+    <p>X-ORBIT may, at its sole discretion, implement rate limiting, traffic shaping, protocol restrictions, or other technical controls to protect the integrity and performance of its network. These measures may be applied to individual accounts or to the network as a whole and are not subject to appeal or negotiation except in cases where X-ORBIT determines that a restriction was applied in error.</p>
 
-    <p class="notice">For more details on data collection, please refer to our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+    <p class="notice">For complete details on how X-ORBIT collects, stores, processes, and uses your data — including device fingerprinting, behavioral analytics, and session tracking — please refer to our <a href="privacy-policy.html">Privacy Policy</a>.</p>
 
-    <h2>3. Usage and Limitations</h2>
-    <h3>3.1 Acceptable Use</h3>
-    <p>Clients must not use the services for unlawful purposes, including hacking, fraud, or distribution of malicious software. High-bandwidth abuse, spamming, or activities that disrupt the network are strictly prohibited and may lead to immediate suspension of services.</p>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-3">3. Account Security and Prohibited Account Sharing</h2>
 
-    <h3>3.2 Service Actions</h3>
-    <p>X-ORBIT may take necessary actions, including suspension or termination, if a client is found violating these Terms. We may also throttle or limit usage in cases of excessive strain on the network to ensure fair access for all users.</p>
+    <h3>3.1 Account Ownership</h3>
+    <p>Each X-ORBIT account is registered to and intended for use by a single individual or, in the case of a business account, a single authorized entity. Accounts are strictly non-transferable and may not be sold, gifted, leased, rented, or otherwise conveyed to any other person or entity without the express prior written consent of X-ORBIT. Any attempt to transfer an account without authorization will result in immediate suspension of the account pending investigation, and may result in permanent termination without refund.</p>
+    <p>You are solely responsible for all activity that occurs under your account, regardless of whether such activity was authorized by you. If you suspect that your account has been accessed by an unauthorized party, you must notify X-ORBIT immediately through our Support Center. Failure to promptly report unauthorized access may be considered implicit consent to the activity that occurred under your account, and X-ORBIT reserves the right to take action accordingly.</p>
 
-    <h2>4. Compensation</h2>
-    <h3>4.1 Fees & Payment</h3>
-    <p>Clients agree to pay fees associated with their selected plan, with payment required in advance unless otherwise agreed upon. Failure to make timely payments may result in service suspension or account termination until the outstanding balance is settled.</p>
+    <h3>3.2 Absolute Prohibition on Account Sharing</h3>
+    <p>The sharing of X-ORBIT account credentials — including but not limited to usernames, passwords, access tokens, session cookies, or any other form of authentication material — with any other person or entity is strictly and absolutely prohibited under all circumstances. This prohibition applies regardless of the relationship between the account holder and the person with whom credentials are shared, whether that person is a friend, family member, colleague, business partner, or any other individual. There are no exceptions to this rule.</p>
+    <p>X-ORBIT employs a variety of technical mechanisms to detect simultaneous or geographically inconsistent account usage, including device fingerprinting, IP reputation analysis, session concurrency monitoring, and behavioral pattern recognition. If X-ORBIT determines, at its sole discretion, that an account is being used by more than one individual concurrently or at different times without authorization, X-ORBIT reserves the right to immediately suspend or permanently terminate the account without prior notice and without issuing a refund for any unused service period.</p>
+    <p>Furthermore, any attempt to circumvent account sharing restrictions through the use of VPNs, shared IP pools, or any other technical means is itself a violation of this Agreement and may be treated as a separate, independent basis for account termination. If your legitimate use case requires access by multiple users — such as a team or organization — you must contact X-ORBIT to discuss appropriate multi-seat or enterprise licensing options. Using a single account to serve multiple users is never permitted under any personal or standard business plan.</p>
 
-    <h2>5. Confidentiality</h2>
-    <h3>5.1 Mutual Confidentiality</h3>
-    <p>Both parties agree to maintain the confidentiality of sensitive information, including account details and service configurations, and must take reasonable measures to prevent unauthorized access.</p>
+    <div class="warning-box">
+      <strong>ZERO TOLERANCE POLICY:</strong> Account sharing is grounds for immediate and permanent account termination. X-ORBIT actively monitors all sessions for signs of shared access and will act without warning upon detection.
+    </div>
 
-    <h3>5.2 Non-Disclosure</h3>
-    <p>Confidential information cannot be shared with third parties without prior written consent, except as required by law or regulatory authorities.</p>
+    <h3>3.3 Credential Security Obligations</h3>
+    <p>You are required to maintain the confidentiality and security of your account credentials at all times. This includes choosing a strong, unique password that is not reused across other services, enabling any available multi-factor authentication features, and ensuring that your login information is not stored in insecure locations or transmitted through unsecured channels. X-ORBIT will never request your password via email, chat, or any unsolicited communication. Any such request should be treated as a phishing attempt and reported to X-ORBIT immediately.</p>
+    <p>If you become aware of any actual or suspected breach of your account credentials, you must immediately change your password through the account dashboard, revoke any active sessions you do not recognize, and notify X-ORBIT's support team. X-ORBIT is not liable for any losses or damages arising from your failure to maintain the security of your account credentials or from your failure to promptly report a breach.</p>
 
-    <h2>6. Term & Termination</h2>
-    <p>This Agreement remains in effect until terminated by either party. Either party may terminate the Agreement with a 24-hour notice, provided all outstanding payments are fulfilled.</p>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-4">4. Device Fingerprinting, Tracking, and Data Collection</h2>
 
-    <h2>7. Limitation of Liability</h2>
-    <p>X-ORBIT is not liable for damages, including downtime, data loss, or indirect financial impacts. Clients agree to indemnify and hold harmless X-ORBIT Proxy Services from claims arising out of misuse of the service.</p>
+    <h3>4.1 Device Fingerprinting</h3>
+    <p>X-ORBIT uses device fingerprinting technology as a core component of its account security, fraud prevention, and abuse detection systems. Device fingerprinting is the process of collecting and analyzing a combination of technical attributes from your device and browser environment in order to generate a unique identifier that can be associated with your account and sessions. This identifier, referred to as a "device fingerprint" or "device UUID," is generated each time you access X-ORBIT services and is stored in association with your account record.</p>
+    <p>The attributes used to construct a device fingerprint may include, but are not limited to: browser type, version, and configuration; installed fonts and plugins; screen resolution and color depth; operating system and version; hardware concurrency and memory characteristics; timezone and locale settings; canvas rendering output; WebGL renderer and vendor information; audio context characteristics; network interface details; and any other technically observable properties of your device and software environment. These attributes are analyzed collectively to produce a probabilistic identifier that remains consistent across sessions even if individual attributes change.</p>
+    <p>By using X-ORBIT services, you explicitly consent to the collection of device fingerprint data as described above. This data is used strictly for the purposes of account verification, session authentication, detection of unauthorized account access, enforcement of account sharing restrictions, and investigation of Terms of Service violations. X-ORBIT does not sell device fingerprint data to third parties for advertising or marketing purposes.</p>
 
-    <h2>8. Severability</h2>
-    <p>If any provision of these Terms is deemed invalid, the remaining provisions shall remain enforceable and continue to govern the relationship between both parties.</p>
+    <h3>4.2 Session and Behavioral Tracking</h3>
+    <p>In addition to device fingerprinting, X-ORBIT records detailed logs of all sessions conducted through its platform. These logs may include the date and time of login and logout events; the IP addresses used to access the service; the geographic location associated with those IP addresses; the duration and volume of proxy sessions; the types of requests made through the proxy; error rates and anomalous patterns; and any other metadata relevant to the operation, security, and integrity of the platform.</p>
+    <p>X-ORBIT may also employ behavioral analytics to identify patterns of use that deviate from a given account's established baseline. Such deviations may indicate unauthorized account access, credential sharing, automated abuse, or other violations of these Terms. When anomalous behavior is detected, X-ORBIT may take automated or manual action, including issuing security alerts, requiring re-authentication, temporarily suspending the account, or escalating to a full investigation.</p>
+    <p>Login attempts — both successful and failed — are logged along with the associated device fingerprint, IP address, timestamp, and other relevant metadata. This information is retained for a period determined by X-ORBIT's data retention policies and may be used in the investigation of security incidents, enforcement of these Terms, and compliance with applicable legal obligations. All login attempt logs are stored securely and are accessible only to authorized X-ORBIT personnel.</p>
 
-    <h2>9. Miscellaneous</h2>
-    <p>This Agreement is governed by the laws of X-ORBIT's operating jurisdiction. Any disputes will be resolved through arbitration or mediation as deemed appropriate by X-ORBIT.</p>
+    <h3>4.3 Cookies and Local Storage</h3>
+    <p>X-ORBIT may use browser cookies, local storage, session storage, and other similar client-side storage mechanisms to maintain your session state, remember your preferences, support authentication workflows, and facilitate the operation of the platform. Some of these storage mechanisms are strictly necessary for the platform to function and cannot be disabled without disrupting your ability to use the service. Others may be used for analytical or security purposes and are described in greater detail in our Privacy Policy.</p>
+    <p>By using X-ORBIT services, you consent to the use of cookies and similar technologies as described in these Terms and in our Privacy Policy. If you configure your browser to block or delete cookies, certain features of the platform may become unavailable or may not function as intended. X-ORBIT is not responsible for any degradation in service quality resulting from your choice to restrict cookie usage.</p>
 
-    <p>For questions or concerns about these Terms, please contact 
-      <a href="mailto:support@xorbitproxy.com">support@xorbitproxy.com</a>. 
-      For faster assistance, please open a ticket through our 
+    <h3>4.4 Third-Party Service Providers</h3>
+    <p>X-ORBIT may use third-party service providers to support certain operational functions, including authentication, database hosting, content delivery, analytics, and payment processing. These providers may have access to certain user data, including device identifiers, IP addresses, and account information, strictly as necessary to perform their functions on behalf of X-ORBIT. All third-party providers are contractually obligated to handle user data in a manner consistent with these Terms and applicable privacy laws.</p>
+
+    <div class="info-box">
+      For a complete and detailed description of all data we collect, how it is used, who it may be shared with, how long it is retained, and your rights regarding your personal data, please read our full <a href="privacy-policy.html">Privacy Policy</a>. The Privacy Policy is incorporated by reference into these Terms and forms part of the binding agreement between you and X-ORBIT.
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-5">5. Prohibited Uses and Circumvention Policy</h2>
+
+    <h3>5.1 General Prohibited Uses</h3>
+    <p>X-ORBIT services may only be used for lawful purposes and in a manner consistent with these Terms. Any use of X-ORBIT services that violates applicable local, national, or international law is strictly prohibited. Prohibited uses include but are not limited to: accessing or attempting to access computer systems, networks, or accounts without authorization; engaging in any form of fraud, deception, or misrepresentation; distributing malware, ransomware, spyware, viruses, worms, or any other form of malicious code; conducting phishing campaigns or other forms of social engineering; engaging in unauthorized data harvesting or scraping; violating the intellectual property rights of any third party; facilitating or participating in any form of cybercrime; or using X-ORBIT services to transmit, store, or process content that is illegal in any applicable jurisdiction.</p>
+    <p>Any Client found to be engaging in prohibited uses will have their account terminated immediately and without refund. X-ORBIT reserves the right to report such activity to relevant law enforcement authorities and to cooperate fully with any investigation. X-ORBIT will not be held liable for any damages, legal consequences, or third-party claims arising from a Client's use of X-ORBIT services for prohibited purposes.</p>
+
+    <h3>5.2 Absolute Prohibition on Circumvention and Bypassing Restrictions</h3>
+    <p>X-ORBIT services must not be used, under any circumstances, to circumvent, bypass, defeat, or otherwise undermine the security measures, access controls, authentication systems, geolocation restrictions, IP blocks, content filters, rate limiters, firewalls, or any other technical restrictions imposed by any system, network, platform, service, or organization. This prohibition applies broadly and without exception to any form of restrictions, whether those restrictions are imposed by governments, corporations, educational institutions, employers, internet service providers, software vendors, website operators, or any other party.</p>
+    <p>Using X-ORBIT to access content or services that are geo-restricted in your region, to bypass school or workplace network filters, to circumvent IP bans or rate limits imposed by third-party platforms, to evade detection systems used by online services, or to defeat any form of access control that you have not been explicitly authorized to bypass constitutes a material violation of these Terms. X-ORBIT takes this prohibition extremely seriously and actively monitors for patterns of use consistent with circumvention activity. Accounts found to be engaged in such activity will be terminated immediately and without appeal.</p>
+    <p>Furthermore, X-ORBIT must not be used to bypass or circumvent X-ORBIT's own security systems, access controls, or Terms enforcement mechanisms. Any attempt to probe, test, reverse engineer, or exploit X-ORBIT's infrastructure — including but not limited to its authentication systems, rate limiting mechanisms, device fingerprinting systems, or account management portals — without explicit prior written authorization from X-ORBIT is strictly forbidden and constitutes a serious violation of both this Agreement and applicable computer crime statutes. X-ORBIT will pursue all available legal remedies against individuals or entities engaged in unauthorized attempts to compromise its systems.</p>
+    <p>Clients who require the legitimate ability to test or assess X-ORBIT's security posture — such as authorized penetration testers or security researchers — must obtain explicit written authorization from X-ORBIT before conducting any such activities. Any testing conducted without such authorization is unlawful and will be treated accordingly.</p>
+
+    <h3>5.3 No Use for Illegal Content Distribution</h3>
+    <p>X-ORBIT services must not be used to host, distribute, transmit, facilitate, or otherwise engage with content that is illegal under any applicable law. This includes but is not limited to: content that infringes on copyrights, trademarks, or other intellectual property rights; content that constitutes defamation, harassment, or threats; content depicting the sexual exploitation of minors; content that incites or facilitates violence or terrorism; content that constitutes illegal gambling; and any other content that is prohibited by applicable law. X-ORBIT will cooperate with law enforcement and rights holders in identifying and taking action against accounts involved in illegal content distribution.</p>
+
+    <h3>5.4 Prohibition on Network Abuse</h3>
+    <p>High-bandwidth abuse, unsolicited bulk messaging, distributed denial-of-service attacks, port scanning, credential stuffing, brute-force attacks, and any other activity that places excessive strain on X-ORBIT's infrastructure or that targets third-party systems are strictly prohibited. X-ORBIT continuously monitors network traffic for signs of abuse and will act swiftly to isolate and terminate connections associated with abusive activity. Clients whose activity causes measurable harm to X-ORBIT's infrastructure or to third-party systems may be held financially liable for the costs associated with that harm.</p>
+    <p>Automated bots, scrapers, or scripts that make requests through X-ORBIT at a rate inconsistent with human browsing behavior are prohibited unless the Client has obtained explicit written permission from X-ORBIT for such use. Any automated use of X-ORBIT services must be disclosed to X-ORBIT at the time of account registration or subscription, and the scope and nature of such automation must be accurately described. Misrepresenting the nature of your usage to obtain access to X-ORBIT services is a material breach of this Agreement.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-6">6. Usage Limitations and Fair Use</h2>
+
+    <h3>6.1 Bandwidth and Traffic Policies</h3>
+    <p>Each X-ORBIT service plan includes a defined allocation of bandwidth, connection slots, and concurrent session limits. These allocations are specified at the time of subscription and vary by plan tier. Exceeding your plan's allocation may result in automatic throttling of your connection speed, temporary suspension of service, or additional charges, depending on the terms of your specific plan. X-ORBIT reserves the right to enforce plan limits at any time and without prior notice.</p>
+    <p>Even within plan limits, X-ORBIT reserves the right to throttle or limit usage by individual accounts if that usage is determined to be disproportionate relative to other users on the same infrastructure, or if the usage pattern suggests abuse or automated activity. Such throttling is applied on a case-by-case basis and is intended to ensure fair access for all users, not to arbitrarily restrict legitimate use.</p>
+
+    <h3>6.2 Service Actions for Policy Violations</h3>
+    <p>X-ORBIT may take a range of actions in response to policy violations, depending on the severity, frequency, and nature of the violation. These actions may include, in escalating order of severity: issuing a formal warning via the account email address or in-platform notification; temporarily restricting access to certain features or service tiers; throttling connection speeds or reducing allocated resources; suspending the account pending investigation; or permanently terminating the account and banning the associated email address, device fingerprint, and IP address from future registration.</p>
+    <p>The specific action taken in any given situation is at the sole discretion of X-ORBIT. X-ORBIT is not obligated to issue warnings before taking action in cases of severe, obvious, or repeated violations. Suspended accounts may submit an appeal via the Support Center; however, X-ORBIT is not obligated to reinstate any account and its decision on any appeal is final. Terminated accounts are not eligible for refunds of any unused service period unless X-ORBIT determines that the termination was made in error.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-7">7. Compensation and Billing</h2>
+
+    <h3>7.1 Fees and Payment Terms</h3>
+    <p>Clients agree to pay all fees associated with their selected service plan. Payment is required in advance for all subscription periods unless an alternative payment arrangement has been explicitly agreed upon in writing by X-ORBIT. All fees are stated in the currency specified at the time of purchase and are exclusive of any applicable taxes, duties, or levies, which are the sole responsibility of the Client. X-ORBIT reserves the right to modify its pricing at any time, with reasonable advance notice provided to existing subscribers before any price change takes effect.</p>
+    <p>Failure to make timely payment will result in a grace period, the length of which is determined by X-ORBIT and communicated at the time of subscription. If payment is not received within the grace period, X-ORBIT reserves the right to immediately suspend the account until all outstanding balances are settled in full. If an account remains in arrears for an extended period, X-ORBIT may terminate the account and pursue recovery of the outstanding balance through available legal means. Clients are responsible for ensuring that their payment method remains valid and up to date; X-ORBIT is not liable for service interruptions caused by expired or invalid payment methods.</p>
+
+    <h3>7.2 Refunds and Chargebacks</h3>
+    <p>All fees paid to X-ORBIT are generally non-refundable except as required by applicable consumer protection law or as expressly provided in the service plan terms at the time of purchase. X-ORBIT may, at its sole discretion, issue partial or full refunds in exceptional circumstances, such as extended service outages caused by X-ORBIT's infrastructure failures. Requests for refunds must be submitted within the timeframe specified in the service plan terms.</p>
+    <p>Initiating a chargeback or payment dispute through your bank or payment provider without first attempting to resolve the issue through X-ORBIT's official support channels is considered a violation of this Agreement. X-ORBIT reserves the right to permanently ban accounts associated with fraudulent chargebacks and to pursue recovery of disputed amounts through legal channels. Clients are encouraged to contact support before initiating any payment dispute, as X-ORBIT is committed to resolving legitimate billing issues promptly and fairly.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-8">8. Confidentiality</h2>
+
+    <h3>8.1 Mutual Confidentiality Obligations</h3>
+    <p>Both X-ORBIT and the Client agree to maintain the strict confidentiality of all sensitive information exchanged or accessed in connection with this Agreement, including but not limited to account credentials, service configurations, billing information, technical infrastructure details, and any non-public information about either party's operations or systems. Each party must take reasonable and appropriate measures to prevent unauthorized access to, disclosure of, or use of confidential information, including implementing appropriate technical and organizational safeguards.</p>
+    <p>X-ORBIT's confidentiality obligations to the Client include maintaining the security of account credentials and not disclosing account information to third parties except as required by applicable law or as described in the Privacy Policy. The Client's confidentiality obligations to X-ORBIT include not disclosing the technical details of X-ORBIT's systems, not sharing access credentials, not reverse engineering or probing X-ORBIT's infrastructure, and not publishing or distributing any non-public information about X-ORBIT's operations or capabilities.</p>
+
+    <h3>8.2 Non-Disclosure of Third-Party Information</h3>
+    <p>Neither party may share confidential information with any third party without the prior written consent of the disclosing party, except in cases where disclosure is required by law, regulation, or valid legal process, such as a court order or government subpoena. In the event that either party is required to disclose confidential information by law, that party must, to the extent permitted by applicable law, promptly notify the other party before making such disclosure and cooperate with the other party's reasonable efforts to seek a protective order or other appropriate relief.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-9">9. Term and Termination</h2>
+
+    <h3>9.1 Duration of Agreement</h3>
+    <p>This Agreement remains in full force and effect from the date of your account registration or first use of X-ORBIT services, whichever occurs earlier, and continues until terminated in accordance with the provisions of this section. Your subscription term is determined by the plan you selected at the time of purchase and renews automatically at the end of each billing period unless you cancel your subscription through the account dashboard prior to the renewal date.</p>
+
+    <h3>9.2 Termination by Client</h3>
+    <p>You may terminate your account and subscription at any time by following the cancellation procedure described in the account dashboard or by contacting X-ORBIT support. Termination by the Client does not entitle the Client to a refund of any prepaid fees for the remaining portion of the current billing period, except where required by applicable law. Upon termination, your access to X-ORBIT services will cease at the end of the current billing period or, in the case of an immediate cancellation request, at the time the termination is processed.</p>
+
+    <h3>9.3 Termination by X-ORBIT</h3>
+    <p>X-ORBIT may terminate this Agreement and your account at any time, with or without cause, upon reasonable notice where practicable. In cases of serious, repeated, or willful violations of these Terms, X-ORBIT may terminate the account immediately and without prior notice. Reasons for termination by X-ORBIT may include, but are not limited to: violation of these Terms; non-payment of fees; fraudulent activity; abuse of X-ORBIT's infrastructure; actions that harm X-ORBIT or its other users; or X-ORBIT's decision to discontinue certain services or cease operations in certain jurisdictions.</p>
+    <p>Upon termination of this Agreement for any reason, all rights granted to you under this Agreement immediately cease, and you must promptly discontinue all use of X-ORBIT services and destroy any copies of X-ORBIT materials in your possession. Provisions of this Agreement that by their nature should survive termination — including confidentiality obligations, limitations of liability, indemnification obligations, and dispute resolution provisions — shall survive and remain in full force and effect after termination.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-10">10. Limitation of Liability</h2>
+
+    <h3>10.1 Disclaimer of Warranties</h3>
+    <p>X-ORBIT services are provided on an "as is" and "as available" basis, without warranties of any kind, whether express, implied, statutory, or otherwise. X-ORBIT expressly disclaims all implied warranties, including but not limited to implied warranties of merchantability, fitness for a particular purpose, non-infringement, and any warranties arising out of course of dealing or usage of trade. X-ORBIT does not warrant that its services will be uninterrupted, error-free, secure, or free from viruses or other harmful components, nor does X-ORBIT warrant that any data transmitted through its services will be transmitted securely or without interception.</p>
+
+    <h3>10.2 Limitation of Damages</h3>
+    <p>To the maximum extent permitted by applicable law, X-ORBIT shall not be liable to you or to any third party for any indirect, incidental, consequential, special, exemplary, or punitive damages, including but not limited to lost profits, lost revenue, lost data, loss of goodwill, business interruption, or the cost of substitute services, arising out of or in connection with your use of, or inability to use, X-ORBIT services, even if X-ORBIT has been advised of the possibility of such damages. In jurisdictions that do not allow the exclusion or limitation of certain damages, X-ORBIT's liability will be limited to the greatest extent permitted by applicable law.</p>
+    <p>In no event shall X-ORBIT's total aggregate liability to you for all claims arising out of or in connection with this Agreement exceed the total amount paid by you to X-ORBIT during the six months immediately preceding the event giving rise to the claim. This limitation applies regardless of the legal theory under which the claim is brought, whether in contract, tort, strict liability, or otherwise.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-11">11. Indemnification</h2>
+    <p>You agree to defend, indemnify, and hold harmless X-ORBIT Proxy Services, its founder, operators, affiliates, contractors, and service providers, and their respective officers, directors, employees, and agents, from and against any and all claims, liabilities, damages, judgments, awards, losses, costs, expenses, and fees (including reasonable attorneys' fees) arising out of or relating to: (a) your violation of these Terms; (b) your use of X-ORBIT services, including any data or content transmitted through the service; (c) your violation of any applicable law or regulation; (d) your violation of any rights of any third party, including intellectual property rights, privacy rights, or other proprietary rights; or (e) any dispute between you and any third party arising from or related to your use of X-ORBIT services. This indemnification obligation survives the termination of this Agreement and your cessation of use of X-ORBIT services.</p>
+    <p>X-ORBIT reserves the right, at its own expense, to assume the exclusive defense and control of any matter otherwise subject to indemnification by you, in which event you agree to cooperate with X-ORBIT in asserting any available defenses. You may not settle any claim subject to indemnification under this Agreement without X-ORBIT's prior written consent.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-12">12. Disputes and Governing Law</h2>
+
+    <h3>12.1 Governing Law</h3>
+    <p>This Agreement shall be governed by and construed in accordance with the laws of X-ORBIT's operating jurisdiction, without regard to its conflict of law provisions. You agree that any dispute, claim, or controversy arising out of or relating to this Agreement or the breach, termination, enforcement, interpretation, or validity thereof, or to the use of X-ORBIT services, shall be subject to the exclusive jurisdiction of the courts or arbitration panels located in X-ORBIT's operating jurisdiction.</p>
+
+    <h3>12.2 Dispute Resolution</h3>
+    <p>Before initiating any formal dispute resolution process, both parties agree to attempt to resolve any dispute informally by contacting X-ORBIT through the official Support Center. X-ORBIT will make a good-faith effort to address the issue within a reasonable timeframe. If the dispute cannot be resolved informally within 30 days of the initial notice, either party may pursue the dispute through the formal processes described in this section.</p>
+    <p>To the extent permitted by applicable law, disputes that cannot be resolved informally shall be resolved through binding arbitration, conducted by a recognized arbitration body in X-ORBIT's operating jurisdiction, in accordance with that body's rules and procedures. The arbitrator's award shall be final and binding and may be entered as a judgment in any court of competent jurisdiction. You agree to waive any right to participate in a class action lawsuit or class-wide arbitration against X-ORBIT. If this class action waiver is found to be unenforceable, then the agreement to arbitrate shall be void as to the claim or controversy for which the class action was sought.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-13">13. Severability</h2>
+    <p>If any provision of these Terms is held by a court or arbitrator of competent jurisdiction to be invalid, illegal, unenforceable, or in conflict with any applicable law, the validity, legality, and enforceability of the remaining provisions of these Terms shall not in any way be affected or impaired thereby. The invalid or unenforceable provision shall be modified to the minimum extent necessary to make it valid and enforceable, or if such modification is not possible, the provision shall be severed from these Terms. The remaining provisions shall continue in full force and effect and shall be construed as if the invalid or unenforceable provision had not been included in these Terms.</p>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-14">14. Miscellaneous</h2>
+
+    <h3>14.1 Entire Agreement</h3>
+    <p>These Terms, together with the Privacy Policy and any other policies or agreements incorporated by reference herein, constitute the entire agreement between you and X-ORBIT with respect to your use of X-ORBIT services and supersede all prior or contemporaneous communications, representations, understandings, or agreements, whether written or oral, relating to the same subject matter. No modification of these Terms shall be valid unless made in writing and agreed to by X-ORBIT.</p>
+
+    <h3>14.2 Waiver</h3>
+    <p>X-ORBIT's failure to enforce any provision of these Terms or to exercise any right hereunder shall not constitute a waiver of that provision or right. Any waiver by X-ORBIT of any breach or default under this Agreement must be in writing and signed by an authorized representative of X-ORBIT, and shall not be deemed a waiver of any subsequent breach or default of the same or any other provision. The rights and remedies provided in these Terms are cumulative and not exclusive of any rights or remedies provided by law.</p>
+
+    <h3>14.3 Assignment</h3>
+    <p>You may not assign, delegate, or otherwise transfer any of your rights or obligations under this Agreement without X-ORBIT's prior written consent. Any attempted assignment without such consent shall be null and void. X-ORBIT may freely assign its rights and obligations under this Agreement, including in connection with a merger, acquisition, sale of assets, or by operation of law, without your consent, provided that X-ORBIT provides reasonable notice of such assignment. These Terms shall be binding upon and inure to the benefit of the parties and their respective permitted successors and assigns.</p>
+
+    <h3>14.4 Force Majeure</h3>
+    <p>X-ORBIT shall not be liable for any failure or delay in performance of its obligations under this Agreement to the extent such failure or delay is caused by events beyond X-ORBIT's reasonable control, including but not limited to: acts of God; natural disasters; war or terrorist acts; government orders or regulations; widespread internet outages; actions of third-party service providers; or other force majeure events. X-ORBIT will make reasonable efforts to resume normal service operations as soon as practicable following any such event and will communicate with affected users through available channels.</p>
+
+    <h3>14.5 Notices</h3>
+    <p>Any notices or communications required or permitted under this Agreement shall be delivered to you via email at the address associated with your X-ORBIT account, or via in-platform notification, and shall be deemed received upon delivery. Notices to X-ORBIT must be submitted through the official Support Center or sent via email to the address listed below. X-ORBIT is not responsible for notices sent to incorrect addresses or through unofficial channels.</p>
+
+    <p>For questions, concerns, or support requests related to these Terms, please contact us at
+      <a href="mailto:support@xorbitproxy.com">support@xorbitproxy.com</a>.
+      For faster assistance, please open a ticket through our
       <a href="support.html">Support Center</a>.
     </p>
 

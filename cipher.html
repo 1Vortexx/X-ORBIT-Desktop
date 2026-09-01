@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cipher</title>
+  <script src="cipher.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 20px 40px;
+    }
+
+    @media (min-height: 600px) {
+      body { align-items: center; }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* mode toggle */
+    .mode-toggle {
+      display: flex;
+      gap: 20px;
+    }
+    .mode-toggle button {
+      background: none;
+      border: none;
+      color: #444;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.15s;
+    }
+    .mode-toggle button.active { color: #fff; }
+    .mode-toggle button:hover  { color: #aaa; }
+
+    /* inputs */
+    .key-wrap { position: relative; }
+
+    input, textarea {
+      width: 100%;
+      background: none;
+      border: none;
+      border-bottom: 1px solid #222;
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px; /* prevents iOS auto-zoom on focus */
+      padding: 12px 0;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+      -webkit-appearance: none;
+    }
+    input:focus, textarea:focus { border-color: #555; }
+    input::placeholder, textarea::placeholder { color: #333; }
+
+    input { padding-right: 32px; }
+
+    .eye-btn {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #333;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 10px 0 10px 16px; /* larger tap target */
+      transition: color 0.15s;
+      -webkit-appearance: none;
+    }
+    .eye-btn:hover { color: #888; }
+
+    textarea { min-height: 110px; line-height: 1.6; }
+
+    /* output */
+    .output-wrap { position: relative; }
+    .output-wrap textarea { color: #888; padding-right: 48px; }
+
+    .copy-btn {
+      position: absolute;
+      top: 6px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #333;
+      cursor: pointer;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 8px 0 8px 16px; /* larger tap target */
+      transition: color 0.15s;
+      -webkit-appearance: none;
+    }
+    .copy-btn:hover        { color: #fff; }
+    .copy-btn.copied       { color: #fff; }
+
+    /* run button */
+    .run-btn {
+      width: 100%;
+      padding: 15px;
+      background: #fff;
+      border: none;
+      color: #000;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+    }
+    .run-btn:hover  { opacity: 0.85; }
+    .run-btn:active { opacity: 0.7; }
+
+    /* status */
+    .status {
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      min-height: 1em;
+      color: #444;
+    }
+    .status.ok  { color: #5a5; }
+    .status.err { color: #a44; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="mode-toggle">
+      <button id="btn-encode" class="active" onclick="setMode('encode')">Encode</button>
+      <button id="btn-decode"                onclick="setMode('decode')">Decode</button>
+    </div>
+
+    <div class="key-wrap">
+      <input id="key-input" type="password" placeholder="key" autocomplete="off" spellcheck="false" autocapitalize="none" autocorrect="off" />
+      <button class="eye-btn" onclick="toggleKeyVisibility()">show</button>
+    </div>
+
+    <textarea id="input-text" placeholder="message" spellcheck="false" autocapitalize="none" autocorrect="off"></textarea>
+
+    <button class="run-btn" id="run-btn" onclick="run()">Encode</button>
+
+    <div class="status" id="status"></div>
+
+    <div class="output-wrap">
+      <textarea id="output-text" readonly placeholder="output" spellcheck="false" autocorrect="off"></textarea>
+      <button class="copy-btn" id="copy-btn" onclick="copyOutput()">Copy</button>
+    </div>
+
+  </div>
+
+  <script>
+    let currentMode = 'encode';
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('btn-encode').classList.toggle('active', mode === 'encode');
+      document.getElementById('btn-decode').classList.toggle('active', mode === 'decode');
+      document.getElementById('run-btn').textContent    = mode === 'encode' ? 'Encode' : 'Decode';
+      document.getElementById('input-text').placeholder = mode === 'encode' ? 'message' : 'ciphertext';
+      document.getElementById('output-text').value = '';
+      setStatus('', '');
+    }
+
+    function setStatus(msg, type) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status ' + (type || '');
+    }
+
+    function run() {
+      const key   = document.getElementById('key-input').value;
+      const input = document.getElementById('input-text').value;
+      const out   = document.getElementById('output-text');
+
+      if (!key) { setStatus('Please enter a secret key.', 'err'); return; }
+      if (!input.trim()) { setStatus('Please enter a message.', 'err'); return; }
+
+      try {
+        if (currentMode === 'encode') {
+          out.value = XorbitCipher.encode(input, key);
+          setStatus('Encoded successfully.', 'ok');
+        } else {
+          out.value = XorbitCipher.decode(input, key);
+          setStatus('Decoded successfully.', 'ok');
+        }
+      } catch (e) {
+        out.value = '';
+        setStatus(e.message, 'err');
+      }
+    }
+
+    function copyOutput() {
+      const text = document.getElementById('output-text').value;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+
+    function toggleKeyVisibility() {
+      const inp = document.getElementById('key-input');
+      const btn = document.querySelector('.eye-btn');
+      const isHidden = inp.type === 'password';
+      inp.type = isHidden ? 'text' : 'password';
+      btn.textContent = isHidden ? 'hide' : 'show';
+    }
+
+    // Allow Ctrl+Enter / Cmd+Enter to run from any field
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') run();
+    });
+  </script>
+
+</body>
+</html>

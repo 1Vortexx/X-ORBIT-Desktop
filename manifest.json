@@ -2,10 +2,10 @@
   "name": "X-ORBIT Desktop",
   "short_name": "X-ORBIT",
   "description": "X-ORBIT Desktop – your personal OS in the browser",
-  "start_url": "/",
+  "start_url": "/app.html",
   "display": "standalone",
-  "background_color": "#0d001a",
-  "theme_color": "#7850ff",
+  "background_color": "#000000",
+  "theme_color": "#4f8aff",
   "icons": [
     {
       "src": "https://codehs.com/uploads/7f204d91a682cb833441eb2fc59228b6",

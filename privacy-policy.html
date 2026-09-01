@@ -11,9 +11,9 @@
 body {
   margin: 0;
   padding: 40px 20px;
-  font-family: 'Inter', Arial, sans-serif;
-  background-color: #121212;
-  color: #e0e0e0;
+  font-family: 'Inter', sans-serif;
+  background-color: #000;
+  color: rgba(255,255,255,0.7);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -21,31 +21,33 @@ body {
 }
 
 .container {
-  max-width: 900px;
-  background: #1e1e1e;
-  padding: 40px 50px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  max-width: 860px;
+  background: #0a0a0a;
+  padding: 40px 48px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
   box-sizing: border-box;
   text-align: left;
-  color: #e0e0e0;
 }
 
 h1 {
   font-weight: 700;
-  font-size: 2.8rem;
-  color: #ffffff;
-  margin-bottom: 30px;
-  border-bottom: 3px solid #3399ff;
-  padding-bottom: 10px;
+  font-size: 1.75rem;
+  color: #fff;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 16px;
+  letter-spacing: -0.02em;
 }
 
 h2 {
-  font-weight: 700;
-  font-size: 1.75rem;
-  color: #66b2ff;
-  margin-top: 40px;
-  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #4f8aff;
+  margin-top: 36px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .services-table {
@@ -56,78 +58,52 @@ h2 {
 }
 
 .service-card {
-  background: #292929;
-  border-radius: 10px;
-  padding: 25px 30px;
+  background: #111;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 20px 24px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
-  transition: box-shadow 0.3s ease;
-  color: #cccccc;
+  transition: border-color 0.15s;
+  color: rgba(255,255,255,0.6);
 }
 
-.service-card:hover {
-  box-shadow: 0 10px 30px rgba(51, 153, 255, 0.5);
-}
+.service-card:hover { border-color: rgba(255,255,255,0.15); }
 
 .service-card h3 {
-  font-weight: 700;
-  font-size: 1.4rem;
-  margin-bottom: 18px;
-  color: #66b2ff;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-bottom: 10px;
+  color: #fff;
 }
 
 .service-description {
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.5;
-  margin-bottom: 25px;
-  color: #bbbbbb;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  color: rgba(255,255,255,0.5);
 }
 
 .btn {
   display: inline-block;
-  padding: 12px 25px;
-  background-color: #3399ff;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1rem;
-  border-radius: 7px;
+  padding: 0.5rem 1rem;
+  background: #4f8aff;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: 6px;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(51, 153, 255, 0.6);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: opacity 0.15s;
 }
 
-.btn:hover,
-.btn:focus {
-  background-color: #1a6fcc;
-  box-shadow: 0 6px 20px rgba(26, 111, 204, 0.8);
-  outline: none;
-}
+.btn:hover, .btn:focus { opacity: 0.85; outline: none; }
 
 @media (max-width: 600px) {
-  body {
-    padding: 30px 15px;
-  }
-  .container {
-    padding: 30px 20px;
-  }
-  h1 {
-    font-size: 2.2rem;
-  }
-  h2 {
-    font-size: 1.4rem;
-  }
-  .service-card {
-    padding: 25px 20px;
-  }
-  .btn {
-    padding: 10px 22px;
-    font-size: 0.9rem;
-  }
-  .notice {
-      color: red;
-  }
+  body { padding: 24px 12px; }
+  .container { padding: 24px 20px; }
+  h1 { font-size: 1.4rem; }
+  .service-card { padding: 16px 18px; }
+  .notice { color: #ef4444; }
 }
 
   </style>

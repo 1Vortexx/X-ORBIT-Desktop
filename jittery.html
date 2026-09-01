@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X-ORBIT Direct Messages</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -13,21 +13,21 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg:         #0d0d10;
-            --surface:    #141418;
-            --surface-2:  #1a1a1f;
-            --surface-3:  #202026;
-            --border:     #26262e;
-            --border-hi:  #32323c;
-            --text:       #ededf0;
-            --text-dim:   #b2b2c4;
-            --text-muted: #70708a;
-            --text-faint: #464658;
-            --text-ghost: #2e2e3a;
-            --text-dead:  #1e1e28;
-            --accent:     #7c6af7;
-            --accent-hi:  #9a8bfa;
-            --accent-dim: rgba(124,106,247,0.13);
+            --bg:         #000;
+            --surface:    #0a0a0a;
+            --surface-2:  #111;
+            --surface-3:  #161616;
+            --border:     rgba(255,255,255,0.08);
+            --border-hi:  rgba(255,255,255,0.15);
+            --text:       #fff;
+            --text-dim:   rgba(255,255,255,0.65);
+            --text-muted: rgba(255,255,255,0.38);
+            --text-faint: rgba(255,255,255,0.18);
+            --text-ghost: rgba(255,255,255,0.08);
+            --text-dead:  rgba(255,255,255,0.04);
+            --accent:     #4f8aff;
+            --accent-hi:  #7aaaff;
+            --accent-dim: rgba(79,138,255,0.12);
             --online:     #22c55e;
             --away:       #f97316;
             --offline:    #383844;
@@ -938,7 +938,7 @@
             font-size: 0.5rem;
             font-weight: 700;
             padding: 2px 6px;
-            border-radius: 10px;
+            border-radius: 8px;
             min-width: 18px;
             text-align: center;
             display: none;
@@ -1643,7 +1643,7 @@
             gap: 5px;
             padding: 3px 9px;
             border: 1px solid var(--border-hi);
-            border-radius: 10px;
+            border-radius: 8px;
             font-family: 'Share Tech Mono', monospace;
             font-size: 0.58rem;
             color: var(--text-ghost);
@@ -4070,11 +4070,48 @@
     }
 
     function unsubscribeAll() {
-        if (messagesSubscription) { messagesSubscription.unsubscribe(); messagesSubscription = null; }
-        if (convSubscription)     { convSubscription.unsubscribe();     convSubscription     = null; }
-        if (presenceSubscription) { presenceSubscription.unsubscribe(); presenceSubscription = null; }
-        if (friendshipSub)        { friendshipSub.unsubscribe();        friendshipSub        = null; }
-        if (typingChannel)        { typingChannel.unsubscribe();        typingChannel        = null; }
+        if (messagesSubscription)       { messagesSubscription.unsubscribe();       messagesSubscription       = null; }
+        if (convSubscription)           { convSubscription.unsubscribe();           convSubscription           = null; }
+        if (presenceSubscription)       { presenceSubscription.unsubscribe();       presenceSubscription       = null; }
+        if (friendshipSub)              { friendshipSub.unsubscribe();              friendshipSub              = null; }
+        if (typingChannel)              { typingChannel.unsubscribe();              typingChannel              = null; }
+        if (globalMessagesSubscription) { globalMessagesSubscription.unsubscribe(); globalMessagesSubscription = null; }
+    }
+
+    /* ──────────────────────────────────────────────────
+       DESKTOP NOTIFICATIONS
+    ────────────────────────────────────────────────── */
+    let globalMessagesSubscription = null;
+
+    function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+
+    function showDesktopNotification(title, body) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        if (document.hasFocus()) return;
+        const n = new Notification(title, { body, icon: '/manifest.json', tag: 'xorbit-dm-' + Date.now() });
+        n.onclick = () => { window.focus(); n.close(); };
+    }
+
+    function subscribeToAllMessages() {
+        if (globalMessagesSubscription) { globalMessagesSubscription.unsubscribe(); globalMessagesSubscription = null; }
+        globalMessagesSubscription = sb.channel('xorbit_global_messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, (payload) => {
+                const msg = payload.new;
+                if (!msg || msg.sender_email === currentUser.email) return;
+                const conv = conversations.find(c => c.id === msg.conversation_id);
+                if (!conv) return;
+                // Skip if this is the active conversation and page is visible (subscribeToMessages already handles render)
+                if (msg.conversation_id === activeConvId && !document.hidden) return;
+                const sender = msg.sender_name || msg.sender_email;
+                const preview = (msg.message || '').substring(0, 100);
+                const title = conv.is_group ? `${sender} in ${conv.group_name || 'Group'}` : `New message from ${sender}`;
+                showDesktopNotification(title, preview);
+            })
+            .subscribe();
     }
 
     /* ──────────────────────────────────────────────────
@@ -4216,6 +4253,8 @@
         subscribeToConversations();
         subscribeToPresence();
         subscribeToFriendships();
+        requestNotificationPermission();
+        subscribeToAllMessages();
 
         // Presence poll: re-fetch last_seen + current_page from DB every 20s so
         // dots stay accurate even when Realtime drops events, then re-render.

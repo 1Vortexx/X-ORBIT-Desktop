@@ -6,88 +6,68 @@
 <title>Notifications - X-ORBIT</title>
 <script src="audioStop.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
-    height: 100%;
+    min-height: 100%;
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, rgba(0, 234, 255, 0.08), rgba(112, 56, 255, 0.08)), #0e0f1a;
-    color: #d6e0ff;
-    overflow-x: hidden;
-  }
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(28, 53, 205, 0.5);
-    backdrop-filter: blur(18px);
-    z-index: 0;
+    background: #000;
+    color: #fff;
   }
   .notifications-container {
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 60px 20px;
+    padding: 48px 24px 80px;
   }
   h1 {
-    text-align: center;
-    font-size: 2.5rem;
-    background: linear-gradient(90deg, #7038ff, #00eaff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 40px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
   }
   .notification {
-    background: rgba(255, 0, 0, 0.1);
-    border: 1px solid rgba(176, 0, 32, 0.5);
-    border-radius: 18px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(16px);
-    box-shadow: 0 6px 25px rgba(255, 50, 50, 0.3), 0 4px 20px rgba(176, 0, 32, 0.3);
-    animation: fadeIn 1.5s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    background: #0a0a0a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 8px;
   }
   .notification .meta {
-    font-size: 0.85rem;
-    color: #ffcdd2;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
   }
   .notification .title {
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin-bottom: 8px;
-    color: #ffb3b3;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    margin-bottom: 6px;
+    color: #fff;
   }
   .notification .content {
-    color: #ffcccc;
-    font-size: 0.98rem;
-    line-height: 1.5;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.875rem;
+    line-height: 1.6;
   }
   .tag {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.8rem;
-    border-radius: 12px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
     font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.06em;
     display: inline-block;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 0 10px rgba(255,0,0,0.2);
   }
-  .tag.system { background: rgba(176,0,32,0.3); color: #ffcdd2; border: 1px solid rgba(176,0,32,0.5); }
-  .tag.critical { background: rgba(255,0,0,0.3); color: #ff8080; border: 1px solid rgba(255,0,0,0.5); }
+  .tag.system   { background: rgba(79,138,255,0.1); color: #4f8aff; border: 1px solid rgba(79,138,255,0.2); }
+  .tag.critical { background: rgba(239,68,68,0.1);  color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
 
   @media (max-width: 600px) {
-    h1 { font-size: 2rem; }
-    .notification { padding: 20px; }
-    .notification .title { font-size: 1.15rem; }
+    .notifications-container { padding: 32px 16px 60px; }
+    .notification { padding: 1rem; }
   }
 </style>
 </head>

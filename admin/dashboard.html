@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X-ORBIT Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -25,7 +25,7 @@
         }
 
         body {
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             font-size: 13px;
@@ -2139,6 +2139,17 @@
                     }]);
 
                 if (error) throw error;
+
+                // Send welcome email via edge function
+                console.log('Sending welcome email to', email);
+                try {
+                    const emailResult = await supabaseClient.functions.invoke('send-welcome-email', {
+                        body: { name, email, password },
+                    });
+                    console.log('Welcome email result:', emailResult);
+                } catch (emailErr) {
+                    console.warn('Welcome email failed to send:', emailErr);
+                }
 
                 msgEl.className = 'create-msg success';
                 msgEl.textContent = `User "${name}" created successfully.`;

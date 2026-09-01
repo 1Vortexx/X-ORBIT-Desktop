@@ -19,24 +19,24 @@
 
       :root {
         --black:    #000000;
-        --void:     #04010a;
-        --card:     #08030f;
-        --card-mid: #0e061a;
-        --border:   #1f0d40;
-        --border-b: #3b1a78;
-        --p-dim:    #4c1d95;
-        --p-mid:    #7c3aed;
-        --p-core:   #9333ea;
-        --p-bright: #a855f7;
-        --p-light:  #c084fc;
-        --p-pale:   #e9d5ff;
+        --void:     #000000;
+        --card:     #0a0a0a;
+        --card-mid: #111111;
+        --border:   rgba(255,255,255,0.08);
+        --border-b: rgba(255,255,255,0.15);
+        --p-dim:    rgba(79,138,255,0.12);
+        --p-mid:    #4f8aff;
+        --p-core:   #4f8aff;
+        --p-bright: #7aaaff;
+        --p-light:  #a8c8ff;
+        --p-pale:   #dce9ff;
         --text:     #ffffff;
-        --text-sub: #94a3b8;
-        --text-dim: #475569;
-        --green:    #10b981;
-        --green-dim:#064e3b;
+        --text-sub: rgba(255,255,255,0.5);
+        --text-dim: rgba(255,255,255,0.28);
+        --green:    #22c55e;
+        --green-dim:rgba(34,197,94,0.1);
         --red:      #ef4444;
-        --red-dim:  #7f1d1d;
+        --red-dim:  rgba(239,68,68,0.1);
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -54,24 +54,6 @@
         overflow-x: hidden;
       }
 
-      /* ── Background ── */
-      .void-bg  { position: fixed; inset: 0; z-index: -3; background: var(--black); }
-      .void-glow {
-        position: fixed; inset: 0; z-index: -2;
-        background:
-          radial-gradient(ellipse 90% 55% at 50% -5%,  #1a0a35 0%, transparent 70%),
-          radial-gradient(ellipse 60% 40% at 15% 100%, #0f0520 0%, transparent 60%),
-          radial-gradient(ellipse 50% 35% at 90% 90%,  #120830 0%, transparent 60%);
-        animation: breathe 9s ease-in-out infinite;
-      }
-      @keyframes breathe { 0%,100% { opacity: 0.8; } 50% { opacity: 1; } }
-      .void-grid {
-        position: fixed; inset: 0; z-index: -1;
-        background-image:
-          linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
-        background-size: 48px 48px;
-      }
 
       /* ── Top bar ── */
       .topbar {
@@ -479,9 +461,6 @@
     </style>
   </head>
   <body>
-    <div class="void-bg"></div>
-    <div class="void-glow"></div>
-    <div class="void-grid"></div>
 
     <!-- Top bar -->
     <div class="topbar">
@@ -1049,13 +1028,10 @@
       function signOut() {
         localStorage.removeItem("xorbit_auth_session");
         sessionStorage.removeItem("xorbit_auth_session");
-        // If opened inside X-ORBIT as an iframe window, reload index.html so it
-        // picks up the cleared session and shows the login screen.
-        // Otherwise fall back to redirecting this page.
         if (window.parent && window.parent !== window) {
-          window.parent.location.href = "index.html";
+          window.parent.location.href = "app.html";
         } else {
-          window.location.href = "index.html";
+          window.location.href = "app.html";
         }
       }
 

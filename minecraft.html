@@ -21,7 +21,21 @@
       }
 
       /* ── Iframe ───────────────────────────────── */
-      .iframe-container { display: none; width: 100%; height: 100%; flex-grow: 1; }
+      .iframe-container {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        flex-grow: 1;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        background: #000;
+      }
+      .iframe-container.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
       .iframe-container iframe { width: 100%; height: 100%; border: none; }
 
       /* ── Landing ──────────────────────────────── */
@@ -358,43 +372,6 @@
         color: rgba(255,255,255,0.3);
       }
 
-      /* Phase 3 — fullscreen prompt */
-      .fullscreen-prompt {
-        text-align: center;
-        max-width: 380px;
-        padding: 20px;
-      }
-      .fullscreen-prompt p {
-        font-size: clamp(14px, 2.5vw, 20px);
-        font-weight: 500;
-        color: rgba(255,255,255,0.8);
-        letter-spacing: 0.3px;
-        margin-bottom: 30px;
-        line-height: 1.5;
-      }
-      .fullscreen-prompt p em {
-        font-style: normal;
-        color: #fff;
-        font-weight: 700;
-      }
-      .intro-actions {
-        display: flex; gap: 10px; justify-content: center;
-      }
-      .intro-btn {
-        padding: 11px 24px;
-        border: 1px solid rgba(255,255,255,0.3);
-        background: transparent;
-        color: rgba(255,255,255,0.6);
-        font-family: "Inter", sans-serif;
-        font-size: 11px; font-weight: 700;
-        letter-spacing: 1px; text-transform: uppercase;
-        cursor: pointer; transition: all 0.2s ease;
-      }
-      .intro-btn.primary {
-        background: #fff; color: #000; border-color: #fff;
-      }
-      .intro-btn.primary:hover { background: #ddd; }
-      .intro-btn.secondary:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
     </style>
   </head>
   <body>
@@ -481,46 +458,11 @@
 
     <!-- Fullscreen iframe -->
     <div class="iframe-container" id="iframeContainer">
-      <iframe id="mcFrame" src="" allowfullscreen></iframe>
+      <iframe id="mcFrame" src="" allowfullscreen loading="eager"></iframe>
     </div>
 
     <!-- Free play timer pill -->
     <div id="freeTimer">Free: <span id="freeTimerText">—</span> remaining</div>
-
-    <!-- Fullscreen exit prompt -->
-    <div id="fsPrompt" style="
-      display:none; position:fixed; inset:0; z-index:8000;
-      background:rgba(0,0,0,0.85);
-      align-items:center; justify-content:center;
-      font-family:'Inter',sans-serif;
-    ">
-      <div style="
-        background:#000; border:1px solid rgba(255,255,255,0.15);
-        padding:32px; max-width:340px; width:100%; text-align:center;
-      ">
-        <div style="font-size:22px; margin-bottom:10px;">⛶</div>
-        <div style="font-size:15px; font-weight:700; color:#fff; margin-bottom:8px;">
-          Did you mean to exit fullscreen?
-        </div>
-        <div style="font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:24px;">
-          Minecraft is best experienced in fullscreen.
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button onclick="reenterFullscreen()" style="
-            flex:1; padding:11px; background:#fff; color:#000;
-            border:1px solid #fff; font-family:'Inter',sans-serif;
-            font-size:11px; font-weight:700; letter-spacing:0.8px;
-            text-transform:uppercase; cursor:pointer;
-          ">Go Back</button>
-          <button onclick="dismissFsPrompt()" style="
-            flex:1; padding:11px; background:transparent; color:rgba(255,255,255,0.4);
-            border:1px solid rgba(255,255,255,0.12); font-family:'Inter',sans-serif;
-            font-size:11px; font-weight:600; letter-spacing:0.8px;
-            text-transform:uppercase; cursor:pointer;
-          ">Stay Windowed</button>
-        </div>
-      </div>
-    </div>
 
     <!-- ── Intro overlay ─────────────────────────────────────────────── -->
     <div id="introOverlay">
@@ -545,21 +487,6 @@
         <div class="game-version">Version 1.12</div>
       </div>
 
-      <!-- Phase 3: Fullscreen prompt -->
-      <div class="intro-phase" id="phase3">
-        <div class="fullscreen-prompt">
-          <p>This game is best experienced in <em>fullscreen.</em></p>
-          <div class="intro-actions">
-            <button class="intro-btn primary" onclick="goFullscreen()">
-              <i class="fa-solid fa-expand"></i>&nbsp; Go Fullscreen
-            </button>
-            <button class="intro-btn secondary" onclick="continueWithoutFullscreen()">
-              Continue Anyway
-            </button>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <script>
@@ -579,6 +506,22 @@
       let sessionStartTime  = null;
       let lastSavedTime     = null; // timestamp of last periodic save
       let pendingLaunchType = null; // "premium" | "free"
+      let framePreloadStarted = false;
+      let frameLoaded = false;
+
+      function beginPreloadFrame() {
+        if (framePreloadStarted) return;
+        framePreloadStarted = true;
+        const frame = document.getElementById("mcFrame");
+        frame.addEventListener(
+          "load",
+          () => {
+            frameLoaded = true;
+          },
+          { once: true }
+        );
+        if (!frame.src) frame.src = MC_URL;
+      }
 
       // ── Playtime ──────────────────────────────────────────────────────
       function getTodayKey() { return new Date().toISOString().slice(0, 10); }
@@ -783,6 +726,7 @@
           await delay(240);
           addStep(6); await delay(timings[6]);
           resolveStep(6, "pass"); await delay(240);
+          beginPreloadFrame();
           setButton("launch", "Launch Minecraft");
 
         } else {
@@ -816,6 +760,7 @@
           await delay(240);
           addStep(6); await delay(timings[6]);
           resolveStep(6, "pass"); await delay(240);
+          beginPreloadFrame();
           setButton("free", `Play Free  ·  ${fmtTime(freeSecsLeft)} left today`);
 
           const info = document.getElementById("timeInfo");
@@ -849,29 +794,14 @@
         await delay(200);
         await fadePhase(document.getElementById("phase2"), 600, 1400, 600);
         await delay(200);
-
-        // Phase 3 stays until user clicks
-        const p3 = document.getElementById("phase3");
-        p3.classList.add("showing");
-        p3.style.animation = "introIn 600ms ease forwards";
-      }
-
-      function goFullscreen() {
-        const el = document.documentElement;
-        if (el.requestFullscreen)       el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-        finishLaunch();
-      }
-
-      function continueWithoutFullscreen() {
         finishLaunch();
       }
 
       function finishLaunch() {
         document.getElementById("introOverlay").classList.remove("active");
         document.getElementById("landing").style.display = "none";
-        document.getElementById("iframeContainer").style.display = "block";
-        document.getElementById("mcFrame").src = MC_URL;
+        beginPreloadFrame();
+        document.getElementById("iframeContainer").classList.add("active");
         if (pendingLaunchType === "free") startFreeTimer(freeSecsLeft);
       }
 
@@ -911,9 +841,11 @@
       }
 
       function stopGame(reason) {
-        document.getElementById("iframeContainer").style.display = "none";
+        document.getElementById("iframeContainer").classList.remove("active");
         document.getElementById("freeTimer").style.display       = "none";
         document.getElementById("mcFrame").src                   = "";
+        framePreloadStarted = false;
+        frameLoaded = false;
         if (reason === "daily") {
           document.getElementById("timesUpTitle").textContent = "Daily Limit Reached";
           document.getElementById("timesUpMsg").textContent   = "Your 1-hour free limit for today has been used. Come back tomorrow for another hour, or upgrade for unlimited access.";
@@ -925,6 +857,10 @@
       }
 
       window.addEventListener("beforeunload", () => {
+        // Clear the iframe before unload so the game's beforeunload
+        // doesn't trigger Chromium's "Leave site?" popup
+        const frame = document.getElementById("mcFrame");
+        if (frame) frame.src = "about:blank";
         // Save any unsaved seconds since the last periodic save
         if (lastSavedTime !== null) {
           const elapsed = Math.round((Date.now() - lastSavedTime) / 1000);
@@ -943,23 +879,6 @@
 
       function closeModal(id) {
         document.getElementById(id).classList.remove("active");
-      }
-
-      // ── Fullscreen exit detection ──────────────────────────────────────
-      document.addEventListener("fullscreenchange", () => {
-        const gameRunning = document.getElementById("iframeContainer").style.display === "block";
-        if (!document.fullscreenElement && gameRunning) {
-          document.getElementById("fsPrompt").style.display = "flex";
-        }
-      });
-
-      function reenterFullscreen() {
-        document.getElementById("fsPrompt").style.display = "none";
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-
-      function dismissFsPrompt() {
-        document.getElementById("fsPrompt").style.display = "none";
       }
 
       window.addEventListener("DOMContentLoaded", runBootSequence);

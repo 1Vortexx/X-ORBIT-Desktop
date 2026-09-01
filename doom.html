@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DOOM — X-ORBIT</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #000;
+        color: #fff;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .topbar {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: #0a0a0a;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .back-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        color: #f8faff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.2s, border-color 0.2s;
+        cursor: pointer;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #ff3a00;
+        text-shadow: 0 0 20px rgba(255, 58, 0, 0.6);
+        text-transform: uppercase;
+      }
+
+      .badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 8px;
+        background: rgba(255, 58, 0, 0.15);
+        border: 1px solid rgba(255, 58, 0, 0.3);
+        border-radius: 20px;
+        color: #ff7a50;
+        letter-spacing: 0.05em;
+      }
+
+      .controls-hint {
+        font-size: 11px;
+        color: rgba(248, 250, 255, 0.4);
+      }
+
+      .game-wrapper {
+        position: relative;
+        z-index: 5;
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .game-container {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        aspect-ratio: 4 / 3;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 58, 0, 0.25);
+        box-shadow:
+          0 0 60px rgba(255, 58, 0, 0.15),
+          0 0 120px rgba(200, 20, 0, 0.08),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      }
+
+      #doom-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+        background: #000;
+      }
+
+      .loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        z-index: 10;
+        transition: opacity 0.5s;
+      }
+
+      .loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .doom-logo {
+        font-size: 52px;
+        font-weight: 900;
+        color: #ff3a00;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-shadow:
+          0 0 20px rgba(255, 58, 0, 0.8),
+          0 0 60px rgba(255, 58, 0, 0.4);
+        font-family: "Inter", sans-serif;
+      }
+
+      .loading-bar-track {
+        width: 200px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .loading-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff3a00, #ff7a00);
+        border-radius: 2px;
+        animation: loadbar 2s ease-in-out forwards;
+      }
+
+      @keyframes loadbar {
+        0%   { width: 0%; }
+        60%  { width: 70%; }
+        100% { width: 100%; }
+      }
+
+      .loading-text {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 0.1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left">
+        <a class="back-btn" href="app.html">
+          <i class="fa fa-arrow-left"></i>
+          Back
+        </a>
+        <span class="title">DOOM</span>
+        <span class="badge">1993 Shareware</span>
+      </div>
+      <span class="controls-hint">Arrow keys / WASD &nbsp;·&nbsp; Ctrl = Fire &nbsp;·&nbsp; Space = Open &nbsp;·&nbsp; Alt+Enter = Fullscreen</span>
+    </div>
+
+    <div class="game-wrapper">
+      <div class="game-container">
+        <div class="loading-overlay" id="loading">
+          <div class="doom-logo">DOOM</div>
+          <div class="loading-bar-track">
+            <div class="loading-bar-fill"></div>
+          </div>
+          <div class="loading-text">LOADING HELLSPAWN...</div>
+        </div>
+        <iframe
+          id="doom-frame"
+          src="https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Foriginal%2F2X%2F1%2F1976e8a9dbe1da58f0f4f7e91f2f2d4741a2b08e.jsdos&anonymous=1"
+          allowfullscreen
+          allow="autoplay; fullscreen"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
+        ></iframe>
+      </div>
+    </div>
+
+    <script>
+      const frame = document.getElementById("doom-frame");
+      const loading = document.getElementById("loading");
+
+      frame.addEventListener("load", () => {
+        setTimeout(() => {
+          loading.classList.add("hidden");
+        }, 2200);
+      });
+
+      // Fallback hide after 5s in case load event already fired
+      setTimeout(() => loading.classList.add("hidden"), 5000);
+    </script>
+  </body>
+</html>

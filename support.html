@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X-ORBIT Support Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -28,7 +28,7 @@
         }
 
         body {
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             font-size: 13px;
@@ -419,6 +419,53 @@
         .container-inner {
             max-width: 960px;
             margin: 0 auto;
+        }
+
+        /* ─── EARLY ACCESS BOX ─── */
+        .early-access-box {
+            margin-top: 14px;
+            background: rgba(124,90,246,0.06);
+            border: 1px solid rgba(124,90,246,0.22);
+            padding: 16px 18px;
+        }
+
+        .early-access-box .ea-label {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #9d80ff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .early-access-box .ea-label::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #9d80ff;
+            flex-shrink: 0;
+        }
+
+        .early-access-box .ea-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 7px;
+            letter-spacing: 0.5px;
+        }
+
+        .early-access-box .ea-body {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+        }
+
+        .early-access-box .ea-body strong {
+            color: #9d80ff;
         }
 
         /* Welcome section */
@@ -1113,6 +1160,12 @@
                             <p>Continue previous support conversation</p>
                         </div>
                     </button>
+
+                    <div class="early-access-box">
+                        <div class="ea-label">Early Access</div>
+                        <div class="ea-title">Want to create an account?</div>
+                        <p class="ea-body">X-ORBIT is in early access. To sign up, select <strong>Account Services</strong> above.</p>
+                    </div>
                 </div>
 
                 <div id="clientLoginForm" style="display: none;">

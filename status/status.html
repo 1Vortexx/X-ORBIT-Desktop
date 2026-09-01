@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X-ORBIT Status</title>
+    <link rel="icon" href="https://codehs.com/uploads/7f204d91a682cb833441eb2fc59228b6" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+      :root {
+        --bg:      #000;
+        --surface: #0a0a0a;
+        --border:  rgba(255,255,255,0.08);
+        --accent:  #4f8aff;
+        --accent2: #7aaaff;
+        --text:    #fff;
+        --text-2:  rgba(255,255,255,0.5);
+        --text-3:  rgba(255,255,255,0.25);
+        --green:   #22c55e;
+        --yellow:  #f59e0b;
+        --red:     #ef4444;
+        --blue:    #4f8aff;
+        --orange:  #f97316;
+        --sidebar: 280px;
+      }
+
+      html, body { height: 100%; }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+      }
+
+
+      /* ── Sidebar ─────────────────────────────────────── */
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: var(--sidebar);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--border);
+        background: rgba(11,8,20,0.9);
+        backdrop-filter: blur(24px);
+        padding: 2rem 1.5rem;
+        overflow-y: auto;
+      }
+
+      .sb-brand {
+        font-size: 0.95rem;
+        font-weight: 900;
+        letter-spacing: 3px;
+        text-decoration: none;
+        color: var(--text);
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      .sb-brand span { color: var(--accent); }
+
+      .sb-tagline {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 2rem;
+      }
+
+      /* Overall pill */
+      .sb-status-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: rgba(52,211,153,0.08);
+        border: 1px solid rgba(52,211,153,0.2);
+        margin-bottom: 2rem;
+        transition: all 0.3s;
+      }
+      .sb-status-pill.degraded    { background: rgba(251,191,36,0.08);  border-color: rgba(251,191,36,0.2); }
+      .sb-status-pill.outage      { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); }
+      .sb-status-pill.maintenance { background: rgba(96,165,250,0.08);  border-color: rgba(96,165,250,0.2); }
+      .sb-status-pill.shutdown    { background: rgba(249,115,22,0.08);  border-color: rgba(249,115,22,0.2); }
+      .sb-status-pill.unknown     { background: rgba(112,112,138,0.08); border-color: var(--border); }
+
+      .sb-dot {
+        width: 9px; height: 9px; border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+        flex-shrink: 0;
+        animation: blink 2s ease-in-out infinite;
+      }
+      .sb-status-pill.degraded    .sb-dot { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+      .sb-status-pill.outage      .sb-dot { background: var(--red);    box-shadow: 0 0 8px var(--red); }
+      .sb-status-pill.maintenance .sb-dot { background: var(--blue);   box-shadow: 0 0 8px var(--blue); }
+      .sb-status-pill.shutdown    .sb-dot { background: var(--orange); box-shadow: 0 0 8px var(--orange); }
+      .sb-status-pill.unknown     .sb-dot { background: var(--text-3); box-shadow: none; animation: none; }
+
+      @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+      .sb-pill-text { }
+      .sb-pill-title { font-size: 0.8rem; font-weight: 700; color: var(--green); line-height: 1.2; }
+      .sb-status-pill.degraded    .sb-pill-title { color: var(--yellow); }
+      .sb-status-pill.outage      .sb-pill-title { color: var(--red); }
+      .sb-status-pill.maintenance .sb-pill-title { color: var(--blue); }
+      .sb-status-pill.shutdown    .sb-pill-title { color: var(--orange); }
+      .sb-status-pill.unknown     .sb-pill-title { color: var(--text-3); }
+      .sb-pill-sub { font-size: 0.68rem; color: var(--text-3); margin-top: 1px; }
+
+      /* Uptime stats in sidebar */
+      .sb-section-label {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 0.75rem;
+      }
+
+      .sb-uptime-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 2rem;
+      }
+
+      .sb-uptime-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .sb-uptime-period { font-size: 0.78rem; color: var(--text-3); }
+
+      .sb-uptime-bar-wrap {
+        flex: 1;
+        height: 3px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 2px;
+        margin: 0 10px;
+        overflow: hidden;
+      }
+
+      .sb-uptime-bar {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--green);
+        transition: width 0.6s ease;
+      }
+
+      .sb-uptime-val { font-size: 0.75rem; font-weight: 700; color: var(--text-2); min-width: 42px; text-align: right; }
+
+      /* Nav links */
+      .sb-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: auto;
+      }
+
+      .sb-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-3);
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .sb-nav-link i { width: 14px; text-align: center; }
+      .sb-nav-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+      .sb-footer {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.68rem;
+        color: var(--text-3);
+        line-height: 1.8;
+      }
+
+      /* ── Main ────────────────────────────────────────── */
+      .main {
+        position: relative;
+        z-index: 1;
+        margin-left: var(--sidebar);
+        flex: 1;
+        min-height: 100vh;
+        padding: 3rem 3rem 5rem;
+        max-width: calc(100vw - var(--sidebar));
+      }
+
+      /* ── Page header ─────────────────────────────────── */
+      .page-header {
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .page-header h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+      }
+
+      .page-header p { font-size: 0.85rem; color: var(--text-3); }
+
+      .page-meta {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 0.72rem;
+        color: var(--text-3);
+      }
+
+      .page-meta span { display: flex; align-items: center; gap: 5px; }
+
+      /* ── Incident alert ──────────────────────────────── */
+      .incident-alert {
+        display: none;
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        border: 1px solid rgba(251,191,36,0.25);
+        border-left: 3px solid var(--yellow);
+        background: rgba(251,191,36,0.06);
+        margin-bottom: 2rem;
+        font-size: 0.83rem;
+      }
+      .incident-alert.show { display: block; }
+      .incident-alert.critical { border-color: rgba(248,113,113,0.25); border-left-color: var(--red); background: rgba(248,113,113,0.06); }
+      .alert-title { font-weight: 700; color: var(--yellow); margin-bottom: 3px; display: flex; align-items: center; gap: 7px; }
+      .incident-alert.critical .alert-title { color: var(--red); }
+      .alert-body { color: var(--text-2); line-height: 1.5; }
+
+      /* ── Section ─────────────────────────────────────── */
+      .section { margin-bottom: 3rem; }
+
+      .section-label {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 1rem;
+      }
+
+      /* ── Services ────────────────────────────────────── */
+      .services-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--border);
+      }
+
+      .service-block { background: var(--surface); backdrop-filter: blur(20px); }
+      .service-block:first-child { border-radius: 12px 12px 0 0; }
+      .service-block:last-child  { border-radius: 0 0 12px 12px; }
+      .service-block:only-child  { border-radius: 12px; }
+
+      .service-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        gap: 1rem;
+        transition: background 0.15s;
+      }
+      .service-row:hover { background: rgba(30,24,50,0.6); }
+
+      .service-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+      .service-ico {
+        width: 34px; height: 34px;
+        border-radius: 8px;
+        background: rgba(124,106,247,0.1);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--accent2);
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+
+      .service-name { font-size: 0.88rem; font-weight: 600; }
+      .service-desc { font-size: 0.73rem; color: var(--text-3); margin-top: 1px; }
+
+      .service-badge {
+        display: flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .service-badge.operational  { background: rgba(52,211,153,0.1);  color: var(--green);  border: 1px solid rgba(52,211,153,0.18); }
+      .service-badge.degraded     { background: rgba(251,191,36,0.1);  color: var(--yellow); border: 1px solid rgba(251,191,36,0.18); }
+      .service-badge.outage       { background: rgba(248,113,113,0.1); color: var(--red);    border: 1px solid rgba(248,113,113,0.18); }
+      .service-badge.maintenance  { background: rgba(96,165,250,0.1);  color: var(--blue);   border: 1px solid rgba(96,165,250,0.18); }
+      .service-badge.shutdown     { background: rgba(249,115,22,0.1);  color: var(--orange); border: 1px solid rgba(249,115,22,0.18); }
+      .service-badge.unknown      { background: rgba(112,112,138,0.1); color: var(--text-3); border: 1px solid rgba(112,112,138,0.18); }
+      .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+      .service-badge.operational .badge-dot { animation: blink 2s ease-in-out infinite; }
+
+      .service-components {
+        padding: 0 1.25rem 0.75rem 3.5rem;
+        display: flex; flex-direction: column; gap: 3px;
+      }
+
+      .comp-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 5px 10px;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.02);
+        font-size: 0.75rem;
+      }
+      .comp-name { color: var(--text-2); }
+      .comp-status { font-weight: 600; }
+      .comp-status.operational { color: var(--green); }
+      .comp-status.degraded    { color: var(--yellow); }
+      .comp-status.outage      { color: var(--red); }
+      .comp-status.maintenance { color: var(--blue); }
+      .comp-status.shutdown    { color: var(--orange); }
+      .comp-status.unknown     { color: var(--text-3); }
+
+      .service-issue { padding: 0 1.25rem 0.75rem; }
+      .issue-pill {
+        padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; line-height: 1.5;
+        color: var(--yellow); background: rgba(251,191,36,0.07); border-left: 2px solid var(--yellow);
+      }
+      .issue-pill.outage      { color: var(--red);    background: rgba(248,113,113,0.07); border-left-color: var(--red); }
+      .issue-pill.maintenance { color: var(--blue);   background: rgba(96,165,250,0.07);  border-left-color: var(--blue); }
+      .issue-pill.shutdown    { color: var(--orange); background: rgba(249,115,22,0.07);  border-left-color: var(--orange); }
+
+      /* ── Two-col layout for incidents ────────────────── */
+      .incidents-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .incident-card {
+        padding: 1rem 1.1rem;
+        border-radius: 8px;
+        background: var(--surface);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--yellow);
+        transition: opacity 0.2s;
+      }
+      .incident-card.resolved { border-left-color: var(--green); opacity: 0.6; }
+      .incident-card.resolved:hover { opacity: 1; }
+
+      .inc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+      .inc-title { font-size: 0.85rem; font-weight: 600; line-height: 1.3; }
+
+      .inc-badge {
+        font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+        padding: 2px 8px; border-radius: 50px; white-space: nowrap; flex-shrink: 0;
+      }
+      .inc-badge.investigating { background: rgba(251,191,36,0.12); color: var(--yellow); border: 1px solid rgba(251,191,36,0.2); }
+      .inc-badge.resolved      { background: rgba(52,211,153,0.12); color: var(--green);  border: 1px solid rgba(52,211,153,0.2); }
+      .inc-badge.monitoring    { background: rgba(96,165,250,0.12); color: var(--blue);   border: 1px solid rgba(96,165,250,0.2); }
+
+      .inc-body { font-size: 0.78rem; color: var(--text-2); line-height: 1.5; margin-bottom: 8px; }
+      .inc-meta { font-size: 0.68rem; color: var(--text-3); display: flex; gap: 10px; }
+
+      /* ── Empty / Spinner ─────────────────────────────── */
+      .empty { text-align: center; padding: 2.5rem; color: var(--text-3); font-size: 0.82rem; }
+      .empty i { font-size: 1.3rem; display: block; margin-bottom: 8px; color: var(--green); }
+      .spinner-wrap { display: flex; justify-content: center; padding: 2rem; }
+      .spinner {
+        width: 24px; height: 24px;
+        border: 2px solid rgba(124,106,247,0.2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* ── Mobile ──────────────────────────────────────── */
+      @media (max-width: 768px) {
+        :root { --sidebar: 0px; }
+        .sidebar { display: none; }
+        .main { margin-left: 0; padding: 1.5rem; max-width: 100vw; }
+        .incidents-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── Sidebar ──────────────────────────────────────── -->
+    <aside class="sidebar">
+      <a class="sb-brand" href="https://xorbit.org">X-<span>ORBIT</span></a>
+      <div class="sb-tagline">System Status</div>
+
+      <div class="sb-status-pill" id="sbPill">
+        <div class="sb-dot"></div>
+        <div class="sb-pill-text">
+          <div class="sb-pill-title" id="sbTitle">All Systems Operational</div>
+          <div class="sb-pill-sub" id="sbSub">No issues detected</div>
+        </div>
+      </div>
+
+      <div class="sb-section-label" style="margin-bottom:0.75rem;">Uptime</div>
+      <div class="sb-uptime-list" id="sbUptimeList">
+        <div class="sb-uptime-row">
+          <span class="sb-uptime-period">24h</span>
+          <div class="sb-uptime-bar-wrap"><div class="sb-uptime-bar" id="bar24h" style="width:0%"></div></div>
+          <span class="sb-uptime-val" id="sbUptime24h">—</span>
+        </div>
+        <div class="sb-uptime-row">
+          <span class="sb-uptime-period">7d</span>
+          <div class="sb-uptime-bar-wrap"><div class="sb-uptime-bar" id="bar7d" style="width:0%"></div></div>
+          <span class="sb-uptime-val" id="sbUptime7d">—</span>
+        </div>
+        <div class="sb-uptime-row">
+          <span class="sb-uptime-period">30d</span>
+          <div class="sb-uptime-bar-wrap"><div class="sb-uptime-bar" id="bar30d" style="width:0%"></div></div>
+          <span class="sb-uptime-val" id="sbUptime30d">—</span>
+        </div>
+        <div class="sb-uptime-row">
+          <span class="sb-uptime-period">90d</span>
+          <div class="sb-uptime-bar-wrap"><div class="sb-uptime-bar" id="bar90d" style="width:0%"></div></div>
+          <span class="sb-uptime-val" id="sbUptime90d">—</span>
+        </div>
+      </div>
+
+      <div class="sb-nav">
+        <a class="sb-nav-link" href="https://xorbit.org"><i class="fas fa-house"></i> Home</a>
+        <a class="sb-nav-link" href="https://xorbit.org/support"><i class="fas fa-life-ring"></i> Support</a>
+        <a class="sb-nav-link" href="https://xorbit.org/changelogs"><i class="fas fa-list-alt"></i> Changelog</a>
+        <a class="sb-nav-link" href="https://xorbit.org/admin/dashboard"><i class="fas fa-shield-halved"></i> Admin</a>
+      </div>
+
+      <div class="sb-footer">
+        &copy; 2025 X-ORBIT<br>
+        Updated <span id="sbUpdated">—</span>
+      </div>
+    </aside>
+
+    <!-- ── Main ─────────────────────────────────────────── -->
+    <main class="main">
+
+      <div class="page-header">
+        <h1>System Status</h1>
+        <p>Real-time health monitoring for all X-ORBIT services</p>
+        <div class="page-meta">
+          <span><i class="fas fa-rotate"></i> Auto-refreshes every 30s</span>
+          <span><i class="fas fa-clock"></i> <span id="lastUpdated">—</span></span>
+        </div>
+      </div>
+
+      <!-- Login shutdown banner -->
+      <div class="incident-alert critical" id="loginShutdownAlert" style="display:none;">
+        <div class="alert-title"><i class="fas fa-ban"></i><span>Logins Temporarily Disabled — End of Year Shutdown</span></div>
+        <div class="alert-body">The login system is shut down site-wide as part of our annual end-of-year cost reduction. This is not related to your account. All services will return in August 2026 for the 2026–27 school year. <a href="../blog/yearly-shutdown.html" style="color:inherit;font-weight:600;text-decoration:underline;">Read the blog post</a> for more details.</div>
+      </div>
+
+      <!-- Incident alert -->
+      <div class="incident-alert" id="incidentAlert">
+        <div class="alert-title"><i class="fas fa-triangle-exclamation"></i><span id="alertTitle"></span></div>
+        <div class="alert-body" id="alertBody"></div>
+      </div>
+
+      <!-- Services -->
+      <div class="section">
+        <div class="section-label">Services</div>
+        <div class="services-list" id="servicesList">
+          <div class="spinner-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Incidents -->
+      <div class="section">
+        <div class="section-label">Recent Incidents</div>
+        <div class="incidents-grid" id="incidentsList">
+          <div class="spinner-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+    </main>
+
+    <script>
+      let supabaseClient = null, supabaseAvailable = false;
+
+      async function initSupabase() {
+        try {
+          let attempts = 0;
+          while (!window.supabase && attempts < 10) { await new Promise(r => setTimeout(r, 100)); attempts++; }
+          if (!window.supabase) return false;
+          supabaseClient = window.supabase.createClient(
+            "https://rujvmtvozorylfzsqppc.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1anZtdHZvem9yeWxmenNxcHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NjQxNDEsImV4cCI6MjA3MzA0MDE0MX0.b7jJz3Se_oXXDwwd0dWQ8-rEvhY0aU4JDHQVioE39iY"
+          );
+          const { error } = await supabaseClient.from("status_info").select("count").limit(1);
+          if (error) return false;
+          supabaseAvailable = true;
+          return true;
+        } catch { return false; }
+      }
+
+      async function loadServices() {
+        try {
+          if (!supabaseAvailable) throw new Error();
+          const { data: services, error: se } = await supabaseClient.from("status_info").select("*").order("priority", { ascending: true });
+          if (se) throw se;
+          const { data: components } = await supabaseClient.from("service_components").select("*").order("priority", { ascending: true });
+          const compMap = {};
+          (components || []).forEach(c => (compMap[c.parent_service_id] = compMap[c.parent_service_id] || []).push(c));
+          const merged = services.map(s => ({ ...s, components: compMap[s.service_id] || [] }));
+          renderServices(merged);
+          updateSidebar(merged);
+          if (merged[0]?.uptime_24h !== undefined) updateUptime(merged);
+          // Check if auth-login is shut down
+          const allComponents = Object.values(compMap).flat();
+          const authLoginComp = allComponents.find(c => c.component_id === "auth-login");
+          const loginShutdownEl = document.getElementById("loginShutdownAlert");
+          if (authLoginComp && authLoginComp.status === "shutdown") {
+            loginShutdownEl.style.display = "block";
+          } else {
+            loginShutdownEl.style.display = "none";
+          }
+        } catch { handleFailure(); }
+      }
+
+      function handleFailure() {
+        const fallback = [
+          { service_id:"web",    service_name:"Web Dashboard",  service_description:"Main X-ORBIT interface",          service_icon:"fa-globe",        status:"unknown", components:[] },
+          { service_id:"proxy",  service_name:"Proxy Browser",  service_description:"Rammerhead & Ultraviolet proxies", service_icon:"fa-browser",       status:"unknown", components:[] },
+          { service_id:"auth",   service_name:"Authentication", service_description:"Login and session management",     service_icon:"fa-shield-halved", status:"unknown", components:[] },
+          { service_id:"api",    service_name:"API Services",   service_description:"Backend API and data layer",       service_icon:"fa-code",          status:"unknown", components:[] },
+          { service_id:"support",service_name:"Support Portal", service_description:"Tickets and support center",       service_icon:"fa-life-ring",     status:"unknown", components:[] },
+          { service_id:"db",     service_name:"Database",       service_description:"Supabase PostgreSQL",              service_icon:"fa-database",      status:"outage",  components:[] },
+        ];
+        renderServices(fallback);
+        updateSidebar(fallback);
+        const a = document.getElementById("incidentAlert");
+        document.getElementById("alertTitle").textContent = "Database Connection Issue";
+        document.getElementById("alertBody").textContent  = "Unable to connect to the status database. Service information may be unavailable.";
+        a.classList.add("show","critical");
+      }
+
+      function renderServices(services) {
+        document.getElementById("servicesList").innerHTML = services.map(s => {
+          const issue = s.issue_description && s.status !== 'operational'
+            ? `<div class="service-issue"><div class="issue-pill ${s.status}">${s.issue_description}</div></div>` : '';
+          const comps = s.components?.length
+            ? `<div class="service-components">${s.components.map(c =>
+                `<div class="comp-row"><span class="comp-name">${c.component_name}</span><span class="comp-status ${c.status}">${fmtStatus(c.status)}</span></div>`
+              ).join('')}</div>` : '';
+          return `<div class="service-block">
+            <div class="service-row">
+              <div class="service-left">
+                <div class="service-ico"><i class="fas ${s.service_icon}"></i></div>
+                <div><div class="service-name">${s.service_name}</div><div class="service-desc">${s.service_description}</div></div>
+              </div>
+              <div class="service-badge ${s.status}"><span class="badge-dot"></span>${fmtStatus(s.status)}</div>
+            </div>${issue}${comps}</div>`;
+        }).join('');
+      }
+
+      function updateSidebar(services) {
+        const pill  = document.getElementById("sbPill");
+        const title = document.getElementById("sbTitle");
+        const sub   = document.getElementById("sbSub");
+        const hasOutage   = services.some(s => s.status === "outage");
+        const hasMaint    = services.some(s => s.status === "maintenance");
+        const hasDeg      = services.some(s => s.status === "degraded");
+        const hasUnk      = services.some(s => s.status === "unknown");
+        const hasShutdown = services.some(s => s.status === "shutdown") ||
+          services.some(s => s.components?.some(c => c.status === "shutdown"));
+        if (hasOutage)      { pill.className="sb-status-pill outage";      title.textContent="Service Disruption";     sub.textContent="One or more services are down."; }
+        else if (hasShutdown){ pill.className="sb-status-pill shutdown";   title.textContent="Partial Shutdown";       sub.textContent="Some features are disabled."; }
+        else if (hasMaint)  { pill.className="sb-status-pill maintenance"; title.textContent="Scheduled Maintenance";  sub.textContent="Maintenance in progress."; }
+        else if (hasDeg)    { pill.className="sb-status-pill degraded";    title.textContent="Degraded Performance";   sub.textContent="Some services are slow."; }
+        else if (hasUnk)    { pill.className="sb-status-pill unknown";     title.textContent="Status Unknown";         sub.textContent="Unable to reach database."; }
+        else                { pill.className="sb-status-pill";             title.textContent="All Systems Operational";sub.textContent="No issues detected."; }
+      }
+
+      function updateUptime(services) {
+        const avg = key => services.reduce((s, r) => s + (r[key] || 100), 0) / services.length;
+        const set = (id, barId, key) => {
+          const v = avg(key);
+          document.getElementById(id).textContent = v.toFixed(2) + "%";
+          document.getElementById(barId).style.width = Math.min(v, 100) + "%";
+        };
+        set("sbUptime24h","bar24h","uptime_24h");
+        set("sbUptime7d", "bar7d", "uptime_7d");
+        set("sbUptime30d","bar30d","uptime_30d");
+        set("sbUptime90d","bar90d","uptime_90d");
+      }
+
+      async function loadIncidents() {
+        const list = document.getElementById("incidentsList");
+        try {
+          if (!supabaseAvailable) throw new Error();
+          const { data: incidents, error } = await supabaseClient.from("incidents").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(10);
+          if (error) throw error;
+          if (!incidents?.length) {
+            list.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-circle-check"></i>No recent incidents</div>`;
+            return;
+          }
+          const banner = incidents.find(i => i.show_banner);
+          if (banner) {
+            document.getElementById("alertTitle").textContent = banner.title;
+            document.getElementById("alertBody").textContent  = banner.description;
+            if (banner.severity === "critical") document.getElementById("incidentAlert").classList.add("critical");
+            document.getElementById("incidentAlert").classList.add("show");
+          }
+          list.innerHTML = incidents.map(i => `
+            <div class="incident-card ${i.status === 'resolved' ? 'resolved' : ''}">
+              <div class="inc-top">
+                <div class="inc-title">${i.title}</div>
+                <div class="inc-badge ${i.status}">${i.status}</div>
+              </div>
+              <div class="inc-body">${i.description}</div>
+              <div class="inc-meta">
+                <span><i class="fas fa-server"></i> ${i.affected_services === 'all' ? 'All Services' : i.affected_services}</span>
+                <span><i class="far fa-clock"></i> ${fmtDate(i.created_at)}</span>
+              </div>
+            </div>`).join('');
+        } catch {
+          list.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-triangle-exclamation" style="color:var(--text-3)"></i>Unable to load incidents</div>`;
+        }
+      }
+
+      function fmtStatus(s) {
+        return {operational:"Operational",degraded:"Degraded",outage:"Outage",maintenance:"Maintenance",shutdown:"Shutdown",unknown:"Unknown"}[s]||"Unknown";
+      }
+
+      function fmtDate(d) {
+        const diff = Date.now() - new Date(d);
+        const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), day = Math.floor(diff/86400000);
+        if (m < 60) return `${m}m ago`;
+        if (h < 24) return `${h}h ago`;
+        return `${day}d ago`;
+      }
+
+      function updateTime() {
+        const t = new Date().toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZone:"America/Denver", timeZoneName:"short" });
+        document.getElementById("lastUpdated").textContent = t;
+        document.getElementById("sbUpdated").textContent = new Date().toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit", timeZone:"America/Denver" });
+      }
+
+      async function init() {
+        const ok = await initSupabase();
+        if (ok) { await loadServices(); await loadIncidents(); }
+        else handleFailure();
+        updateTime();
+        setInterval(async () => {
+          if (supabaseAvailable) { await loadServices(); await loadIncidents(); }
+          updateTime();
+        }, 30000);
+      }
+
+      document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
+    </script>
+  </body>
+</html>

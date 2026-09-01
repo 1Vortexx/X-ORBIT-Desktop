@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>End of Year Shutdown — X-ORBIT Blog</title>
+  <link rel="icon" href="https://codehs.com/uploads/7f204d91a682cb833441eb2fc59228b6" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:      #000;
+      --surface: #0a0a0a;
+      --border:  rgba(255,255,255,0.08);
+      --accent:  #4f8aff;
+      --accent2: #7aaaff;
+      --text:    #fff;
+      --text-2:  rgba(255,255,255,0.5);
+      --text-3:  rgba(255,255,255,0.22);
+      --orange:  #f97316;
+      --orange-dim: rgba(249,115,22,0.1);
+      --orange-border: rgba(249,115,22,0.2);
+    }
+
+    html, body { min-height: 100%; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 3rem 1.5rem 6rem;
+    }
+
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* ── Top nav ── */
+    .topnav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+
+    .brand {
+      font-size: 0.9rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand span { color: var(--accent2); }
+
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .nav-link {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-2);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    /* ── Article header ── */
+    .article-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 50px;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange-border);
+      color: var(--orange);
+    }
+
+    .article-date {
+      font-size: 0.75rem;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .article-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-header h1 span {
+      background: linear-gradient(135deg, #a78bfa, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .article-lead {
+      font-size: 1rem;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Callout banner ── */
+    .callout {
+      display: flex;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      border-radius: 8px;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange-border);
+      border-left: 3px solid var(--orange);
+      margin-bottom: 2rem;
+    }
+
+    .callout-icon {
+      font-size: 1.1rem;
+      color: var(--orange);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .callout-body { }
+    .callout-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fdba74;
+      margin-bottom: 3px;
+    }
+    .callout-text {
+      font-size: 0.8rem;
+      color: rgba(253,186,116,0.8);
+      line-height: 1.6;
+    }
+
+    /* ── Body content ── */
+    .article-body {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .section-block {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1.6rem;
+    }
+
+    .section-block h2 {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1rem;
+    }
+
+    .section-block p {
+      font-size: 0.88rem;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+
+    .section-block p + p {
+      margin-top: 0.85rem;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: -4px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .timeline-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .timeline-dot.done     { background: rgba(249,115,22,0.15); border: 1px solid var(--orange-border); color: var(--orange); }
+    .timeline-dot.current  { background: rgba(249,115,22,0.2);  border: 1px solid rgba(249,115,22,0.5); color: var(--orange); box-shadow: 0 0 12px rgba(249,115,22,0.25); }
+    .timeline-dot.upcoming { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25); color: var(--accent2); }
+
+    .timeline-content {
+      padding-bottom: 1.4rem;
+    }
+
+    .timeline-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .timeline-label.done     { color: var(--orange); }
+    .timeline-label.current  { color: #fdba74; }
+    .timeline-label.upcoming { color: var(--accent2); }
+
+    .timeline-desc {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+
+    /* ── What's affected ── */
+    .affected-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .affected-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .affected-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-2);
+    }
+
+    .affected-name i {
+      width: 14px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 0.78rem;
+    }
+
+    .status-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 9px;
+      border-radius: 50px;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange-border);
+      color: var(--orange);
+    }
+
+    .status-pill.returning {
+      background: rgba(124,58,237,0.1);
+      border-color: rgba(124,58,237,0.25);
+      color: var(--accent2);
+    }
+
+    /* ── Sign-off ── */
+    .signoff {
+      font-size: 0.85rem;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+
+    .signoff strong { color: var(--text); font-weight: 600; }
+
+    .signoff-name {
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: 0.5px;
+    }
+
+    .signoff-role {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      margin-top: 1px;
+    }
+
+    /* ── Footer links ── */
+    .article-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: var(--text-3);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-link {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--accent2); }
+
+    @media (max-width: 600px) {
+      body { padding: 2rem 1rem 5rem; }
+      .article-header h1 { font-size: 1.5rem; }
+      .topnav { margin-bottom: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+
+    <!-- Nav -->
+    <nav class="topnav">
+      <a class="brand" href="https://xorbit.org">X-<span>ORBIT</span></a>
+      <div class="nav-links">
+        <a class="nav-link" href="https://xorbit.org"><i class="fas fa-house"></i> Home</a>
+        <a class="nav-link" href="../status/status.html"><i class="fas fa-signal"></i> Status</a>
+        <a class="nav-link" href="https://xorbit.org/support"><i class="fas fa-life-ring"></i> Support</a>
+      </div>
+    </nav>
+
+    <!-- Article header -->
+    <header class="article-header">
+      <div class="article-meta">
+        <span class="tag"><i class="fas fa-bullhorn" style="margin-right:4px"></i>Announcement</span>
+        <span class="article-date"><i class="far fa-calendar"></i> May 2026</span>
+        <span class="article-date"><i class="fas fa-user-shield"></i> X-ORBIT Team</span>
+      </div>
+      <h1>End of Year Shutdown — <span>We'll Be Back in August</span></h1>
+      <p class="article-lead">
+        As the 2025–26 school year wraps up, we are temporarily shutting down X-ORBIT services until August 2026. Here's everything you need to know.
+      </p>
+    </header>
+
+    <!-- Active shutdown callout -->
+    <div class="callout">
+      <i class="fas fa-ban callout-icon"></i>
+      <div class="callout-body">
+        <div class="callout-title">Services are currently offline</div>
+        <div class="callout-text">X-ORBIT is shut down as of May 2026. All services will return in August 2026 for the 2026–27 school year. Your account and data are safe and unaffected.</div>
+      </div>
+    </div>
+
+    <div class="article-body">
+
+      <!-- Why -->
+      <div class="section-block">
+        <h2>Why we shut down every year</h2>
+        <p>
+          X-ORBIT was built for students, and demand for our services follows the school calendar closely. As the academic year comes to an end, usage drops significantly — most of our users are finishing up exams, heading home for the summer, or simply offline for the break.
+        </p>
+        <p>
+          Rather than paying to keep our infrastructure running at full capacity for a fraction of normal traffic, we shut down each summer to cut costs. This is something we do every year, and it lets us reinvest those savings into improvements for the next school year.
+        </p>
+        <p>
+          This is not an emergency, a security incident, or anything negative — it is a planned, routine part of how we operate.
+        </p>
+      </div>
+
+      <!-- Timeline -->
+      <div class="section-block">
+        <h2>Timeline</h2>
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-dot done"><i class="fas fa-check"></i></div>
+            <div class="timeline-content">
+              <div class="timeline-label done">2025–26 School Year</div>
+              <div class="timeline-desc">X-ORBIT was fully operational throughout the 2025–26 academic year, serving students across the network.</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot current"><i class="fas fa-ban"></i></div>
+            <div class="timeline-content">
+              <div class="timeline-label current">Now — Shutdown (May–July 2026)</div>
+              <div class="timeline-desc">All X-ORBIT services are offline for the summer. Logins are disabled. Your account remains intact and will be waiting when we return.</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot upcoming"><i class="fas fa-rotate-right"></i></div>
+            <div class="timeline-content">
+              <div class="timeline-label upcoming">August 2026 — We Return</div>
+              <div class="timeline-desc">Services will be restored ahead of the 2026–27 school year. Expect improvements, updates, and the same X-ORBIT experience you're used to.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- What's affected -->
+      <div class="section-block">
+        <h2>What's affected</h2>
+        <div class="affected-list">
+          <div class="affected-row">
+            <span class="affected-name"><i class="fas fa-right-to-bracket"></i> Login &amp; Authentication</span>
+            <span class="status-pill">Shutdown</span>
+          </div>
+          <div class="affected-row">
+            <span class="affected-name"><i class="fas fa-browser"></i> Proxy Browser</span>
+            <span class="status-pill">Shutdown</span>
+          </div>
+          <div class="affected-row">
+            <span class="affected-name"><i class="fas fa-code"></i> API Services</span>
+            <span class="status-pill">Shutdown</span>
+          </div>
+          <div class="affected-row">
+            <span class="affected-name"><i class="fas fa-database"></i> Database</span>
+            <span class="status-pill">Shutdown</span>
+          </div>
+          <div class="affected-row">
+            <span class="affected-name"><i class="fas fa-shield-halved"></i> Your Account &amp; Data</span>
+            <span class="status-pill returning">Safe &amp; Unaffected</span>
+          </div>
+          <div class="affected-row">
+            <span class="affected-name"><i class="fas fa-life-ring"></i> Support Portal</span>
+            <span class="status-pill returning">Still Available</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sign-off -->
+      <div class="section-block">
+        <h2>A note from the team</h2>
+        <p class="signoff">
+          Thank you to everyone who used X-ORBIT this year. We genuinely appreciate your support, and we hope the platform has been useful throughout the school year.
+          <br><br>
+          We know a summer break can be inconvenient, and we don't take that lightly. But keeping costs manageable is what allows us to offer X-ORBIT <strong>free of charge</strong> — and to keep improving it year after year.
+          <br><br>
+          We'll be back in <strong>August 2026</strong>, refreshed and ready for the <strong>2026–27 school year</strong>. Until then, take care — and enjoy your summer.
+        </p>
+        <div class="signoff-name">— The X-ORBIT Team</div>
+        <div class="signoff-role">Posted May 2026</div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="article-footer">
+      <span class="footer-copy">&copy; 2026 X-ORBIT. All rights reserved.</span>
+      <div class="footer-links">
+        <a class="footer-link" href="https://xorbit.org"><i class="fas fa-house"></i> Home</a>
+        <a class="footer-link" href="../status/status.html"><i class="fas fa-signal"></i> Status Page</a>
+        <a class="footer-link" href="https://xorbit.org/support"><i class="fas fa-life-ring"></i> Support</a>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

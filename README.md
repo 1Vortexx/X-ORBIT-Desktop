@@ -1,130 +1,214 @@
-<div align="center">
+# X-ORBIT Desktop — Project Reference
 
-<img src="https://codehs.com/uploads/ab65fa0acacaff18144310e79cb0895f" width="96" height="96" style="border-radius:50%" />
+## What It Is
 
-# X-ORBIT Desktop
+A browser-based desktop operating system built entirely in HTML, CSS, and JavaScript.
+Live at: **https://xorbit.org**
 
-**A full desktop operating system experience — running entirely in the browser.**
-
-[![Release](https://img.shields.io/badge/release-5.5.7%20Ventas-7c3aed?style=flat-square)](https://github.com/1Vortexx/hammerspoon/releases)
-[![Status](https://img.shields.io/badge/status-stable-22c55e?style=flat-square)](https://xorbit.org)
-[![Built With](https://img.shields.io/badge/built%20with-HTML%20%2F%20CSS%20%2F%20JS-a855f7?style=flat-square)](#)
-[![License](https://img.shields.io/badge/license-proprietary-475569?style=flat-square)](#)
-
-[Live Demo](https://xorbit.org) · [Support Portal](https://xorbit.org/support) · [Changelogs](https://xorbit.org/changelogs)
-
-<br/>
-
-![X-ORBIT Promotional](https://raw.githubusercontent.com/1Vortexx/X-ORBIT-Desktop/main/assets/promotional.png)
-
-</div>
-
----
-
-## What is X-ORBIT?
-
-X-ORBIT Desktop is a browser-based operating system built entirely in HTML, CSS, and JavaScript. It delivers a full windowed desktop environment — complete with a dock, menu bar, notification center, and native-feeling apps — from any modern web browser, with nothing to install.
-
-X-ORBIT is a passion project pushing the boundaries of what the web can do.
-
----
-
-## Features
-
-### Desktop Environment
-- **Windowed UI** — resizable, draggable windows with macOS-style title bar controls (close, minimize, maximize)
-- **Dock** — app launcher with hover animations and active indicators
-- **Menu Bar** — clock, notification badge, quick-access menus
-- **Notification Center** — in-OS notification feed with filtering
-- **Themes** — swappable theme stylesheets (Dark, Minimalist, Orange, and more)
-- **PWA Support** — installable as a standalone desktop/mobile app via Web App Manifest
-
-### Authentication
-- **macOS Catalina-style login screen** — full-screen wallpaper, floating account circles, glassmorphism inputs
-- **Remembered user** — saves the last logged-in account with avatar loading
-- **Click-first interaction** — circles animate to center on click before showing the password field
-- **Field state indicators** — inputs turn red/green with Font Awesome icons on failed/successful login
-- **Inline account creation flow** — transforms the login screen to guide new users through the support portal signup process
-- **Account warnings** — modal acknowledgement for flagged accounts before login completes
-- Powered by **Supabase** for auth, login attempt logging, and live alert fetching
-
-### Built-in Apps
-
-| App | Description |
-|-----|-------------|
-| **Browser** | Full in-OS web browser with Ultraviolet and Rammerhead proxy support for unrestricted browsing |
-| **Music** | Integrated music player linked to a proxies Spotify SDK thorugh Monochrome |
-| **Minecraft** | Playable Minecraft via Eaglecraft 1.12 |
-| **Jitter** | Built-in X-ORBIT messaging platform to DM your friends |
-| **Changelog** | In-OS release notes viewer |
-| **Support** | Help & support portal access |
-| **Settings** | OS configuration and personalization |
+Features:
+- Full windowed desktop environment with resizable/draggable windows, dock, and menu bar
+- macOS Catalina-style login screen powered by Supabase auth with login attempt logging
+- Built-in proxy browser (Orbix engine on Ultraviolet + Rammerhead backend)
+- Spotify music player, Minecraft (Eaglercraft), Jitter.video, and direct messaging
+- In-OS notification center, terminal emulator, changelogs viewer, and admin dashboard
+- Live alert system (downtime, maintenance, info) fetched from Supabase and shown on login
+- PWA support — installable as a standalone desktop or mobile app via Web App Manifest
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|---|---|
 | Frontend | HTML5, CSS3, Vanilla JavaScript |
-| Auth & Database | [Supabase](https://supabase.com) |
-| Proxy | [Ultraviolet](https://github.com/titaniumnetwork-dev/Ultraviolet) + [Rammerhead](https://github.com/binary-person/rammerhead) |
-| Icons | [Font Awesome 6](https://fontawesome.com) |
-| Fonts | [Inter](https://fonts.google.com/specimen/Inter) (Google Fonts) |
-| PWA | Web App Manifest + Service Worker |
-| Hosting | Custom domain via CNAME () |
+| Auth & Database | Supabase (PostgreSQL) |
+| Proxy | Ultraviolet (Orbix engine) + Rammerhead |
+| Email notifications | Resend API (via Supabase Edge Functions / Deno) |
+| Icons | Font Awesome 6 |
+| Fonts | Inter (Google Fonts) |
+| PWA | Web App Manifest (`manifest.json`) + Service Worker (`sw.js`) |
+| Hosting | Custom domain — `xorbit.org` |
 
 ---
 
-## Getting Started
+## Environment Variables
 
-X-ORBIT is account-gated to prevent abuse. To get access:
+### Client-side (set directly in HTML/JS files)
 
-1. Visit the [Support Portal](https://xorbit.org/support)
-2. Register for an Account Services account
-3. Submit a ticket requesting X-ORBIT access
-4. Receive your login credentials via email
+```
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+```
 
-Once you have credentials, log in at [xorbit.org](https://xorbit.org).
+### Supabase Edge Functions
+
+Required secrets set in the Supabase dashboard under Project Settings → Edge Functions:
+
+```
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=        # optional — defaults to: X-ORBIT <noreply@updates.xorbit.org>
+APP_URL=                  # optional — defaults to: https://xorbit.org/jittery.html
+```
+
+The service role key is used only inside Edge Functions (server-side). It is never exposed client-side.
+
+---
 
 ## Project Structure
 
 ```
 xorbit-main/
-├── index.html              # Landing page
-├── app.html                # Main desktop OS shell
-├── auth.html               # Login screen
-├── browser.html            # In-OS web browser
-├── terminal.html           # Terminal emulator
-├── changelogs.html
-├── X-MUSIC.html            # Music app
-├── support.html
-├── manifest.json           # PWA manifest
-├── sw.js                   # Service worker
-├── theme-minimalist.css
-├── theme-orange.css
-└── ...
+├── index.html                  # Landing/marketing page
+├── auth.html                   # Login screen (Supabase auth, macOS-style UI)
+├── browser.html                # In-OS proxy browser (Orbix + Rammerhead)
+├── terminal.html               # Web-based terminal emulator
+├── account.html                # Account settings and profile page
+├── support.html                # Support portal / early access signup
+├── notifications.html          # Notification feed
+├── notification-center.html    # In-OS notification center app
+├── changelogs.html             # Release notes viewer
+├── render.html                 # Render page
+├── uv-render.html              # Ultraviolet render page
+├── build-info.html             # Build metadata display
+├── spotify-player.html         # Spotify music app
+├── X-MUSIC.html                # X-MUSIC player
+├── minecraft.html              # Minecraft (Eaglercraft) embed
+├── jittery.html                # Jitter.video client
+├── studios.html                # X-ORBIT Studios hub
+├── cipher.html                 # Cipher tool
+├── cipher.js                   # Cipher logic
+├── blockblast.html             # Block Blast game
+├── doom.html                   # Doom embed
+├── blocked.html                # Blocked/access denied page
+├── timeout.html                # Session timeout page
+├── error.html                  # Error page
+├── the-interval.html           # The Interval page
+├── privacy-policy.html         # Privacy policy
+├── tos.html                    # Terms of service
+├── index-backup.html           # Landing page backup
+│
+├── admin/
+│   ├── dashboard.html          # Admin dashboard — alerts, users, system status
+│   └── logs.html               # Login attempt logs viewer
+│
+├── status/
+│   └── status.html             # Live service status page
+│
+├── blog/
+│   └── yearly-shutdown.html    # Blog post — yearly shutdown notice
+│
+├── supabase/
+│   └── functions/
+│       ├── notify-new-message/ # Edge Function — sends DM email notifications via Resend
+│       └── send-welcome-email/ # Edge Function — sends welcome email on account creation
+│
+├── theme-minimalist.css        # Minimalist theme stylesheet
+├── theme-orange.css            # Orange theme stylesheet
+├── manifest.json               # PWA manifest (name, icons, theme color #7850ff)
+├── sw.js                       # Service worker — minimal install-prompt enabler
+├── .gitattributes
+└── service_components_rows.sql # Seed data for the service_components Supabase table
 ```
 
 ---
 
-## Credits
+## Database Schema
 
-<table>
-  <tr>
-    <td align="center">
-      <strong>Demitri Burns</strong><br/>
-      <sub>Founder · Lead Developer · Designer</sub><br/>
-    </td>
-  </tr>
-</table>
+Supabase is used for auth, direct messaging, alerts, and service status. Key tables:
+
+### `service_components`
+Tracks live status of system components displayed on the status page.
+
+```sql
+id                  uuid (PK)
+component_id        text        -- e.g. 'proxy-ultraviolet', 'auth-login'
+component_name      text        -- Display name, e.g. 'Orbix'
+component_description text
+parent_service_id   text        -- Groups components: 'proxy-browser', 'authentication', 'database', 'api-services'
+status              text        -- 'operational' | 'degraded' | 'outage'
+issue_description   text
+priority            int
+created_at          timestamptz
+updated_at          timestamptz
+```
+
+Seed data is in `service_components_rows.sql` — run in Supabase SQL editor to populate.
+
+### Other tables (managed via Supabase dashboard)
+- `dm_conversations` — direct message threads (`participant_1_email`, `participant_2_email`, `is_group`, `group_name`, `participants`)
+- User auth is handled natively by Supabase Auth
 
 ---
 
-<div align="center">
+## Design System
 
-**X-ORBIT** — All systems operational. This repository only includes front-end web code. The backend of X-ORBIT is closed-source and is not within this repo.
+| Token | Value |
+|---|---|
+| Background | `#000000` |
+| Background raised | `#080808` |
+| Background card | `#0a0a0a` |
+| Border | `rgba(255, 255, 255, 0.08)` |
+| Border highlight | `rgba(255, 255, 255, 0.14)` |
+| Text primary | `#ffffff` |
+| Text secondary | `rgba(255, 255, 255, 0.45)` |
+| Text muted | `rgba(255, 255, 255, 0.18)` |
+| Accent green | `#22c55e` |
+| Accent purple | `#7c6af7` |
+| PWA theme color | `#7850ff` |
 
-[xorbit.org](https://xorbit.org) · [Support](https://xorbit.org/support) · [Terms](https://xorbit.org/tos) · [Privacy](https://xorbit.org/privacy)
+Themes are swappable via external CSS files (`theme-minimalist.css`, `theme-orange.css`).
 
-</div>
+---
+
+## Hosting
+
+| Detail | Value |
+|---|---|
+| Domain | `xorbit.org` |
+| Live app | `https://xorbit.org` |
+| Admin | `https://xorbit.org/admin/dashboard` |
+| Status page | `https://xorbit.org/status/status.html` |
+| Support portal | `https://xorbit.org/support` |
+| Edge Functions | Deployed via Supabase CLI |
+
+---
+
+## Releases
+
+| Version | Codename | Status | Date |
+|---|---|---|---|
+| 5.1.0 | Nova | Stable | Apr 2026 |
+| 5.0.1B | Ventas | Beta | Feb 2026 |
+| 4.6.1 | Astra | Stable | Feb 2026 |
+
+---
+
+## Deploying Edge Functions
+
+Supabase Edge Functions are located in `supabase/functions/`. To deploy:
+
+```bash
+# Deploy a single function
+supabase functions deploy notify-new-message
+supabase functions deploy send-welcome-email
+
+# Set secrets
+supabase secrets set RESEND_API_KEY=your_key
+supabase secrets set RESEND_FROM_EMAIL="X-ORBIT <noreply@updates.xorbit.org>"
+supabase secrets set APP_URL=https://xorbit.org/jittery.html
+```
+
+The `notify-new-message` function is triggered by a Supabase database webhook on `INSERT` to the DM messages table. Configure the webhook in Supabase under Database → Webhooks.
+
+---
+
+## Access
+
+X-ORBIT is account-gated. Access is by application while in early access:
+
+1. Visit the [Support Portal](https://xorbit.org/support)
+2. Register for an Account Services account
+3. Submit a ticket requesting X-ORBIT access
+4. Receive credentials via email
