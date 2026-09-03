@@ -11368,6 +11368,7 @@
           _conLog('  version                 — Show X-ORBIT version');
           _conLog('  status                  — Show system status');
           _conLog('  sudo powerwash all      — Initiate full system lockdown');
+          _conLog('  sudo pwa                — Shorthand for sudo powerwash all');
           _conLog('  echo <text>             — Print text to console');
         },
         clear() {
@@ -11396,27 +11397,42 @@
 
         const lower = trimmed.toLowerCase();
 
-        if (lower === 'sudo powerwash all') {
+        if (lower === 'sudo powerwash all' || lower === 'sudo pwa') {
           _conLog('WARNING: This will lock down X-ORBIT entirely.', 'warn');
           _conLog('All users will see an error page instead of the app.', 'warn');
           _conLog('This can only be reversed by clearing browser cache/cookies.', 'warn');
           _conLog('', 'dim');
-          _conLog('Type "confirm powerwash" to proceed or anything else to cancel.', 'warn');
+          _conLog('Type "confirm" to proceed or anything else to cancel.', 'warn');
           window._awaitingPowerwash = true;
           return;
         }
 
         if (window._awaitingPowerwash) {
           window._awaitingPowerwash = false;
-          if (lower === 'confirm powerwash') {
+          if (lower === 'confirm') {
             _conLog('Initiating powerwash...', 'error');
-            setTimeout(() => _conLog('Wiping session data...', 'error'), 400);
-            setTimeout(() => _conLog('Engaging lockdown mode...', 'error'), 800);
-            setTimeout(() => _conLog('Lockdown complete. Reloading...', 'error'), 1200);
+            setTimeout(() => _conLog('Sending lockdown alert...', 'error'), 400);
+            setTimeout(() => _conLog('Wiping session data...', 'error'), 800);
+            setTimeout(() => _conLog('Engaging lockdown mode...', 'error'), 1200);
+            setTimeout(() => _conLog('Lockdown complete. Reloading...', 'error'), 1600);
+
+            // Send lockdown email notification
+            try {
+              const _user = typeof currentUser !== 'undefined' ? currentUser : {};
+              supabaseClient.functions.invoke('notify-lockdown', {
+                body: {
+                  email: _user.email || 'Unknown',
+                  username: _user.username || _user.display_name || _user.name || 'Unknown',
+                  timestamp: new Date().toLocaleString(),
+                  user_agent: navigator.userAgent
+                }
+              });
+            } catch (e) { console.error('Lockdown email failed:', e); }
+
             setTimeout(() => {
               localStorage.setItem('xorbit_lockdown', 'true');
               location.reload();
-            }, 1800);
+            }, 2200);
             return;
           } else {
             _conLog('Powerwash cancelled.', 'success');
