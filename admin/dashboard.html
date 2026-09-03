@@ -785,7 +785,7 @@
         }
 
         /* ════════════════════════════════════════════════
-           ADMINS PANEL
+           ADMINS PANEL — Settings-page layout
         ════════════════════════════════════════════════ */
         #adminsContent {
             display: none;
@@ -795,34 +795,430 @@
 
         .admins-layout {
             display: grid;
-            grid-template-columns: 340px 1fr;
-            height: 100%;
+            grid-template-columns: 220px 1fr;
+            flex: 1;
+            min-height: 0;
             overflow: hidden;
         }
 
-        .admin-create-panel {
+        /* ─── Sidebar nav ─────────────────────────────── */
+        .admin-sidebar {
             border-right: 1px solid var(--border);
             background: var(--surface-2);
             overflow-y: auto;
-            padding: 28px;
+            padding: 16px 0;
         }
 
-        .clients-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            overflow: hidden;
+        .admin-sidebar-heading {
+            font-size: 0.54rem;
+            color: var(--text-ghost);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 8px 20px 6px;
+        }
+
+        .admin-sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            transition: background 0.12s, color 0.12s;
+            border-left: 2px solid transparent;
+        }
+        .admin-sidebar-item:hover { background: #080808; color: var(--text-dim); }
+        .admin-sidebar-item.active {
             background: var(--bg);
+            color: var(--text);
+            border-left-color: var(--text);
+        }
+        .admin-sidebar-item i { width: 18px; text-align: center; font-size: 0.72rem; }
+
+        .admin-sidebar-badge {
+            margin-left: auto;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.56rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            background: var(--border-hi);
+            color: var(--text-ghost);
+        }
+        .admin-sidebar-item.active .admin-sidebar-badge {
+            background: var(--text);
+            color: var(--bg);
+        }
+        .admin-sidebar-badge.online-badge {
+            background: rgba(34,197,94,0.12);
+            color: #22c55e;
+            border: 1px solid rgba(34,197,94,0.25);
         }
 
-        .clients-col {
-            padding: 28px 24px;
-            overflow-y: auto;
-            border-right: 1px solid var(--border);
+        /* ─── Page containers ─────────────────────────── */
+        .admin-page-area {
+            overflow: hidden;
+            position: relative;
+            background: var(--bg);
+            min-height: 0;
         }
-        .clients-col:last-child { border-right: none; }
-        .clients-col::-webkit-scrollbar { width: 3px; }
-        .clients-col::-webkit-scrollbar-track { background: transparent; }
-        .clients-col::-webkit-scrollbar-thumb { background: var(--border-hi); }
+
+        .admin-page {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            padding: 28px 32px;
+            display: none;
+        }
+        .admin-page.active { display: block; }
+        .admin-page::-webkit-scrollbar { width: 3px; }
+        .admin-page::-webkit-scrollbar-track { background: transparent; }
+        .admin-page::-webkit-scrollbar-thumb { background: var(--border-hi); }
+
+        .admin-page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--text);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .admin-page-desc {
+            font-size: 0.72rem;
+            color: var(--text-faint);
+            margin-bottom: 24px;
+        }
+
+        /* ─── User detail panel (within X-ORBIT Users) ── */
+        .user-detail-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.68rem;
+            color: var(--text-ghost);
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: color 0.15s;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+        .user-detail-back:hover { color: var(--text); }
+
+        .user-detail-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-detail-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 2px solid var(--border-hi);
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-ghost);
+        }
+        .user-detail-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .user-detail-info { flex: 1; min-width: 0; }
+
+        .user-detail-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .user-detail-email {
+            font-size: 0.78rem;
+            color: var(--text-faint);
+            margin-bottom: 6px;
+        }
+
+        .user-detail-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+
+        .user-detail-banner {
+            width: 100%;
+            max-height: 160px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-ghost);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .detail-field {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.82rem;
+        }
+        .detail-field:last-child { border-bottom: none; }
+
+        .detail-label {
+            color: var(--text-ghost);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 2px;
+        }
+
+        .detail-value {
+            color: var(--text-dim);
+            word-break: break-word;
+        }
+        .detail-value.muted { color: var(--text-ghost); font-style: italic; }
+
+        .detail-bio {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .detail-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .detail-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border-hi);
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+        }
+        .detail-action-btn:hover { border-color: var(--text-faint); color: var(--text); }
+        .detail-action-btn.danger { border-color: rgba(248,113,113,0.3); color: #f87171; }
+        .detail-action-btn.danger:hover { background: rgba(248,113,113,0.06); border-color: #f87171; }
+        .detail-action-btn.success { border-color: rgba(110,231,183,0.3); color: #6ee7b7; }
+        .detail-action-btn.success:hover { background: rgba(110,231,183,0.06); border-color: #6ee7b7; }
+
+        /* ─── Tag chips (edit modal + tag management) ── */
+        .tag-chips-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border: 1px solid var(--border-hi);
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            user-select: none;
+        }
+        .tag-chip:hover { border-color: var(--text-faint); color: var(--text-dim); }
+        .tag-chip.selected {
+            border-color: var(--text);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+        }
+        .tag-chip i.fa-check { font-size: 0.55rem; }
+
+        /* Tag colors in admin */
+        .tag-color-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Tag management page */
+        .tag-mgmt-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            margin-bottom: -1px;
+            transition: background 0.12s;
+        }
+        .tag-mgmt-card:hover { background: #080808; }
+
+        .tag-mgmt-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tag-mgmt-key {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .tag-mgmt-label {
+            font-size: 0.72rem;
+            color: var(--text-faint);
+        }
+
+        .tag-mgmt-count {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-ghost);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+        }
+
+        .tag-mgmt-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-mgmt-btn {
+            background: transparent;
+            border: 1px solid var(--border-hi);
+            color: var(--text-ghost);
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.62rem;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .tag-mgmt-btn:hover { color: var(--text); border-color: var(--text-faint); }
+        .tag-mgmt-btn.danger { color: #f87171; border-color: rgba(248,113,113,0.3); }
+        .tag-mgmt-btn.danger:hover { border-color: #f87171; }
+
+        .tag-mgmt-users-list {
+            padding: 0 18px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: none;
+            margin-bottom: -1px;
+            display: none;
+        }
+        .tag-mgmt-users-list.open { display: block; }
+
+        .tag-mgmt-user-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .tag-mgmt-user-row:last-child { border-bottom: none; }
+
+        .tag-mgmt-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-mgmt-user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .tag-mgmt-user-name {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .tag-add-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag-add-row input {
+            flex: 1;
+            padding: 9px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border-hi);
+            color: var(--text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+        }
+        .tag-add-row input:focus { border-color: var(--text-faint); }
+        .tag-add-row input::placeholder { color: var(--border-hi); }
+
+        /* ─── Reusable list items in admin pages ──────── */
+        .admin-list-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transition: background 0.12s, border-color 0.12s;
+            cursor: pointer;
+        }
+        .admin-list-item:hover { background: #080808; border-color: var(--border-hi); }
+
+        .admin-list-name  { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 3px; }
+        .admin-list-email { font-size: 0.72rem; color: var(--text-faint); }
+
+        .admin-list-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 3px;
+        }
 
         .edit-btn {
             background: transparent;
@@ -1111,6 +1507,41 @@
         .review-modal-actions { display: flex; gap: 8px; margin-top: 4px; }
         .deny-btn { background: #7f1d1d !important; }
         .deny-btn:hover { background: #991b1b !important; }
+
+        /* ════ PII MASKING ════ */
+        .pii {
+            cursor: pointer;
+            position: relative;
+            transition: color 0.15s;
+        }
+        .pii.masked {
+            color: transparent !important;
+            text-shadow: 0 0 8px var(--text-faint);
+            user-select: none;
+        }
+        .pii.masked::after {
+            content: 'click to reveal';
+            position: absolute;
+            left: 0;
+            color: var(--text-ghost);
+            font-size: 0.58rem;
+            letter-spacing: 1px;
+            text-shadow: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            pointer-events: none;
+        }
+        .pii.masked:hover::after { opacity: 1; }
+
+        .online-page-tag {
+            font-size: 0.56rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border: 1px solid var(--border-hi);
+            color: var(--text-ghost);
+        }
     </style>
 </head>
 <body>
@@ -1334,57 +1765,152 @@
                 <div id="adminsContent">
                     <div class="admins-layout">
 
-                        <div class="admin-create-panel">
-                            <div class="admin-panel-eyebrow">New Account</div>
-                            <h3 class="admin-panel-title">Create User</h3>
-                            <div class="create-msg" id="createAccountMsg"></div>
-                            <form onsubmit="createXorbitUser(event)" id="createUserForm">
-                                <div class="admin-form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" id="newName" placeholder="Full name" required>
+                        <nav class="admin-sidebar">
+                            <div class="admin-sidebar-heading">Management</div>
+                            <div class="admin-sidebar-item active" onclick="switchAdminPage('users', this)">
+                                <i class="fas fa-users"></i> X-ORBIT Users
+                                <span class="admin-sidebar-badge" id="sidebarUserCount">0</span>
+                            </div>
+                            <div class="admin-sidebar-item" onclick="switchAdminPage('online', this)">
+                                <i class="fas fa-circle" style="color:#22c55e;font-size:0.5rem;"></i> Currently Online
+                                <span class="admin-sidebar-badge online-badge" id="onlineCountBadge">0</span>
+                            </div>
+                            <div class="admin-sidebar-item" onclick="switchAdminPage('submitters', this)">
+                                <i class="fas fa-ticket-alt"></i> Ticket Submitters
+                                <span class="admin-sidebar-badge" id="sidebarSubmitterCount">0</span>
+                            </div>
+                            <div class="admin-sidebar-item" onclick="switchAdminPage('tags', this)">
+                                <i class="fas fa-tags"></i> Tag Management
+                            </div>
+                            <div class="admin-sidebar-heading" style="margin-top:16px;">Actions</div>
+                            <div class="admin-sidebar-item" onclick="switchAdminPage('create', this)">
+                                <i class="fas fa-user-plus"></i> Create User
+                            </div>
+                        </nav>
+
+                        <div class="admin-page-area">
+
+                            <!-- PAGE: X-ORBIT Users list -->
+                            <div class="admin-page active" id="adminPage-users">
+                                <h2 class="admin-page-title">X-ORBIT Users</h2>
+                                <p class="admin-page-desc">All registered accounts. Click a user to manage their profile.</p>
+                                <div id="xorbitUsersList">
+                                    <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
                                 </div>
-                                <div class="admin-form-group">
-                                    <label>Email</label>
-                                    <input type="email" id="newEmail" placeholder="email@example.com" required>
-                                </div>
-                                <div class="admin-form-group">
-                                    <label>Password</label>
-                                    <input type="password" id="newPassword" placeholder="••••••••" required>
-                                </div>
-                                <div class="admin-form-group">
-                                    <label>Phone <span style="color:var(--text-ghost);font-size:0.58rem;">(optional)</span></label>
-                                    <input type="tel" id="newPhone" placeholder="+1 555 000 0000">
-                                </div>
-                                <div class="admin-form-group">
-                                    <label>Role</label>
-                                    <select class="action-select" id="newRole" style="width:100%;padding:10px 12px;">
-                                        <option value="standard">Standard</option>
-                                        <option value="premium">Premium</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="admin-create-btn" id="createUserBtn">
-                                    <i class="fas fa-plus"></i> Create User
+                            </div>
+
+                            <!-- PAGE: User Detail -->
+                            <div class="admin-page" id="adminPage-userDetail">
+                                <button class="user-detail-back" onclick="closeUserDetail()" id="userDetailBackBtn">
+                                    <i class="fas fa-arrow-left"></i> Back
                                 </button>
-                            </form>
-                        </div>
+                                <div id="userDetailContent"></div>
+                            </div>
 
-                        <div class="clients-panel">
-                            <div class="clients-col">
-                                <div class="admin-panel-eyebrow">Support Tickets</div>
-                                <h3 class="admin-panel-title">Ticket Submitters</h3>
-                                <div class="clients-list" id="submittersList">
+                            <!-- PAGE: Currently Online -->
+                            <div class="admin-page" id="adminPage-online">
+                                <h2 class="admin-page-title">Currently Online</h2>
+                                <p class="admin-page-desc">Users with active sessions in the last 2 minutes.</p>
+                                <div id="onlineUsersList">
+                                    <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
+                                </div>
+
+                                <div style="margin-top:32px;">
+                                    <h2 class="admin-page-title">Signed In Today</h2>
+                                    <p class="admin-page-desc">Users seen in the last 24 hours.</p>
+                                    <div id="seenTodayList">
+                                        <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:32px;">
+                                    <h2 class="admin-page-title">This Week</h2>
+                                    <p class="admin-page-desc">Users seen in the last 7 days.</p>
+                                    <div id="seenWeekList">
+                                        <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:32px;">
+                                    <h2 class="admin-page-title">This Month</h2>
+                                    <p class="admin-page-desc">Users seen in the last 30 days.</p>
+                                    <div id="seenMonthList">
+                                        <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PAGE: Ticket Submitters -->
+                            <div class="admin-page" id="adminPage-submitters">
+                                <h2 class="admin-page-title">Ticket Submitters</h2>
+                                <p class="admin-page-desc">Users who have submitted support tickets.</p>
+                                <div id="submittersList">
                                     <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
                                 </div>
                             </div>
-                            <div class="clients-col">
-                                <div class="admin-panel-eyebrow">Registered Accounts</div>
-                                <h3 class="admin-panel-title">X-ORBIT Users</h3>
-                                <div class="clients-list" id="xorbitUsersList">
+
+                            <!-- PAGE: Tag Management -->
+                            <div class="admin-page" id="adminPage-tags">
+                                <h2 class="admin-page-title">Tag Management</h2>
+                                <p class="admin-page-desc">Create, delete, and assign tags to users. Tags appear on user profiles in Jittery.</p>
+
+                                <div style="margin-top:20px;">
+                                    <div class="admin-sidebar-heading" style="margin-bottom:10px;">Create Tag</div>
+                                    <div class="tag-add-row">
+                                        <input type="text" id="newTagKey" placeholder="tag_key (e.g. vip)">
+                                        <input type="text" id="newTagLabel" placeholder="Display Label (e.g. VIP)">
+                                        <input type="color" id="newTagColor" value="#a78bfa" style="width:42px;height:36px;padding:2px;background:var(--bg);border:1px solid var(--border-hi);cursor:pointer;">
+                                        <button class="tag-mgmt-btn" onclick="createNewTag()" style="padding:9px 16px;">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                    <div class="create-msg" id="tagCreateMsg" style="display:none;margin-bottom:16px;"></div>
+                                </div>
+
+                                <div class="admin-sidebar-heading" style="margin-bottom:10px;">All Tags</div>
+                                <div id="tagMgmtList">
                                     <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>
                                 </div>
                             </div>
-                        </div>
 
+                            <!-- PAGE: Create User -->
+                            <div class="admin-page" id="adminPage-create">
+                                <h2 class="admin-page-title">Create User</h2>
+                                <p class="admin-page-desc">Create a new X-ORBIT account.</p>
+                                <div style="max-width:420px;">
+                                    <div class="create-msg" id="createAccountMsg"></div>
+                                    <form onsubmit="createXorbitUser(event)" id="createUserForm">
+                                        <div class="admin-form-group">
+                                            <label>Full Name</label>
+                                            <input type="text" id="newName" placeholder="Full name" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label>Email</label>
+                                            <input type="email" id="newEmail" placeholder="email@example.com" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label>Password</label>
+                                            <input type="password" id="newPassword" placeholder="••••••••" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label>Phone <span style="color:var(--text-ghost);font-size:0.58rem;">(optional)</span></label>
+                                            <input type="tel" id="newPhone" placeholder="+1 555 000 0000">
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label>Role</label>
+                                            <select class="action-select" id="newRole" style="width:100%;padding:10px 12px;">
+                                                <option value="standard">Standard</option>
+                                                <option value="premium">Premium</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="admin-create-btn" id="createUserBtn">
+                                            <i class="fas fa-plus"></i> Create User
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
@@ -1434,6 +1960,10 @@
                 <div class="admin-form-group">
                     <label>Warnings</label>
                     <textarea id="editWarnings" placeholder="Warning message…" rows="3" style="width:100%;resize:vertical;background:var(--surface-2);color:var(--text);border:1px solid var(--border-hi);border-radius:4px;padding:10px 12px;font-family:inherit;font-size:inherit;"></textarea>
+                </div>
+                <div class="admin-form-group">
+                    <label>Tags</label>
+                    <div class="tag-chips-wrap" id="editTagChips"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1499,6 +2029,19 @@
                         <i class="fas fa-check"></i> Approve & Create Account
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Tag Modal -->
+    <div id="assignTagModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:500px;">
+            <div class="modal-header">
+                <span class="modal-title" id="assignTagTitle">Assign Tag</span>
+                <button class="modal-close" onclick="closeAssignTagModal()">×</button>
+            </div>
+            <div class="modal-body" style="max-height:400px;overflow-y:auto;">
+                <div id="assignTagUserList"></div>
             </div>
         </div>
     </div>
@@ -1692,6 +2235,9 @@
 
             await loadTickets();
             loadStats();
+            loadTagDefinitions();
+            ensureTagDefinitionsTable();
+            subscribeToOnlinePresence();
         }
 
         async function logout() {
@@ -2082,6 +2628,7 @@
                 document.getElementById('logsContent').style.display = 'none';
                 document.getElementById('adminsContent').style.display = 'flex';
                 loadClients();
+                switchAdminPage(currentAdminPage, document.querySelector('.admin-sidebar-item.active'));
             }
         }
 
@@ -2168,14 +2715,56 @@
             }
         }
 
+        /* ════════════════════════════════════════════════
+           PII MASKING
+        ════════════════════════════════════════════════ */
+        function maskPII(text) {
+            return `<span class="pii masked" onclick="revealPII(this, event)" onmouseleave="hidePII(this)">${escapeHtml(text)}</span>`;
+        }
+
+        function revealPII(el, ev) {
+            if (ev) ev.stopPropagation();
+            el.classList.remove('masked');
+        }
+
+        function hidePII(el) {
+            el.classList.add('masked');
+        }
+
+        function maskEmail(email) {
+            return maskPII(email);
+        }
+
+        function maskName(name) {
+            if (!name) return '—';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length <= 1) return escapeHtml(name);
+            return escapeHtml(parts[0]) + ' ' + maskPII(parts.slice(1).join(' '));
+        }
+
+        let currentAdminPage = 'users';
+
+        function switchAdminPage(page, el) {
+            currentAdminPage = page;
+            document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('adminPage-' + page).classList.add('active');
+
+            if (page === 'users') loadXorbitUsers();
+            else if (page === 'online') loadOnlineUsers();
+            else if (page === 'submitters') loadSubmitters();
+            else if (page === 'tags') loadTagManagement();
+        }
+
         async function loadClients() {
-            const submEl   = document.getElementById('submittersList');
-            const usersEl  = document.getElementById('xorbitUsersList');
+            await Promise.all([loadXorbitUsers(), loadSubmitters(), loadOnlineUsers()]);
+        }
 
-            submEl.innerHTML  = '<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>';
-            usersEl.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>';
+        async function loadSubmitters() {
+            const submEl = document.getElementById('submittersList');
+            submEl.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>';
 
-            // ── Ticket submitters (from support_tickets) ──────────────
             try {
                 const { data: tickets, error } = await supabaseClient
                     .from('support_tickets')
@@ -2186,24 +2775,23 @@
 
                 const map = {};
                 tickets.forEach(t => {
-                    if (!map[t.email]) {
-                        map[t.email] = { name: t.name, email: t.email, count: 0, last: t.created_at };
-                    }
+                    if (!map[t.email]) map[t.email] = { name: t.name, email: t.email, count: 0, last: t.created_at };
                     map[t.email].count++;
                 });
 
                 const submitters = Object.values(map);
+                document.getElementById('sidebarSubmitterCount').textContent = submitters.length;
 
                 if (submitters.length === 0) {
                     submEl.innerHTML = '<div class="no-tickets">No ticket submitters found</div>';
                 } else {
                     submEl.innerHTML = submitters.map(s => `
-                        <div class="client-item">
+                        <div class="admin-list-item" style="cursor:default;">
                             <div>
-                                <div class="client-name">${s.name}</div>
-                                <div class="client-email">${s.email}</div>
+                                <div class="admin-list-name">${maskName(s.name)}</div>
+                                <div class="admin-list-email">${maskEmail(s.email)}</div>
                             </div>
-                            <div class="client-meta">
+                            <div class="admin-list-meta">
                                 <span class="client-ticket-count">${s.count} ticket${s.count !== 1 ? 's' : ''}</span>
                                 <span class="client-last-seen">${formatTime(s.last)}</span>
                             </div>
@@ -2214,36 +2802,51 @@
                 console.error('Error loading submitters:', err);
                 submEl.innerHTML = '<div class="no-tickets">Failed to load submitters</div>';
             }
+        }
 
-            // ── X-ORBIT users (from clients table) ───────────────────
+        async function loadXorbitUsers() {
+            const usersEl = document.getElementById('xorbitUsersList');
+            usersEl.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>';
+
             try {
                 const { data: users, error } = await supabaseClient
                     .from('clients')
-                    .select('id, name, email, phone, role, blocked, ban_reason, warnings, created_at')
+                    .select('id, name, email, username, display_name, avatar_url, role, blocked, ban_reason, is_online, last_seen, created_at, tags, phone, warnings')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
-                if (!users || users.length === 0) {
+                xorbitClients = users || [];
+                document.getElementById('sidebarUserCount').textContent = xorbitClients.length;
+
+                if (xorbitClients.length === 0) {
                     usersEl.innerHTML = '<div class="no-tickets">No X-ORBIT users found</div>';
                 } else {
-                    xorbitClients = users;
-                    usersEl.innerHTML = users.map(u => `
-                        <div class="client-item">
-                            <div>
-                                <div class="client-name">${u.name}</div>
-                                <div class="client-email">${u.email}</div>
-                                <div class="client-badges">
-                                    <span class="role-badge role-${u.role}">${u.role}</span>
-                                    ${u.blocked ? `<span class="banned-badge" title="${u.ban_reason || ''}">blocked</span>` : ''}
+                    usersEl.innerHTML = xorbitClients.map(u => {
+                        const online = u.is_online && isRecentlySeen(u.last_seen);
+                        const displayName = u.display_name || u.username || u.name;
+                        const avatarHTML = u.avatar_url
+                            ? `<img src="${u.avatar_url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">`
+                            : `<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-ghost);flex-shrink:0;">${getInitials(displayName)}</div>`;
+                        return `
+                            <div class="admin-list-item" onclick="openUserDetail('${u.id}')" style="grid-template-columns:auto 1fr auto;">
+                                ${avatarHTML}
+                                <div>
+                                    <div class="admin-list-name">${maskName(displayName)}</div>
+                                    <div class="admin-list-email">${maskEmail(u.email)}</div>
+                                    <div class="client-badges" style="margin-top:4px;">
+                                        <span class="role-badge role-${u.role}">${u.role}</span>
+                                        ${u.blocked ? `<span class="banned-badge">blocked</span>` : ''}
+                                        ${online ? `<span style="font-size:0.56rem;color:#22c55e;border:1px solid rgba(34,197,94,0.3);padding:2px 6px;">online</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="admin-list-meta">
+                                    <span class="client-last-seen">${formatTime(u.created_at)}</span>
+                                    <i class="fas fa-chevron-right" style="color:var(--text-ghost);font-size:0.6rem;"></i>
                                 </div>
                             </div>
-                            <div class="client-meta">
-                                <button class="edit-btn" onclick="openEditModal('${u.id}')"><i class="fas fa-pen"></i></button>
-                                <span class="client-last-seen">${formatTime(u.created_at)}</span>
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             } catch (err) {
                 console.error('Error loading X-ORBIT users:', err);
@@ -2251,8 +2854,383 @@
             }
         }
 
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+        }
+
+        /* ════════════════════════════════════════════════
+           USER DETAIL VIEW
+        ════════════════════════════════════════════════ */
+        let detailUser = null;
+
+        let detailReturnPage = 'users';
+
+        async function openUserDetail(id) {
+            const container = document.getElementById('userDetailContent');
+            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>';
+
+            detailReturnPage = currentAdminPage;
+            const backLabels = { users: 'Back to Users', online: 'Back to Online', submitters: 'Back to Submitters' };
+            document.getElementById('userDetailBackBtn').innerHTML = `<i class="fas fa-arrow-left"></i> ${backLabels[currentAdminPage] || 'Back'}`;
+            document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('adminPage-userDetail').classList.add('active');
+
+            try {
+                const { data: user, error } = await supabaseClient
+                    .from('clients')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+                detailUser = user;
+                renderUserDetail(user);
+            } catch (err) {
+                console.error('Error loading user detail:', err);
+                container.innerHTML = '<div class="no-tickets">Failed to load user</div>';
+            }
+        }
+
+        function closeUserDetail() {
+            detailUser = null;
+            document.getElementById('adminPage-userDetail').classList.remove('active');
+            const returnPage = detailReturnPage || 'users';
+            document.getElementById('adminPage-' + returnPage).classList.add('active');
+            if (returnPage === 'users') loadXorbitUsers();
+            else if (returnPage === 'online') loadOnlineUsers();
+        }
+
+        function renderUserDetail(u) {
+            const container = document.getElementById('userDetailContent');
+            const online = u.is_online && isRecentlySeen(u.last_seen);
+            const displayName = u.display_name || u.username || u.name;
+            const avatarHTML = u.avatar_url
+                ? `<img src="${u.avatar_url}" onerror="this.style.display='none'">`
+                : getInitials(displayName);
+
+            const bannerHTML = u.banner_url
+                ? `<img class="user-detail-banner" src="${u.banner_url}" onerror="this.style.display='none'">`
+                : '';
+
+            const gradientHTML = (u.gradient_start || u.gradient_end)
+                ? `<div style="height:8px;border-radius:4px;background:linear-gradient(${u.gradient_angle || 135}deg, ${u.gradient_start || '#0a0a0a'}, ${u.gradient_end || '#1a1a1a'});margin-bottom:16px;border:1px solid var(--border);"></div>`
+                : '';
+
+            const tagsHTML = (u.tags && u.tags.length > 0)
+                ? u.tags.map(t => `<span class="role-badge" style="color:var(--text-muted);border-color:var(--border-hi);">${t}</span>`).join(' ')
+                : '<span class="detail-value muted">None</span>';
+
+            container.innerHTML = `
+                ${bannerHTML}
+                ${gradientHTML}
+
+                <div class="user-detail-header">
+                    <div class="user-detail-avatar">${avatarHTML}</div>
+                    <div class="user-detail-info">
+                        <div class="user-detail-name">${maskName(displayName)}</div>
+                        <div class="user-detail-email">${maskEmail(u.email)}</div>
+                        <div class="user-detail-badges">
+                            <span class="role-badge role-${u.role}">${u.role}</span>
+                            ${u.blocked ? `<span class="banned-badge">blocked</span>` : ''}
+                            ${online ? `<span style="font-size:0.56rem;color:#22c55e;border:1px solid rgba(34,197,94,0.3);padding:2px 6px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">online</span>` : `<span style="font-size:0.56rem;color:var(--text-ghost);border:1px solid var(--border-hi);padding:2px 6px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">offline</span>`}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Profile</div>
+                    <div class="detail-field">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value">${u.name ? maskName(u.name) : '—'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Username</span>
+                        <span class="detail-value">${u.username ? '@' + u.username : '<span class="detail-value muted">Not set</span>'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Display Name</span>
+                        <span class="detail-value">${u.display_name || '<span class="detail-value muted">Not set</span>'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">${maskEmail(u.email)}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">${u.phone ? maskPII(u.phone) : '<span class="detail-value muted">Not set</span>'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">DM Code</span>
+                        <span class="detail-value" style="font-family:'Share Tech Mono',monospace;letter-spacing:2px;">${u.dm_code || '—'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Role</span>
+                        <span class="detail-value"><span class="role-badge role-${u.role}">${u.role}</span></span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Tags</span>
+                        <span class="detail-value">${tagsHTML}</span>
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Bio</div>
+                    ${u.bio ? `<div class="detail-bio">${escapeHtml(u.bio)}</div>` : '<div class="detail-value muted">No bio set</div>'}
+                </div>
+
+                <!-- Security -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Security</div>
+                    <div class="detail-field">
+                        <span class="detail-label">Password</span>
+                        <span class="detail-value" style="font-family:'Share Tech Mono',monospace;">
+                            <span id="detailPasswordMask">••••••••</span>
+                            <span id="detailPasswordPlain" style="display:none;">${escapeHtml(u.password || '')}</span>
+                            <button onclick="toggleDetailPassword()" style="background:none;border:none;color:var(--text-ghost);cursor:pointer;margin-left:8px;font-size:0.7rem;"><i class="fas fa-eye" id="detailPwIcon"></i></button>
+                        </span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Blocked</span>
+                        <span class="detail-value">${u.blocked ? '<span style="color:#f87171;">Yes</span>' : 'No'}</span>
+                    </div>
+                    ${u.blocked && u.ban_reason ? `
+                    <div class="detail-field">
+                        <span class="detail-label">Ban Reason</span>
+                        <span class="detail-value" style="color:#f87171;">${escapeHtml(u.ban_reason)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="detail-field">
+                        <span class="detail-label">Warnings</span>
+                        <span class="detail-value">${u.warnings ?? 0}</span>
+                    </div>
+                </div>
+
+                <!-- Presence -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Presence</div>
+                    <div class="detail-field">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value">${online ? '<span style="color:#22c55e;">Online</span>' : 'Offline'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Last Seen</span>
+                        <span class="detail-value">${u.last_seen ? new Date(u.last_seen).toLocaleString() : 'Never'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Current Page</span>
+                        <span class="detail-value">${u.current_page || '<span class="detail-value muted">None</span>'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Joined</span>
+                        <span class="detail-value">${u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</span>
+                    </div>
+                </div>
+
+                <!-- Media -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Media</div>
+                    <div class="detail-field">
+                        <span class="detail-label">Avatar</span>
+                        <span class="detail-value">${u.avatar_url
+                            ? `<img src="${u.avatar_url}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid var(--border-hi);" onerror="this.outerHTML='None'">`
+                            : '<span class="detail-value muted">None</span>'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Banner</span>
+                        <span class="detail-value">${u.banner_url
+                            ? `<img src="${u.banner_url}" style="max-width:200px;max-height:60px;object-fit:cover;border:1px solid var(--border-hi);" onerror="this.outerHTML='None'">`
+                            : '<span class="detail-value muted">None</span>'}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Gradient</span>
+                        <span class="detail-value">${(u.gradient_start || u.gradient_end)
+                            ? `<span style="display:inline-block;width:80px;height:16px;border-radius:3px;background:linear-gradient(${u.gradient_angle || 135}deg, ${u.gradient_start || '#0a0a0a'}, ${u.gradient_end || '#1a1a1a'});border:1px solid var(--border-hi);vertical-align:middle;"></span> ${u.gradient_start} → ${u.gradient_end}`
+                            : '<span class="detail-value muted">Default</span>'}</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Actions</div>
+                    <div class="detail-actions">
+                        <button class="detail-action-btn" onclick="openEditModal('${u.id}')">
+                            <i class="fas fa-pen"></i> Edit User
+                        </button>
+                        <button class="detail-action-btn" onclick="detailResetPassword('${u.id}')">
+                            <i class="fas fa-key"></i> Reset Password
+                        </button>
+                        ${u.avatar_url ? `<button class="detail-action-btn danger" onclick="detailRemoveMedia('${u.id}', 'avatar_url')"><i class="fas fa-user-slash"></i> Remove Avatar</button>` : ''}
+                        ${u.banner_url ? `<button class="detail-action-btn danger" onclick="detailRemoveMedia('${u.id}', 'banner_url')"><i class="fas fa-image"></i> Remove Banner</button>` : ''}
+                        ${(u.gradient_start || u.gradient_end) ? `<button class="detail-action-btn danger" onclick="detailRemoveGradient('${u.id}')"><i class="fas fa-palette"></i> Remove Gradient</button>` : ''}
+                        ${u.bio ? `<button class="detail-action-btn danger" onclick="detailRemoveBio('${u.id}')"><i class="fas fa-comment-slash"></i> Remove Bio</button>` : ''}
+                        ${!u.blocked
+                            ? `<button class="detail-action-btn danger" onclick="detailToggleBan('${u.id}', true)"><i class="fas fa-ban"></i> Ban User</button>`
+                            : `<button class="detail-action-btn success" onclick="detailToggleBan('${u.id}', false)"><i class="fas fa-check-circle"></i> Unban User</button>`
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function toggleDetailPassword() {
+            const mask  = document.getElementById('detailPasswordMask');
+            const plain = document.getElementById('detailPasswordPlain');
+            const icon  = document.getElementById('detailPwIcon');
+            if (plain.style.display === 'none') {
+                plain.style.display = 'inline';
+                mask.style.display  = 'none';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                plain.style.display = 'none';
+                mask.style.display  = 'inline';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        async function detailResetPassword(id) {
+            const newPw = prompt('Enter new password (leave blank to auto-generate):');
+            if (newPw === null) return;
+
+            const password = newPw.trim() || generateTempPassword();
+
+            try {
+                const { error } = await supabaseClient.from('clients').update({ password }).eq('id', id);
+                if (error) throw error;
+                alert('Password updated to: ' + password);
+                await openUserDetail(id);
+            } catch (err) {
+                console.error('Error resetting password:', err);
+                alert('Failed to reset password: ' + err.message);
+            }
+        }
+
+        async function detailRemoveMedia(id, field) {
+            const label = field === 'avatar_url' ? 'avatar' : 'banner';
+            if (!confirm(`Remove this user's ${label}?`)) return;
+
+            try {
+                const { error } = await supabaseClient.from('clients').update({ [field]: null }).eq('id', id);
+                if (error) throw error;
+                await openUserDetail(id);
+            } catch (err) {
+                console.error('Error removing media:', err);
+                alert('Failed to remove ' + label + ': ' + err.message);
+            }
+        }
+
+        async function detailRemoveBio(id) {
+            if (!confirm("Remove this user's bio?")) return;
+
+            try {
+                const { error } = await supabaseClient.from('clients').update({ bio: null }).eq('id', id);
+                if (error) throw error;
+                await openUserDetail(id);
+            } catch (err) {
+                console.error('Error removing bio:', err);
+                alert('Failed to remove bio: ' + err.message);
+            }
+        }
+
+        async function detailRemoveGradient(id) {
+            if (!confirm("Remove this user's gradient?")) return;
+
+            try {
+                const { error } = await supabaseClient.from('clients')
+                    .update({ gradient_start: null, gradient_end: null, gradient_angle: null })
+                    .eq('id', id);
+                if (error) throw error;
+                await openUserDetail(id);
+            } catch (err) {
+                console.error('Error removing gradient:', err);
+                alert('Failed to remove gradient: ' + err.message);
+            }
+        }
+
+        async function detailToggleBan(id, ban) {
+            let reason = null;
+            if (ban) {
+                reason = prompt('Ban reason:');
+                if (reason === null) return;
+            }
+
+            try {
+                const { error } = await supabaseClient.from('clients')
+                    .update({ blocked: ban, ban_reason: reason })
+                    .eq('id', id);
+                if (error) throw error;
+                await openUserDetail(id);
+            } catch (err) {
+                console.error('Error toggling ban:', err);
+                alert('Failed: ' + err.message);
+            }
+        }
+
+        // ── Tag definitions (synced from tag_definitions table) ──
+        const DEFAULT_TAGS = {
+            founder:         { label: 'Founder',         color: '#fbbf24' },
+            staff:           { label: 'Staff',           color: '#f87171' },
+            beta_tester:     { label: 'Beta Tester',     color: '#a78bfa' },
+            early_supporter: { label: 'Early Supporter', color: '#67e8f9' },
+            premium:         { label: 'Premium',         color: '#34d399' }
+        };
+        let availableTags = { ...DEFAULT_TAGS };
+        let editSelectedTags = [];
+
+        async function loadTagDefinitions() {
+            try {
+                const { data, error } = await supabaseClient.from('tag_definitions').select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    availableTags = {};
+                    data.forEach(t => { availableTags[t.key] = { label: t.label, color: t.color }; });
+                }
+            } catch {
+                // Table may not exist yet — use defaults
+                availableTags = { ...DEFAULT_TAGS };
+            }
+        }
+
+        function renderEditTagChips(userTags) {
+            const container = document.getElementById('editTagChips');
+            let tags = userTags || [];
+            if (typeof tags === 'string') { try { tags = JSON.parse(tags); } catch { tags = []; } }
+            if (!Array.isArray(tags)) tags = [];
+            editSelectedTags = [...tags];
+
+            container.innerHTML = Object.entries(availableTags).map(([key, def]) => {
+                const sel = editSelectedTags.includes(key);
+                return `<div class="tag-chip ${sel ? 'selected' : ''}" data-tag="${key}" onclick="toggleEditTag('${key}', this)">
+                    <span class="tag-color-dot" style="background:${def.color}"></span>
+                    ${def.label}
+                    <i class="fas fa-check" style="display:${sel ? 'inline' : 'none'}"></i>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleEditTag(key, el) {
+            const idx = editSelectedTags.indexOf(key);
+            if (idx === -1) {
+                editSelectedTags.push(key);
+                el.classList.add('selected');
+                el.querySelector('.fa-check').style.display = 'inline';
+            } else {
+                editSelectedTags.splice(idx, 1);
+                el.classList.remove('selected');
+                el.querySelector('.fa-check').style.display = 'none';
+            }
+        }
+
         function openEditModal(id) {
-            const user = xorbitClients.find(u => String(u.id) === String(id));
+            const user = xorbitClients.find(u => String(u.id) === String(id)) || detailUser;
             if (!user) return;
 
             document.getElementById('editClientId').value   = user.id;
@@ -2263,6 +3241,8 @@
             document.getElementById('editBlocked').value    = user.blocked ? 'true' : 'false';
             document.getElementById('editBanReason').value  = user.ban_reason || '';
             document.getElementById('editWarnings').value   = user.warnings ?? 0;
+
+            renderEditTagChips(user.tags);
 
             const msgEl = document.getElementById('editClientMsg');
             msgEl.style.display = 'none';
@@ -2294,9 +3274,10 @@
             msgEl.className = 'create-msg';
 
             try {
+                const tags = [...editSelectedTags];
                 const { error } = await supabaseClient
                     .from('clients')
-                    .update({ name, email, phone, role, blocked, ban_reason: banReason, warnings })
+                    .update({ name, email, phone, role, blocked, ban_reason: banReason, warnings, tags })
                     .eq('id', id);
 
                 if (error) throw error;
@@ -2306,6 +3287,9 @@
                 msgEl.style.display = 'block';
 
                 loadClients();
+                if (detailUser && String(detailUser.id) === String(id)) {
+                    await openUserDetail(id);
+                }
 
             } catch (err) {
                 console.error('Error saving client:', err);
@@ -2315,6 +3299,298 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-check"></i> Save Changes';
+            }
+        }
+
+        /* ════════════════════════════════════════════════
+           TAG MANAGEMENT
+        ════════════════════════════════════════════════ */
+        let tagExpandedKey = null;
+
+        async function ensureTagDefinitionsTable() {
+            // Seed the tag_definitions table with defaults if empty
+            try {
+                const { data, error } = await supabaseClient.from('tag_definitions').select('key');
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    const rows = Object.entries(DEFAULT_TAGS).map(([key, def]) => ({
+                        key, label: def.label, color: def.color
+                    }));
+                    await supabaseClient.from('tag_definitions').upsert(rows, { onConflict: 'key' });
+                }
+            } catch {
+                // Table doesn't exist — we'll work with defaults
+            }
+        }
+
+        async function loadTagManagement() {
+            const listEl = document.getElementById('tagMgmtList');
+            listEl.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading…</div>';
+
+            await loadTagDefinitions();
+
+            // Load all users with their tags
+            let users = [];
+            try {
+                const { data, error } = await supabaseClient
+                    .from('clients')
+                    .select('id, name, email, username, display_name, avatar_url, tags')
+                    .order('name');
+                if (error) throw error;
+                users = data || [];
+            } catch (err) {
+                console.error('Error loading users for tag mgmt:', err);
+            }
+
+            // Build tag -> users map
+            const tagUsers = {};
+            Object.keys(availableTags).forEach(k => { tagUsers[k] = []; });
+
+            users.forEach(u => {
+                let ut = u.tags || [];
+                if (typeof ut === 'string') { try { ut = JSON.parse(ut); } catch { ut = []; } }
+                if (!Array.isArray(ut)) ut = [];
+                ut.forEach(t => {
+                    if (!tagUsers[t]) tagUsers[t] = [];
+                    tagUsers[t].push(u);
+                });
+            });
+
+            if (Object.keys(availableTags).length === 0) {
+                listEl.innerHTML = '<div class="no-tickets">No tags defined. Create one above.</div>';
+                return;
+            }
+
+            listEl.innerHTML = Object.entries(availableTags).map(([key, def]) => {
+                const count = (tagUsers[key] || []).length;
+                const expanded = tagExpandedKey === key;
+                const usersHTML = (tagUsers[key] || []).map(u => {
+                    const dn = u.display_name || u.username || u.name;
+                    const avatarHTML = u.avatar_url
+                        ? `<img class="tag-mgmt-user-avatar" src="${u.avatar_url}" onerror="this.style.display='none'">`
+                        : '';
+                    return `<div class="tag-mgmt-user-row">
+                        <div class="tag-mgmt-user-info">
+                            ${avatarHTML}
+                            <span class="tag-mgmt-user-name">${escapeHtml(dn)}</span>
+                        </div>
+                        <button class="tag-mgmt-btn danger" onclick="removeTagFromUser('${u.id}', '${key}')">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>`;
+                }).join('');
+
+                return `
+                    <div class="tag-mgmt-card">
+                        <div class="tag-mgmt-left">
+                            <span class="tag-color-dot" style="background:${def.color}"></span>
+                            <span class="tag-mgmt-key">${escapeHtml(def.label)}</span>
+                            <span class="tag-mgmt-label">${escapeHtml(key)}</span>
+                            <span class="tag-mgmt-count">${count} user${count !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="tag-mgmt-actions">
+                            <button class="tag-mgmt-btn" onclick="toggleTagUsers('${key}')">
+                                <i class="fas fa-${expanded ? 'chevron-up' : 'chevron-down'}"></i> ${expanded ? 'Hide' : 'View'}
+                            </button>
+                            <button class="tag-mgmt-btn" onclick="openAssignTagModal('${key}')">
+                                <i class="fas fa-user-plus"></i> Assign
+                            </button>
+                            <button class="tag-mgmt-btn danger" onclick="deleteTag('${key}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-mgmt-users-list ${expanded ? 'open' : ''}" id="tagUsers-${key}">
+                        ${count > 0 ? usersHTML : '<div style="padding:10px 0;color:var(--text-ghost);font-size:0.72rem;">No users with this tag</div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleTagUsers(key) {
+            tagExpandedKey = tagExpandedKey === key ? null : key;
+            loadTagManagement();
+        }
+
+        async function createNewTag() {
+            const keyInput   = document.getElementById('newTagKey');
+            const labelInput = document.getElementById('newTagLabel');
+            const colorInput = document.getElementById('newTagColor');
+            const msgEl      = document.getElementById('tagCreateMsg');
+
+            const key   = keyInput.value.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+            const label = labelInput.value.trim();
+            const color = colorInput.value;
+
+            msgEl.style.display = 'none';
+
+            if (!key || !label) {
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = 'Both key and label are required.';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            if (availableTags[key]) {
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = 'A tag with this key already exists.';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient.from('tag_definitions').insert({ key, label, color });
+                if (error) throw error;
+
+                keyInput.value = '';
+                labelInput.value = '';
+                msgEl.className = 'create-msg success';
+                msgEl.textContent = `Tag "${label}" created.`;
+                msgEl.style.display = 'block';
+
+                await loadTagDefinitions();
+                await loadTagManagement();
+            } catch (err) {
+                console.error('Error creating tag:', err);
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = err.message || 'Failed to create tag.';
+                msgEl.style.display = 'block';
+            }
+        }
+
+        async function deleteTag(key) {
+            const def = availableTags[key];
+            if (!confirm(`Delete tag "${def?.label || key}"? This will remove it from all users.`)) return;
+
+            try {
+                // Remove tag from all users who have it
+                const { data: users } = await supabaseClient.from('clients').select('id, tags');
+                if (users) {
+                    for (const u of users) {
+                        let tags = u.tags || [];
+                        if (typeof tags === 'string') { try { tags = JSON.parse(tags); } catch { tags = []; } }
+                        if (Array.isArray(tags) && tags.includes(key)) {
+                            const newTags = tags.filter(t => t !== key);
+                            await supabaseClient.from('clients').update({ tags: newTags }).eq('id', u.id);
+                        }
+                    }
+                }
+
+                // Delete the tag definition
+                await supabaseClient.from('tag_definitions').delete().eq('key', key);
+
+                await loadTagDefinitions();
+                await loadTagManagement();
+            } catch (err) {
+                console.error('Error deleting tag:', err);
+                alert('Failed to delete tag: ' + err.message);
+            }
+        }
+
+        async function removeTagFromUser(userId, tagKey) {
+            try {
+                const { data: user, error } = await supabaseClient.from('clients').select('tags').eq('id', userId).single();
+                if (error) throw error;
+
+                let tags = user.tags || [];
+                if (typeof tags === 'string') { try { tags = JSON.parse(tags); } catch { tags = []; } }
+                if (!Array.isArray(tags)) tags = [];
+
+                const newTags = tags.filter(t => t !== tagKey);
+                const { error: updateErr } = await supabaseClient.from('clients').update({ tags: newTags }).eq('id', userId);
+                if (updateErr) throw updateErr;
+
+                await loadTagManagement();
+            } catch (err) {
+                console.error('Error removing tag from user:', err);
+                alert('Failed: ' + err.message);
+            }
+        }
+
+        async function openAssignTagModal(tagKey) {
+            // Load all users who do NOT have this tag
+            try {
+                const { data: users, error } = await supabaseClient
+                    .from('clients')
+                    .select('id, name, email, username, display_name, avatar_url, tags')
+                    .order('name');
+                if (error) throw error;
+
+                const eligible = (users || []).filter(u => {
+                    let tags = u.tags || [];
+                    if (typeof tags === 'string') { try { tags = JSON.parse(tags); } catch { tags = []; } }
+                    if (!Array.isArray(tags)) tags = [];
+                    return !tags.includes(tagKey);
+                });
+
+                const def = availableTags[tagKey];
+                const label = def?.label || tagKey;
+
+                if (eligible.length === 0) {
+                    alert('All users already have this tag.');
+                    return;
+                }
+
+                // Build a simple selection modal
+                const modal = document.getElementById('assignTagModal');
+                document.getElementById('assignTagTitle').textContent = `Assign "${label}" Tag`;
+                const listEl = document.getElementById('assignTagUserList');
+
+                listEl.innerHTML = eligible.map(u => {
+                    const dn = u.display_name || u.username || u.name;
+                    const avatarHTML = u.avatar_url
+                        ? `<img class="tag-mgmt-user-avatar" src="${u.avatar_url}" onerror="this.style.display='none'">`
+                        : '';
+                    return `<div class="tag-mgmt-user-row">
+                        <div class="tag-mgmt-user-info">
+                            ${avatarHTML}
+                            <span class="tag-mgmt-user-name">${escapeHtml(dn)}</span>
+                            <span style="font-size:0.62rem;color:var(--text-ghost);margin-left:4px;">${escapeHtml(u.email)}</span>
+                        </div>
+                        <button class="tag-mgmt-btn" onclick="assignTagToUser('${u.id}', '${tagKey}', this)">
+                            <i class="fas fa-plus"></i> Assign
+                        </button>
+                    </div>`;
+                }).join('');
+
+                modal.style.display = 'flex';
+            } catch (err) {
+                console.error('Error loading users for assignment:', err);
+                alert('Failed to load users: ' + err.message);
+            }
+        }
+
+        function closeAssignTagModal() {
+            document.getElementById('assignTagModal').style.display = 'none';
+        }
+
+        async function assignTagToUser(userId, tagKey, btnEl) {
+            try {
+                btnEl.disabled = true;
+                btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                const { data: user, error } = await supabaseClient.from('clients').select('tags').eq('id', userId).single();
+                if (error) throw error;
+
+                let tags = user.tags || [];
+                if (typeof tags === 'string') { try { tags = JSON.parse(tags); } catch { tags = []; } }
+                if (!Array.isArray(tags)) tags = [];
+
+                if (!tags.includes(tagKey)) tags.push(tagKey);
+
+                const { error: updateErr } = await supabaseClient.from('clients').update({ tags }).eq('id', userId);
+                if (updateErr) throw updateErr;
+
+                // Remove row from modal
+                btnEl.closest('.tag-mgmt-user-row').remove();
+
+                // Refresh tag management in the background
+                loadTagManagement();
+            } catch (err) {
+                console.error('Error assigning tag:', err);
+                alert('Failed: ' + err.message);
+                btnEl.disabled = false;
+                btnEl.innerHTML = '<i class="fas fa-plus"></i> Assign';
             }
         }
 
@@ -2617,6 +3893,128 @@
         setInterval(() => {
             if (currentAdmin && currentTicket) {
                 loadMessages(currentTicket.id);
+            }
+        }, 15000);
+
+        /* ════════════════════════════════════════════════
+           ONLINE USERS
+        ════════════════════════════════════════════════ */
+        let onlinePresenceSub = null;
+
+        function isRecentlySeen(lastSeen) {
+            if (!lastSeen) return false;
+            return Date.now() - new Date(lastSeen).getTime() < 120000;
+        }
+
+        function formatLastSeen(lastSeen) {
+            if (!lastSeen) return 'never';
+            const diff = Date.now() - new Date(lastSeen).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hours = Math.floor(diff / 3600000);
+            if (hours < 24) return `${hours}h ago`;
+            return `${Math.floor(diff / 86400000)}d ago`;
+        }
+
+        function renderUserRow(u, borderColor) {
+            const displayName = u.display_name || u.username || u.name;
+            const bc = borderColor || 'var(--border-hi)';
+            const avatarHTML = u.avatar_url
+                ? `<img src="${u.avatar_url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid ${bc};" onerror="this.style.display='none'">`
+                : `<div style="width:32px;height:32px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--text-ghost);flex-shrink:0;border:2px solid ${bc};">${getInitials(displayName)}</div>`;
+            return `
+                <div class="admin-list-item" onclick="openUserDetail('${u.id}')" style="grid-template-columns:auto 1fr auto;">
+                    ${avatarHTML}
+                    <div>
+                        <div class="admin-list-name">${maskName(displayName)}</div>
+                        <div class="admin-list-email">${maskEmail(u.email)}</div>
+                    </div>
+                    <div class="admin-list-meta">
+                        ${u.current_page ? `<span class="online-page-tag">${u.current_page}</span>` : ''}
+                        <span class="client-last-seen">${formatLastSeen(u.last_seen)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUserList(el, users, emptyMsg) {
+            if (!users || users.length === 0) {
+                el.innerHTML = `<div class="no-tickets">${emptyMsg}</div>`;
+            } else {
+                el.innerHTML = users.map(u => renderUserRow(u, 'var(--border-hi)')).join('');
+            }
+        }
+
+        async function loadOnlineUsers() {
+            const listEl  = document.getElementById('onlineUsersList');
+            const badgeEl = document.getElementById('onlineCountBadge');
+
+            try {
+                const { data: users, error } = await supabaseClient
+                    .from('clients')
+                    .select('id, name, email, username, display_name, avatar_url, is_online, last_seen, current_page, role')
+                    .order('last_seen', { ascending: false });
+
+                if (error) throw error;
+
+                const now    = Date.now();
+                const DAY    = 86400000;
+                const online = users.filter(u => u.is_online && isRecentlySeen(u.last_seen));
+                const away   = users.filter(u => !online.includes(u) && isRecentlySeen(u.last_seen));
+                const sorted = [...online, ...away];
+
+                badgeEl.textContent = online.length;
+
+                // Currently online
+                if (sorted.length === 0) {
+                    listEl.innerHTML = '<div class="no-tickets">No users currently online</div>';
+                } else {
+                    listEl.innerHTML = sorted.map(u => {
+                        const isOnline = online.includes(u);
+                        const bc = isOnline ? 'rgba(34,197,94,0.5)' : 'rgba(249,115,22,0.5)';
+                        return renderUserRow(u, bc);
+                    }).join('');
+                }
+
+                // Seen today / week / month — exclude currently online/away users
+                const onlineSet = new Set(sorted.map(u => u.id));
+
+                const seenToday = users.filter(u => !onlineSet.has(u.id) && u.last_seen && (now - new Date(u.last_seen).getTime()) < DAY);
+                const seenWeek  = users.filter(u => !onlineSet.has(u.id) && u.last_seen && (now - new Date(u.last_seen).getTime()) >= DAY && (now - new Date(u.last_seen).getTime()) < DAY * 7);
+                const seenMonth = users.filter(u => !onlineSet.has(u.id) && u.last_seen && (now - new Date(u.last_seen).getTime()) >= DAY * 7 && (now - new Date(u.last_seen).getTime()) < DAY * 30);
+
+                renderUserList(document.getElementById('seenTodayList'), seenToday, 'No other users signed in today');
+                renderUserList(document.getElementById('seenWeekList'),  seenWeek,  'No users in this range');
+                renderUserList(document.getElementById('seenMonthList'), seenMonth, 'No users in this range');
+
+            } catch (err) {
+                console.error('Error loading online users:', err);
+                listEl.innerHTML = '<div class="no-tickets">Failed to load online users</div>';
+            }
+        }
+
+        function subscribeToOnlinePresence() {
+            if (onlinePresenceSub) onlinePresenceSub.unsubscribe();
+            onlinePresenceSub = supabaseClient.channel('admin_presence_watch')
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'clients'
+                }, () => {
+                    if (currentView === 'admins') {
+                        loadOnlineUsers();
+                        if (currentAdminPage === 'users') loadXorbitUsers();
+                    }
+                })
+                .subscribe();
+        }
+
+        // Periodic refresh
+        setInterval(() => {
+            if (currentAdmin && currentView === 'admins') {
+                loadOnlineUsers();
+                if (currentAdminPage === 'users') loadXorbitUsers();
             }
         }, 15000);
     </script>
