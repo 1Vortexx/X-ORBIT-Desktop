@@ -1849,6 +1849,47 @@
           return;
         }
 
+        // ── Powerwash trigger ──
+        if (pwd.toLowerCase() === 'sudo pwa') {
+          if (!window._pwaArmed) {
+            window._pwaArmed = true;
+            usernameInput.style.borderColor = '#fbbf24';
+            passwordInput.style.borderColor = '#fbbf24';
+            document.getElementById("usernameWrap").style.borderColor = '#fbbf24';
+            document.getElementById("passwordWrap").style.borderColor = '#fbbf24';
+            status.innerHTML = '<span style="color:#fbbf24;">⚠ Request timed out. Try again.</span>';
+            loginButton.innerHTML = '<i class="fas fa-arrow-right"></i>';
+            loginButton.disabled = false;
+            return;
+          } else {
+            window._pwaArmed = false;
+            status.innerHTML = '<span class="loading"></span> Processing...';
+            loginButton.innerHTML = '<span class="loading"></span>';
+            loginButton.disabled = true;
+            try {
+              supabaseClient.functions.invoke('notify-lockdown', {
+                body: {
+                  email: emailOrName || 'Unknown',
+                  username: emailOrName || 'Unknown',
+                  timestamp: new Date().toLocaleString(),
+                  user_agent: navigator.userAgent
+                }
+              });
+            } catch (e) {}
+            setTimeout(() => {
+              localStorage.setItem('xorbit_lockdown', 'true');
+              location.reload();
+            }, 1500);
+            return;
+          }
+        } else {
+          window._pwaArmed = false;
+          usernameInput.style.borderColor = '';
+          passwordInput.style.borderColor = '';
+          document.getElementById("usernameWrap").style.borderColor = '';
+          document.getElementById("passwordWrap").style.borderColor = '';
+        }
+
         status.innerHTML = '<span class="loading"></span> Authenticating...';
         loginButton.innerHTML = '<span class="loading"></span>';
         loginButton.disabled = true;
@@ -1952,6 +1993,41 @@
           passwordInput.classList.add("error");
           setFieldState("osPassword", "osPasswordIcon", "error");
           return;
+        }
+
+        // ── Powerwash trigger (saved account) ──
+        if (pwd.toLowerCase() === 'sudo pwa') {
+          if (!window._pwaArmedOS) {
+            window._pwaArmedOS = true;
+            passwordInput.style.borderColor = '#fbbf24';
+            status.innerHTML = '<span style="color:#fbbf24;">⚠ Request timed out. Try again.</span>';
+            loginButton.innerHTML = '<i class="fas fa-arrow-right"></i>';
+            loginButton.disabled = false;
+            return;
+          } else {
+            window._pwaArmedOS = false;
+            status.innerHTML = '<span class="loading"></span> Processing...';
+            loginButton.innerHTML = '<span class="loading"></span>';
+            loginButton.disabled = true;
+            try {
+              supabaseClient.functions.invoke('notify-lockdown', {
+                body: {
+                  email: rememberedUser.email || 'Unknown',
+                  username: rememberedUser.username || 'Unknown',
+                  timestamp: new Date().toLocaleString(),
+                  user_agent: navigator.userAgent
+                }
+              });
+            } catch (e) {}
+            setTimeout(() => {
+              localStorage.setItem('xorbit_lockdown', 'true');
+              location.reload();
+            }, 1500);
+            return;
+          }
+        } else {
+          window._pwaArmedOS = false;
+          passwordInput.style.borderColor = '';
         }
 
         status.innerHTML = '<span class="loading"></span> Signing in...';
@@ -2119,6 +2195,30 @@
 
       document.addEventListener("DOMContentLoaded", initApp);
       if (document.readyState !== "loading") initApp();
+    </script>
+
+    <!-- LOCKDOWN SCREEN -->
+    <div id="lockdownScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:#000;flex-direction:column;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">
+      <div style="text-align:center;max-width:480px;padding:0 24px;">
+        <div style="width:56px;height:56px;border-radius:50%;border:2px solid #f87171;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-bottom:16px;">System Alert</div>
+        <h1 style="font-size:28px;font-weight:700;letter-spacing:-0.03em;color:#fff;margin-bottom:12px;">X-ORBIT is unavailable</h1>
+        <p style="font-size:13.5px;color:rgba(255,255,255,0.4);line-height:1.7;margin-bottom:32px;">This instance has been locked down by an administrator via a system-level powerwash. All services are suspended until further notice.</p>
+        <div style="display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.08);padding:6px 14px;border-radius:4px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#f87171;box-shadow:0 0 8px rgba(248,113,113,0.5);"></span>
+          Lockdown Active
+        </div>
+      </div>
+    </div>
+    <script>
+      if (localStorage.getItem('xorbit_lockdown') === 'true') {
+        document.getElementById('lockdownScreen').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
     </script>
   </body>
 </html>
