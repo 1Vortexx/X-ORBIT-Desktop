@@ -493,8 +493,8 @@
       const SUPABASE_URL      = "https://rujvmtvozorylfzsqppc.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1anZtdHZvem9yeWxmenNxcHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NjQxNDEsImV4cCI6MjA3MzA0MDE0MX0.b7jJz3Se_oXXDwwd0dWQ8-rEvhY0aU4JDHQVioE39iY";
 
-      const FREE_DAILY_LIMIT  = 30;
-      const FREE_WEEKLY_LIMIT = 150;
+      const FREE_DAILY_LIMIT  = 60;
+      const FREE_WEEKLY_LIMIT = 300;
       const MC_URL            = "https://eaglecraft.xorbit.org";
       const SERVER_ADDR       = "wss://eaglecraft.xorbit.org/ws";
 
@@ -520,7 +520,7 @@
           },
           { once: true }
         );
-        if (!frame.src) frame.src = MC_URL;
+        if (!frame.src || frame.src === location.href || !frame.src.startsWith('http')) frame.src = MC_URL;
       }
 
       // ── Playtime ──────────────────────────────────────────────────────
