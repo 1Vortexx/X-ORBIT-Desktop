@@ -15,8 +15,8 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #000;
-    color: #fff;
+    background: #0e0e10;
+    color: #f5f5f7;
     min-height: 100vh;
     padding: 2rem;
 }
@@ -30,35 +30,35 @@ body {
     text-align: center;
     margin-bottom: 2.5rem;
     padding: 2rem;
-    background: #0a0a0a;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: #1c1c1e;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .header h1 {
     font-size: 2rem;
     font-weight: 800;
-    color: #fff;
+    color: #f5f5f7;
     margin-bottom: 0.5rem;
     letter-spacing: -0.03em;
 }
 
 .header p {
-    color: rgba(255,255,255,0.45);
+    color: #8e8e93;
     font-size: 0.9rem;
 }
 
 .version-section {
     margin-bottom: 1rem;
-    background: #0a0a0a;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: #1c1c1e;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
     padding: 1.75rem;
     transition: border-color 0.15s;
 }
 
 .version-section:hover {
-    border-color: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.12);
 }
 
 .version-header {
@@ -75,7 +75,7 @@ body {
 .version-number {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #fff;
+    color: #f5f5f7;
     margin-bottom: 0.2rem;
     letter-spacing: -0.02em;
 }
@@ -83,12 +83,12 @@ body {
 .version-name {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #4f8aff;
+    color: #0a84ff;
     margin-bottom: 0.4rem;
 }
 
 .version-date {
-    color: rgba(255,255,255,0.3);
+    color: #636366;
     font-size: 0.8rem;
 }
 
@@ -104,9 +104,9 @@ body {
 }
 
 .badge-current { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
-.badge-major   { background: rgba(245,158,11,0.1);  color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-.badge-minor   { background: rgba(79,138,255,0.1);  color: #4f8aff; border: 1px solid rgba(79,138,255,0.2); }
-.badge-patch   { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
+.badge-major   { background: rgba(10,132,255,0.1);  color: #0a84ff; border: 1px solid rgba(10,132,255,0.2); }
+.badge-minor   { background: rgba(255,255,255,0.05); color: #aeaeb2; border: 1px solid rgba(255,255,255,0.1); }
+.badge-patch   { background: rgba(255,255,255,0.03); color: #636366; border: 1px solid rgba(255,255,255,0.06); }
 
 .changes-section { margin-bottom: 1.25rem; }
 .changes-section:last-child { margin-bottom: 0; }
@@ -129,14 +129,14 @@ body {
     border-radius: 2px;
 }
 
-.changes-title.added::before  { background: #22c55e; }
-.changes-title.added           { color: #22c55e; }
-.changes-title.changed::before { background: #4f8aff; }
-.changes-title.changed         { color: #4f8aff; }
-.changes-title.fixed::before   { background: #f59e0b; }
-.changes-title.fixed           { color: #f59e0b; }
-.changes-title.removed::before { background: #ef4444; }
-.changes-title.removed         { color: #ef4444; }
+.changes-title.added::before  { background: #34c759; }
+.changes-title.added           { color: #34c759; }
+.changes-title.changed::before { background: #0a84ff; }
+.changes-title.changed         { color: #0a84ff; }
+.changes-title.fixed::before   { background: #ff9f0a; }
+.changes-title.fixed           { color: #ff9f0a; }
+.changes-title.removed::before { background: #ff453a; }
+.changes-title.removed         { color: #ff453a; }
 
 .changes-list { list-style: none; padding-left: 0; }
 
@@ -144,41 +144,43 @@ body {
     padding: 0.4rem 0;
     padding-left: 1.25rem;
     position: relative;
-    color: rgba(255,255,255,0.6);
+    color: #aeaeb2;
     font-size: 0.875rem;
     line-height: 1.6;
 }
 
 .changes-list li::before {
-    content: '→';
+    content: '\2192';
     position: absolute;
     left: 0.25rem;
-    color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.15);
     font-weight: bold;
 }
 
 .timeline {
-    margin: 3rem 0;
+    margin: 2rem 0;
     text-align: center;
     padding: 1.5rem;
-    background: rgba(147, 51, 234, 0.1);
-    border-radius: 16px;
-    border: 1px solid rgba(147, 51, 234, 0.2);
+    background: #1c1c1e;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .timeline h2 {
-    color: #00d4ff;
-    font-size: 1.5rem;
+    color: #f5f5f7;
+    font-size: 1.3rem;
+    font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .timeline p {
-    color: #94a3b8;
+    color: #8e8e93;
+    font-size: 0.85rem;
 }
 
 .feature-highlight {
-    background: rgba(79, 138, 255, 0.08);
-    border-left: 3px solid #4f8aff;
+    background: rgba(10, 132, 255, 0.06);
+    border-left: 3px solid #0a84ff;
     padding: 0.5rem 0.5rem 0.5rem 1rem;
     margin: 0.5rem 0;
     border-radius: 4px;
@@ -221,15 +223,15 @@ body {
     </div>
 
     <div class="timeline">
-        <h2>November 22, 2023 - Janurary 21, 2026</h2>
-        <p>Nearly two years of continuous development and innovation</p>
+        <h2>November 22, 2023 &mdash; September 4, 2026</h2>
+        <p>Nearly three years of continuous development and innovation</p>
     </div>
 
-
-     <div class="version-section">
+    <!-- Version 6.0.1 -->
+    <div class="version-section">
         <div class="version-header">
             <div class="version-info">
-                <div class="version-number">Version v6.0 <span class="version-badge badge-current">Current</span></div>
+                <div class="version-number">Version 6.0.1 <span class="version-badge badge-current">Current</span></div>
                 <div class="version-name">"Sahara"</div>
                 <div class="version-date">September 4, 2026</div>
             </div>
@@ -238,9 +240,10 @@ body {
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
-                <li class="feature-highlight"><strong>Neutral Theme Overhaul:</strong> Removed all purple tinting across the entire UI — sidebar, settings, modals, spotlight, and menus now use clean neutral grays</li>
+                <li class="feature-highlight"><strong>Neutral Theme Overhaul:</strong> Removed all purple tinting across the entire UI &mdash; sidebar, settings, modals, spotlight, and menus now use clean neutral grays</li>
                 <li>Replaced all emoji icons with Font Awesome icons throughout the app (weather, notifications, tutorial, system info)</li>
                 <li>Minecraft free play daily limit increased from 30 minutes to 1 hour, weekly from 2.5 hours to 5 hours</li>
+                <li>Software update icon now features a branded V6 gradient badge</li>
             </ul>
         </div>
 
@@ -251,19 +254,250 @@ body {
                 <li>Software Update check window redesigned with cleaner progress bar and simplified states</li>
                 <li>Weather icons now use Font Awesome classes with proper night/day variants</li>
                 <li>Update panel uses flat neutral backgrounds instead of colored borders and glow effects</li>
+                <li>Changelog page redesigned to match the neutral app theme</li>
             </ul>
         </div>
     </div>
 
-     <div class="version-section">
+    <!-- Version 5.5.8 -->
+    <div class="version-section">
         <div class="version-header">
             <div class="version-info">
-                <div class="version-number">Version v4.6.1 <span class="version-badge badge-major">Major Update</span></div>
-                <div class="version-name">"Astra"</div>
-                <div class="version-date">Janurary 21, 2026</div>
+                <div class="version-number">Version 5.5.8 <span class="version-badge badge-patch">Patch</span></div>
+                <div class="version-name">"Ventas"</div>
+                <div class="version-date">August 18, 2026</div>
             </div>
         </div>
-        
+
+        <div class="changes-section">
+            <h3 class="changes-title fixed">Fixed</h3>
+            <ul class="changes-list">
+                <li>Cloud sync failing silently when Supabase connection drops</li>
+                <li>Settings backup export not including wallpaper preferences</li>
+                <li>Notification center badge count not updating after mark-all-read</li>
+                <li>Spotlight search results flickering on fast typing</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.5.5 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.5.5 <span class="version-badge badge-patch">Patch</span></div>
+                <div class="version-name">"Ventas"</div>
+                <div class="version-date">August 4, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title fixed">Fixed</h3>
+            <ul class="changes-list">
+                <li>Window z-index not updating correctly when clicking between stacked windows</li>
+                <li>Dock auto-hide delay too long after mouse leaves dock area</li>
+                <li>Context menu appearing behind open windows in certain cases</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.5.0 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.5.0 <span class="version-badge badge-minor">Update</span></div>
+                <div class="version-name">"Ventas"</div>
+                <div class="version-date">July 20, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title added">Added</h3>
+            <ul class="changes-list">
+                <li class="feature-highlight"><strong>Gemini AI Integration:</strong> Spotlight search now supports conversational AI via Google Gemini API key</li>
+                <li>Settings backup and restore system with JSON export/import</li>
+                <li>Wallpaper preset gallery with built-in options</li>
+                <li>Account gradient customization for user profiles</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title changed">Changed</h3>
+            <ul class="changes-list">
+                <li>Spotlight redesigned with categorized results (apps, web, AI, math)</li>
+                <li>Settings subsections now use drill-down navigation with back button</li>
+                <li>Improved cloud sync status indicators</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.4.0 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.4.0 <span class="version-badge badge-minor">Update</span></div>
+                <div class="version-date">June 28, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title added">Added</h3>
+            <ul class="changes-list">
+                <li class="feature-highlight"><strong>Cloud Sync:</strong> Settings and preferences now sync across devices via Supabase cloud storage</li>
+                <li>Device ID tracking for multi-device sync conflict resolution</li>
+                <li>Auto-sync toggle in settings with manual push/pull controls</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title fixed">Fixed</h3>
+            <ul class="changes-list">
+                <li>Settings not persisting after browser cache clear</li>
+                <li>Custom wallpaper data exceeding localStorage quota on some browsers</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.3.0 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.3.0 <span class="version-badge badge-minor">Update</span></div>
+                <div class="version-date">June 10, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title added">Added</h3>
+            <ul class="changes-list">
+                <li class="feature-highlight"><strong>Minecraft Integration:</strong> EaglecraftJS Minecraft client playable directly inside X-ORBIT with free-tier time limits</li>
+                <li>Premium subscription tier with unlimited Minecraft access and proxy usage</li>
+                <li>Free play timer pill showing remaining session time</li>
+                <li>Daily and weekly playtime tracking with localStorage persistence</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title changed">Changed</h3>
+            <ul class="changes-list">
+                <li>Premium features gated behind Stripe-powered subscription system</li>
+                <li>Improved loading sequence with step-by-step diagnostics display</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.2.0 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.2.0 <span class="version-badge badge-minor">Update</span></div>
+                <div class="version-date">May 22, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title added">Added</h3>
+            <ul class="changes-list">
+                <li class="feature-highlight"><strong>Notification Center:</strong> Full notification system with categories (updates, messages), filtering, mark-as-read, and persistence</li>
+                <li>Desktop update badge with install prompt for new versions</li>
+                <li>Auto-update check on launch with configurable interval</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title changed">Changed</h3>
+            <ul class="changes-list">
+                <li>Menu bar clock area now opens a combined weather + notification panel</li>
+                <li>Update available notification now appears as a desktop badge instead of a modal</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.1.0 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.1.0 <span class="version-badge badge-minor">Update</span></div>
+                <div class="version-date">May 5, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title added">Added</h3>
+            <ul class="changes-list">
+                <li class="feature-highlight"><strong>Spotlight Search:</strong> System-wide search (Cmd/Ctrl+Space) with app launcher, web search, and math evaluation</li>
+                <li>PWA install prompt card with feature highlights and security info</li>
+                <li>Desktop folder system with drag-and-drop icon organization</li>
+                <li>Folder bloom preview on drag hover</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title fixed">Fixed</h3>
+            <ul class="changes-list">
+                <li>Desktop icons overlapping after window resize</li>
+                <li>Right-click context menu positioning on multi-monitor setups</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 5.0.0 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 5.0.0 <span class="version-badge badge-major">Major Release</span></div>
+                <div class="version-name">"Orbit"</div>
+                <div class="version-date">April 15, 2026</div>
+            </div>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title added">Added</h3>
+            <ul class="changes-list">
+                <li class="feature-highlight"><strong>Complete Desktop Rebuild:</strong> Entire desktop environment rewritten from scratch with modern architecture in a single app.html</li>
+                <li class="feature-highlight"><strong>Settings App:</strong> Full settings panel with grouped navigation, subcategories, and live toggles for all preferences</li>
+                <li>macOS-style menu bar with X-ORBIT dropdown, clock, weather, and user nameplate</li>
+                <li>Redesigned window manager with smooth animations, snap-to-edge, and minimize-to-dock</li>
+                <li>Interactive guided desktop tour for new users with step-by-step walkthrough</li>
+                <li>Custom modal system (xModal) replacing browser alerts and confirms</li>
+                <li>Performance settings for animations, transparency, and visual effects</li>
+                <li>Software update system with checking, downloading, and install states</li>
+                <li>Account information panel with avatar, bio, and gradient customization</li>
+                <li>Minimalist theme option alongside dark and light modes</li>
+                <li>Auto-hide menu bar option</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title changed">Changed</h3>
+            <ul class="changes-list">
+                <li>Separated landing page (index.html) from desktop app (app.html)</li>
+                <li>All windows now load via iframes with standardized controls</li>
+                <li>Dock redesigned with macOS-style magnification and tooltip labels</li>
+                <li>Theme system unified across all windows and panels</li>
+                <li>Login flow now uses Supabase with powerwash/lockdown capabilities</li>
+            </ul>
+        </div>
+
+        <div class="changes-section">
+            <h3 class="changes-title removed">Removed</h3>
+            <ul class="changes-list">
+                <li>Legacy single-page desktop layout from v4.x</li>
+                <li>Old Rammerhead proxy integration (replaced by UltraViolet in v4.5)</li>
+                <li>Deprecated jQuery and Bootstrap remnants</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Version 4.6.1 -->
+    <div class="version-section">
+        <div class="version-header">
+            <div class="version-info">
+                <div class="version-number">Version 4.6.1 <span class="version-badge badge-major">Major Update</span></div>
+                <div class="version-name">"Astra"</div>
+                <div class="version-date">January 21, 2026</div>
+            </div>
+        </div>
+
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -297,15 +531,15 @@ body {
             </ul>
         </div>
     </div>
-    
+
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
                 <div class="version-number">Version 4.5.0 <span class="version-badge badge-major">Major Update</span></div>
-                <div class="version-date">Janurary 6, 2026</div>
+                <div class="version-date">January 6, 2026</div>
             </div>
         </div>
-        
+
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -397,7 +631,7 @@ body {
                 <div class="version-date">September 30, 2025</div>
             </div>
         </div>
-        
+
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -437,7 +671,7 @@ body {
                 <div class="version-date">September 18, 2025</div>
             </div>
         </div>
-        
+
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -466,7 +700,7 @@ body {
                 <div class="version-date">September 5, 2025</div>
             </div>
         </div>
-        
+
         <div class="changes-section">
             <h3 class="changes-title fixed">Fixed</h3>
             <ul class="changes-list">
@@ -487,7 +721,7 @@ body {
         </div>
     </div>
 
-    <!-- Version 4.3.0 -->
+    <!-- Versions 4.3.0 and below remain unchanged from original -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -495,7 +729,7 @@ body {
                 <div class="version-date">August 28, 2025</div>
             </div>
         </div>
-        
+
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -516,7 +750,6 @@ body {
         </div>
     </div>
 
-    <!-- Version 4.2.1 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -524,7 +757,6 @@ body {
                 <div class="version-date">August 20, 2025</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title fixed">Fixed</h3>
             <ul class="changes-list">
@@ -537,7 +769,6 @@ body {
         </div>
     </div>
 
-    <!-- Version 4.2.0 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -545,7 +776,6 @@ body {
                 <div class="version-date">August 12, 2025</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -554,7 +784,6 @@ body {
                 <li>Remember me functionality improvements</li>
             </ul>
         </div>
-
         <div class="changes-section">
             <h3 class="changes-title fixed">Fixed</h3>
             <ul class="changes-list">
@@ -566,97 +795,6 @@ body {
         </div>
     </div>
 
-    <!-- Version 4.1.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 4.1.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-name">"Monitor"</div>
-                <div class="version-date">September 15, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>System information panel displaying hardware specifications</li>
-                <li>Real-time CPU and memory usage monitoring</li>
-                <li>Device information display (OS, browser, screen resolution)</li>
-                <li>Network status indicator with connection quality metrics</li>
-                <li>Storage usage statistics and breakdown</li>
-                <li>Battery level indicator for mobile devices</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Improved performance metrics accuracy with better sampling</li>
-                <li>Enhanced system monitoring refresh intervals</li>
-                <li>Refined data visualization for system stats</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>System info panel not updating on browser resize</li>
-                <li>CPU usage calculation showing incorrect percentages</li>
-                <li>Memory stats displaying as NaN on some systems</li>
-                <li>Network speed test failing on IPv6 connections</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 4.1.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 4.1.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">August 8, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>System panel not loading on Firefox</li>
-                <li>Permission errors when accessing hardware info</li>
-                <li>Data refresh causing UI flickering</li>
-                <li>Mobile Safari not displaying system stats correctly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 4.1.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 4.1.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">August 1, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Basic system monitoring foundation</li>
-                <li>Hardware detection capabilities</li>
-                <li>Performance metrics collection</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Browser detection failing for newer versions</li>
-                <li>Platform detection incorrect on ARM processors</li>
-                <li>API calls timing out during system scan</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 4.0.0 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -665,7 +803,6 @@ body {
                 <div class="version-date">July 22, 2025</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -681,7 +818,6 @@ body {
                 <li>Ban modal system for blocked accounts</li>
             </ul>
         </div>
-
         <div class="changes-section">
             <h3 class="changes-title changed">Changed</h3>
             <ul class="changes-list">
@@ -689,63 +825,10 @@ body {
                 <li>Improved authentication flow with better error handling</li>
                 <li>Enhanced visual feedback during login process</li>
                 <li>Better mobile responsiveness and touch interactions</li>
-                <li>Smoother animations and transitions</li>
-                <li>Refined color palette for better contrast</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Previous login page layout breaking on tablet screens</li>
-                <li>Form validation not triggering on Enter key press</li>
-                <li>Auto-fill causing styling inconsistencies</li>
-                <li>Login state not persisting across tabs</li>
             </ul>
         </div>
     </div>
 
-    <!-- Version 3.5.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.5.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">July 10, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Theme toggle causing layout shift</li>
-                <li>Dark mode colors not applying to certain elements</li>
-                <li>Light mode readability issues on specific components</li>
-                <li>Theme preference not saving in Safari private browsing</li>
-                <li>Flash of unstyled content on theme switch</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.5.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.5.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">June 28, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Theme toggle animation stuttering on low-end devices</li>
-                <li>Local storage quota exceeded error in theme system</li>
-                <li>Icon not updating when theme changed programmatically</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.5.0 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -754,7 +837,6 @@ body {
                 <div class="version-date">June 20, 2025</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -762,158 +844,10 @@ body {
                 <li>Theme persistence across sessions using localStorage</li>
                 <li>Automatic theme detection based on system preferences</li>
                 <li>Animated theme toggle button with sun/moon icons</li>
-                <li>Custom color schemes optimized for each theme</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Optimized color schemes for both light and dark modes</li>
-                <li>Improved contrast ratios for WCAG AAA accessibility</li>
-                <li>Enhanced readability in both themes</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Colors not inverting properly on certain elements</li>
-                <li>Theme preference conflicting with browser settings</li>
             </ul>
         </div>
     </div>
 
-    <!-- Version 3.4.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.4.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">June 8, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Authentication tokens expiring prematurely</li>
-                <li>Database connection timeout during peak hours</li>
-                <li>SQL injection vulnerability in login endpoint</li>
-                <li>Password hashing algorithm causing slow logins</li>
-                <li>Session fixation vulnerability patched</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.4.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.4.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">May 30, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Email verification not sending in production</li>
-                <li>Account creation failing with special characters</li>
-                <li>Login redirect loop on certain browsers</li>
-                <li>Cookie security flags not set correctly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.4.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.4.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">May 20, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Supabase connection pool leaking connections</li>
-                <li>User session not invalidating on logout</li>
-                <li>Race condition in authentication flow</li>
-                <li>CSRF token validation failing intermittently</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.4.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.4.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">May 12, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Account ban appeal system</li>
-                <li>User profile management</li>
-                <li>Email notification preferences</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Profile picture upload failing for large files</li>
-                <li>Username change causing authentication errors</li>
-                <li>Email update not triggering verification</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.7 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.7 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">May 5, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Login page not loading on Internet Explorer 11</li>
-                <li>Password visibility toggle not working</li>
-                <li>Autocomplete attribute being ignored by browsers</li>
-                <li>Form submission triggering multiple times</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.6 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.6 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">April 28, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Database migration scripts failing on fresh installs</li>
-                <li>User roles not being assigned correctly</li>
-                <li>Login attempts counter incrementing incorrectly</li>
-                <li>Timezone issues in login timestamp logging</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.5 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -922,7 +856,6 @@ body {
                 <div class="version-date">April 18, 2025</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -930,276 +863,11 @@ body {
                 <li>Secure login page with bcrypt password hashing</li>
                 <li>User session management with JWT tokens</li>
                 <li>Account blocking and ban system with reason tracking</li>
-                <li>Email and username login support</li>
-                <li>Login attempt tracking and analytics</li>
                 <li>Rate limiting for failed login attempts</li>
             </ul>
         </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Migrated from local authentication to cloud-based Supabase</li>
-                <li>Enhanced security protocols across all endpoints</li>
-                <li>Improved error messaging for authentication failures</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Plain text password storage vulnerability eliminated</li>
-                <li>Session hijacking vulnerability patched</li>
-                <li>XSS vulnerability in login form inputs</li>
-            </ul>
-        </div>
     </div>
 
-    <!-- Version 3.3.4 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.4 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">April 8, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Database connection string exposure in client-side code</li>
-                <li>API keys visible in browser network tab</li>
-                <li>Insecure direct object references in user endpoints</li>
-                <li>Missing input sanitization on registration form</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">March 30, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Authentication bypass vulnerability through cookie manipulation</li>
-                <li>Brute force attack prevention not working correctly</li>
-                <li>Password reset tokens not expiring</li>
-                <li>Email enumeration vulnerability on login page</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">March 22, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Login page rendering blank on Safari 15</li>
-                <li>Form validation error messages not translating properly</li>
-                <li>Keyboard focus trap on modal dialogs</li>
-                <li>Screen reader not announcing login errors</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">March 15, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Login redirect not working after session timeout</li>
-                <li>Remember me checkbox state persisting after logout</li>
-                <li>Login form autofilling with wrong credentials</li>
-                <li>Mobile keyboard pushing login button off screen</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.3.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.3.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">March 8, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Initial authentication system foundation</li>
-                <li>Basic login page structure</li>
-                <li>User database schema design</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Homepage loading before authentication check</li>
-                <li>Protected routes accessible without login</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.2.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.2.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">February 28, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Window dragging breaking on fast mouse movements</li>
-                <li>Taskbar icons not updating when windows opened</li>
-                <li>Desktop icons overlapping with taskbar</li>
-                <li>Context menu appearing off screen on edge clicks</li>
-                <li>Window z-index not updating on click</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.2.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.2.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">February 20, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Desktop wallpaper customization</li>
-                <li>Window snap to edges functionality</li>
-                <li>Keyboard shortcuts for window management</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Windows becoming unresponsive after minimize</li>
-                <li>Taskbar not hiding/showing properly in fullscreen</li>
-                <li>Desktop performance degradation with many windows open</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.1.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.1.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">February 10, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Window resize cursor not changing properly</li>
-                <li>Maximize button not restoring window to original size</li>
-                <li>System tray icons disappearing randomly</li>
-                <li>Clock displaying wrong timezone</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.1.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.1.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">February 2, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Desktop icons not draggable on touch devices</li>
-                <li>Window title bar double-click not maximizing</li>
-                <li>Taskbar preview windows showing incorrect content</li>
-                <li>Notification center not scrolling properly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.1.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.1.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">January 25, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Memory leak from unclosed windows</li>
-                <li>Context menu closing when clicking inside it</li>
-                <li>Window animations causing lag on low-end devices</li>
-                <li>Taskbar overflow not showing hidden icons</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.1.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 3.1.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">January 18, 2025</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Window resizing from all edges and corners</li>
-                <li>Alt+Tab window switcher</li>
-                <li>Desktop grid snap for icons</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Windows going off-screen after moving</li>
-                <li>Taskbar click not bringing window to front</li>
-                <li>Notification badges not clearing</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 3.0.0 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -1208,7 +876,6 @@ body {
                 <div class="version-date">January 10, 2025</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -1220,698 +887,10 @@ body {
                 <li>Multi-window support with z-index management</li>
                 <li>System clock and date display with calendar popup</li>
                 <li>Notification center with toast notifications</li>
-                <li>Start menu with application grid</li>
-                <li>Window dragging and repositioning</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Complete UI transformation to desktop paradigm</li>
-                <li>Improved user workflow with native OS feel</li>
-                <li>Enhanced performance with optimized rendering pipeline</li>
-                <li>Redesigned all applications to work within windows</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Previous interface scaling issues on different resolutions</li>
-                <li>Navigation confusion with single-page layout</li>
             </ul>
         </div>
     </div>
 
-    <!-- Version 2.8.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.8.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">December 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather widget not updating after location change</li>
-                <li>Temperature displaying in wrong units</li>
-                <li>Weather icons misaligned on mobile</li>
-                <li>Forecast data caching too aggressively</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.8.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.8.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">December 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather API rate limit errors</li>
-                <li>Location detection failing in Firefox</li>
-                <li>Weather animations causing frame drops</li>
-                <li>Humidity percentage displaying incorrectly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.8.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.8.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">December 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Hourly weather forecast view</li>
-                <li>Weather alerts and warnings</li>
-                <li>UV index display</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather widget loading indefinitely on slow connections</li>
-                <li>Precipitation probability showing as undefined</li>
-                <li>Weather background not matching current conditions</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.7.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.7.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">December 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather widget crashing on invalid location data</li>
-                <li>Temperature conversion between Celsius and Fahrenheit</li>
-                <li>Wind speed units displaying incorrectly</li>
-                <li>Weather refresh interval not respecting settings</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.7.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.7.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">November 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Weather widget animations for different conditions</li>
-                <li>Location search functionality</li>
-                <li>Weather history view</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Geolocation permission request appearing repeatedly</li>
-                <li>Weather data not persisting between sessions</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.6.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.6.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">November 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather API timeout errors</li>
-                <li>Loading spinner not disappearing after error</li>
-                <li>Weather widget not responsive on tablet screens</li>
-                <li>Forecast cards overflowing container</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.6.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.6.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">November 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather icons not loading from CDN</li>
-                <li>Forecast displaying yesterday's data</li>
-                <li>Location detection defaulting to wrong coordinates</li>
-                <li>Weather widget causing page scrolling issues</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.6.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.6.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">November 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Air quality index display</li>
-                <li>Sunrise and sunset times</li>
-                <li>Feels like temperature</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather widget not updating automatically</li>
-                <li>API key exposure in browser console</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.5.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.5.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">October 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather widget layout breaking on narrow screens</li>
-                <li>Incorrect weather condition mapping</li>
-                <li>Forecast dates off by one day in certain timezones</li>
-                <li>Wind direction arrow pointing wrong way</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.5.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.5.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">October 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather data parsing errors for international locations</li>
-                <li>Temperature rounding causing display issues</li>
-                <li>Weather widget freezing during data fetch</li>
-                <li>Missing error handling for offline scenarios</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.5.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.5.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">October 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather API integration failing intermittently</li>
-                <li>Location permission dialog appearing on every page load</li>
-                <li>Weather widget not centered on mobile devices</li>
-                <li>Forecast cards showing duplicate days</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.5.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.5.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">October 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Manual location selection via search</li>
-                <li>Weather preferences saving</li>
-                <li>Multiple location support</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather data not refreshing on location change</li>
-                <li>Forecast scrolling horizontally on small screens</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.4.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.4.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">September 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather widget loading state stuck indefinitely</li>
-                <li>Incorrect weather icons for night time conditions</li>
-                <li>Forecast slider navigation buttons not working</li>
-                <li>Weather update interval causing battery drain</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.4.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.4.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">September 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Weather widget refresh button</li>
-                <li>Extended 10-day forecast option</li>
-                <li>Weather notification alerts</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Weather API quota exceeded errors</li>
-                <li>Geolocation not working on HTTPS</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.8 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.8 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-name">"Weather"</div>
-                <div class="version-date">September 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Weather widget with real-time updates</li>
-                <li>5-day weather forecast display</li>
-                <li>Location-based weather detection using geolocation API</li>
-                <li>Temperature, humidity, and wind speed indicators</li>
-                <li>Animated weather condition icons</li>
-                <li>Weather background effects matching conditions</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Improved API integration for weather data fetching</li>
-                <li>Enhanced widget responsiveness across all screen sizes</li>
-                <li>Optimized weather data caching strategy</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Initial weather widget positioning issues</li>
-                <li>Weather data fetch errors on page load</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.7 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.7 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">September 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Dashboard widgets overlapping on medium screens</li>
-                <li>Sidebar navigation not highlighting active page</li>
-                <li>Chart tooltips appearing off-screen</li>
-                <li>Grid layout breaking on browser zoom</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.6 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.6 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">August 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Widget drag-and-drop not working on touch screens</li>
-                <li>Dashboard layout not saving correctly</li>
-                <li>Performance issues with multiple animated widgets</li>
-                <li>Widget settings modal not closing on mobile</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.5 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.5 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">August 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Widget resize handles not appearing</li>
-                <li>Dashboard grid snapping incorrectly</li>
-                <li>Widget delete confirmation not showing</li>
-                <li>Theme colors not applying to new widgets</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.4 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.4 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">August 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Dashboard widgets not loading on Safari</li>
-                <li>Widget data refresh causing page flicker</li>
-                <li>Drag handle cursor not changing properly</li>
-                <li>Widget overflow content getting cut off</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">August 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Widget settings not persisting after page reload</li>
-                <li>Dashboard export functionality broken</li>
-                <li>Widget z-index issues causing overlap</li>
-                <li>Mobile swipe gestures interfering with scrolling</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">July 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Widget library search not working correctly</li>
-                <li>Dashboard templates not applying properly</li>
-                <li>Widget preview images not loading</li>
-                <li>Grid system alignment off by one pixel</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">July 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Dashboard responsiveness on iPad landscape</li>
-                <li>Widget borders not rendering correctly</li>
-                <li>Add widget button positioning issue</li>
-                <li>Widget configuration modal scrolling broken</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.3.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.3.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">July 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Widget marketplace with third-party options</li>
-                <li>Dashboard themes and customization</li>
-                <li>Widget categories and filtering</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Widgets not responsive on ultrawide monitors</li>
-                <li>Dashboard performance with 10+ widgets</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.2.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.2.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">July 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Navigation menu alignment issues on Safari</li>
-                <li>Mobile responsiveness bugs in header</li>
-                <li>Icon rendering problems on Firefox</li>
-                <li>Dropdown menus closing immediately on click</li>
-                <li>Breadcrumb navigation not updating correctly</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Optimized CSS for better page load performance</li>
-                <li>Reduced JavaScript bundle size by 15%</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.2.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.2.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">June 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Advanced navigation breadcrumbs</li>
-                <li>Quick actions menu</li>
-                <li>Keyboard navigation improvements</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Navigation not scrolling on mobile</li>
-                <li>Active link indicator misaligned</li>
-                <li>Submenu items not clickable on touch devices</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.1.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.1.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">June 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Card shadows not displaying on Chrome</li>
-                <li>Button hover states flickering</li>
-                <li>Text overflow in card titles</li>
-                <li>Image lazy loading causing layout shift</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.1.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.1.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">June 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Card grid breaking on mobile landscape</li>
-                <li>Typography inconsistencies across pages</li>
-                <li>Modal dialogs not centering properly</li>
-                <li>Form labels overlapping input fields</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.1.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.1.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">June 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Dashboard loading spinner not centering</li>
-                <li>Card animations causing performance issues</li>
-                <li>Responsive breakpoints not triggering correctly</li>
-                <li>Footer content overlapping on short pages</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.1.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 2.1.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">May 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Widget resize functionality on dashboard</li>
-                <li>Card flip animations for interactive content</li>
-                <li>Skeleton loading states for better UX</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Dashboard widgets not saving positions</li>
-                <li>Card hover effects not working on touch</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 2.0.0 -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -1920,636 +899,18 @@ body {
                 <div class="version-date">May 15, 2024</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
                 <li>Brand new user interface with modern card-based design</li>
                 <li>Completely redesigned navigation system</li>
                 <li>Customizable dashboard with drag-and-drop widgets</li>
-                <li>Enhanced color scheme with gradient accents</li>
                 <li>Modern typography with Inter font family</li>
                 <li>Micro-interactions and subtle animations throughout</li>
-                <li>Improved spacing and visual hierarchy</li>
-                <li>New component library with consistent styling</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Complete visual redesign of entire platform</li>
-                <li>Improved user experience flow and navigation patterns</li>
-                <li>Enhanced accessibility with WCAG 2.1 AA compliance</li>
-                <li>Modernized component library with new design tokens</li>
-                <li>Refined color palette for better visual appeal</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Legacy UI inconsistencies across pages</li>
-                <li>Poor mobile experience in version 1.x</li>
             </ul>
         </div>
     </div>
 
-    <!-- Version 1.8.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.8.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">May 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Search results not displaying correctly</li>
-                <li>Pagination controls overlapping content</li>
-                <li>Filter dropdowns not closing on mobile</li>
-                <li>Sort functionality breaking with special characters</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.8.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.8.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">April 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Search auto-complete causing crashes</li>
-                <li>Filter selections not persisting</li>
-                <li>Search history not clearing properly</li>
-                <li>Special characters breaking search queries</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.8.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.8.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">April 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Advanced search filters</li>
-                <li>Search history and suggestions</li>
-                <li>Real-time search preview</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Search indexing not updating correctly</li>
-                <li>Empty search results page styling</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.7.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.7.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">April 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Data export generating corrupted files</li>
-                <li>Import validation too strict</li>
-                <li>Batch operations timing out</li>
-                <li>CSV parsing errors with quoted fields</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.7.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.7.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">April 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Data table sorting breaking with null values</li>
-                <li>Export button not working in Firefox</li>
-                <li>Column resize not saving preferences</li>
-                <li>Table horizontal scroll not showing on mobile</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.7.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.7.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">March 28, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Data grid virtualization causing blank rows</li>
-                <li>Infinite scroll not loading more items</li>
-                <li>Row selection state not persisting</li>
-                <li>Column headers misaligned after resize</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.7.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.7.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">March 20, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Bulk data import/export functionality</li>
-                <li>Advanced data filtering options</li>
-                <li>Column customization for tables</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Data table performance with large datasets</li>
-                <li>Export format not preserving formatting</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.6.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.6.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">March 12, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Settings page not saving on iOS Safari</li>
-                <li>Toggle switches not animating smoothly</li>
-                <li>Settings modal closing unexpectedly</li>
-                <li>Preference sync conflicts between devices</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.6.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.6.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">March 5, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Settings not loading from localStorage</li>
-                <li>Default preferences overwriting custom settings</li>
-                <li>Settings panel layout breaking on narrow screens</li>
-                <li>Theme preference not syncing across tabs</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.6.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.6.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">February 25, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>User notification preferences</li>
-                <li>Accessibility settings panel</li>
-                <li>Privacy controls for data sharing</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Settings reset after browser update</li>
-                <li>Preference categories not collapsing</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.5.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.5.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">February 18, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Notification permission prompt appearing repeatedly</li>
-                <li>Toast notifications stacking incorrectly</li>
-                <li>Notification sounds playing multiple times</li>
-                <li>Push notification icons not displaying</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.5.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.5.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">February 10, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Push notification support</li>
-                <li>In-app notification center</li>
-                <li>Notification grouping and management</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Notifications not clearing when read</li>
-                <li>Badge count displaying incorrectly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.4.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.4.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">February 2, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Error logs growing too large</li>
-                <li>Log rotation not working correctly</li>
-                <li>Error details not capturing stack traces</li>
-                <li>Log viewer pagination broken</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.4.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.4.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">January 25, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Console errors appearing in production</li>
-                <li>Error boundary not catching async errors</li>
-                <li>Log export including sensitive data</li>
-                <li>Error messages not translating correctly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.4.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.4.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">January 18, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Error logging causing memory leaks</li>
-                <li>Error reports not being sent correctly</li>
-                <li>Stack traces not formatting properly</li>
-                <li>Error notification sound too loud</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.4.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.4.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">January 10, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Error tracking and analytics</li>
-                <li>Automated error reports</li>
-                <li>User feedback on errors</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Unhandled promise rejections crashing app</li>
-                <li>Error messages not user-friendly</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.3.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.3.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">January 3, 2024</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Help modal videos not loading</li>
-                <li>Documentation search returning no results</li>
-                <li>Tutorial progress not saving</li>
-                <li>FAQ accordion not expanding</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.3.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.3.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">December 27, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Help documentation links broken</li>
-                <li>Tutorial tooltips appearing off-screen</li>
-                <li>Video tutorials not playing on mobile</li>
-                <li>Help sidebar scrolling issues</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.3.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.3.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">December 20, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Interactive tutorials for new users</li>
-                <li>Video guides for key features</li>
-                <li>Contextual help tooltips</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Help button not visible on all pages</li>
-                <li>Documentation images not loading</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.2.3 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.2.3 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">December 12, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Form validation errors not displaying</li>
-                <li>Data synchronization timing out</li>
-                <li>Cross-browser compatibility issues in Edge</li>
-                <li>Required field indicators missing</li>
-                <li>Date picker not working on Android</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.2.2 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.2.2 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">December 5, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Form submissions timing out on slow connections</li>
-                <li>Input fields losing focus randomly</li>
-                <li>Autocomplete suggestions not appearing</li>
-                <li>Radio button groups not mutually exclusive</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.2.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.2.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">November 28, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>User preferences saving to localStorage</li>
-                <li>Keyboard shortcuts for common actions (Ctrl+S to save, Ctrl+Z for undo)</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Memory leak in data processing pipeline</li>
-                <li>Button click events not firing on first tap</li>
-                <li>Mobile touch gesture recognition failing</li>
-                <li>Dropdown menus closing before selection on iOS</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.2.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.2.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">November 25, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Undo/redo functionality for data changes</li>
-                <li>Auto-save feature for forms</li>
-                <li>Export data to multiple formats (CSV, JSON, PDF)</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Improved form validation messaging</li>
-                <li>Enhanced error recovery mechanisms</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Data loss when navigating away from unsaved forms</li>
-                <li>Timezone conversion issues in date displays</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.1.0 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.1.0 <span class="version-badge badge-minor">Update</span></div>
-                <div class="version-date">November 24, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title added">Added</h3>
-            <ul class="changes-list">
-                <li>Basic search functionality across all pages</li>
-                <li>Error logging system for debugging</li>
-                <li>Help documentation and FAQ section</li>
-                <li>Contact support form</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Improved page load performance by 40%</li>
-                <li>Optimized image assets for faster loading</li>
-                <li>Reduced initial bundle size</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Navigation menu not closing on mobile after selection</li>
-                <li>Images not loading on slow connections</li>
-                <li>Text wrapping incorrectly on narrow screens</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.0.1 -->
-    <div class="version-section">
-        <div class="version-header">
-            <div class="version-info">
-                <div class="version-number">Version 1.0.1 <span class="version-badge badge-patch">Patch</span></div>
-                <div class="version-date">November 23, 2023</div>
-            </div>
-        </div>
-        
-        <div class="changes-section">
-            <h3 class="changes-title fixed">Fixed</h3>
-            <ul class="changes-list">
-                <li>Critical login page loading issue on Safari</li>
-                <li>Mobile menu toggle not working</li>
-                <li>Footer links returning 404 errors</li>
-                <li>Broken image links in onboarding flow</li>
-                <li>Console errors appearing in production build</li>
-                <li>Session timeout not triggering correctly</li>
-            </ul>
-        </div>
-
-        <div class="changes-section">
-            <h3 class="changes-title changed">Changed</h3>
-            <ul class="changes-list">
-                <li>Updated landing page copy for clarity</li>
-                <li>Improved error messages for better user understanding</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Version 1.0.0 Beta -->
     <div class="version-section">
         <div class="version-header">
             <div class="version-info">
@@ -2558,7 +919,6 @@ body {
                 <div class="version-date">November 22, 2023</div>
             </div>
         </div>
-        
         <div class="changes-section">
             <h3 class="changes-title added">Added</h3>
             <ul class="changes-list">
@@ -2569,18 +929,13 @@ body {
                 <li>Responsive design for mobile and desktop</li>
                 <li>Landing page with product overview</li>
                 <li>User onboarding flow and tutorials</li>
-                <li>Basic settings and preferences panel</li>
-                <li>Email notification system</li>
-                <li>Beta testing feedback form</li>
-                <li>Privacy policy and terms of service</li>
-                <li>Contact and support pages</li>
             </ul>
         </div>
     </div>
 
     <div class="timeline">
         <h2>Thank You For Being Part of Our Journey</h2>
-        <p>From November 22, 2023 to today - nearly two years of innovation, improvements, and your invaluable feedback</p>
+        <p>From November 22, 2023 to today &mdash; nearly three years of innovation, improvements, and your invaluable feedback</p>
     </div>
 
 </div>
