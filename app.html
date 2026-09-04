@@ -29,16 +29,12 @@
       }
 
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, sans-serif;
-        background: radial-gradient(
-          ellipse at top,
-          #1a0033 0%,
-          #0d001a 50%,
-          #000014 100%
-        );
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+          "Inter", "Helvetica Neue", sans-serif;
+        background: #1c1c1e;
+        background-image: none;
         background-attachment: fixed;
-        color: #f8faff;
+        color: #f5f5f7;
         height: 100vh;
         overflow: hidden;
         display: flex;
@@ -57,71 +53,53 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(
-            circle at 20% 50%,
-            rgba(120, 40, 255, 0.15) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 80% 20%,
-            rgba(60, 130, 255, 0.15) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 40% 80%,
-            rgba(180, 40, 255, 0.1) 0%,
-            transparent 50%
-          );
+        background: none;
         pointer-events: none;
         z-index: 0;
       }
 
       body::after {
-        content: "\f57d"; /* Font Awesome globe icon */
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 25rem;
-        color: rgba(79, 138, 255, 0.08);
-        pointer-events: none;
-        z-index: 0;
-        text-shadow: 0 0 100px rgba(79, 138, 255, 0.3),
-          0 0 200px rgba(79, 138, 255, 0.2);
+        content: "";
+        display: none;
       }
 
       /* Halloween Theme - Pumpkin */
       body.halloween-theme::after {
         content: "🎃";
+        display: block;
         font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
           "Noto Color Emoji";
         font-weight: normal;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         font-size: 30rem;
         color: transparent;
         text-shadow: none;
+        pointer-events: none;
+        z-index: 0;
         filter: drop-shadow(0 0 100px rgba(255, 140, 0, 0.4))
           drop-shadow(0 0 200px rgba(255, 140, 0, 0.3));
       }
 
       .menu-bar {
-        height: 32px;
-        background: rgba(15, 15, 35, 0.6);
-        backdrop-filter: blur(40px) saturate(1.8) brightness(1.2);
-        -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.2);
+        height: 25px;
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(80px) saturate(1.8);
+        -webkit-backdrop-filter: blur(80px) saturate(1.8);
         display: flex;
         align-items: center;
-        padding: 0 16px;
-        font-size: 0.85rem;
+        padding: 0 12px;
+        font-size: 0.8rem;
         font-weight: 500;
-        color: #e8f0ff;
-        border-bottom: 1px solid rgba(79, 138, 255, 0.2);
-        box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.1) inset,
-          0 4px 16px rgba(0, 0, 0, 0.4);
+        color: rgba(255, 255, 255, 0.9);
+        border-bottom: none;
+        box-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.08);
         position: relative;
         z-index: 1000;
         justify-content: space-between;
+        letter-spacing: -0.01em;
       }
 
       .menu-left {
@@ -148,14 +126,14 @@
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: rgba(79, 138, 255, 0.3);
-        border: 1px solid rgba(79, 138, 255, 0.4);
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 0.52rem;
         font-weight: 700;
-        color: #c4b0ff;
+        color: #d1d1d6;
         overflow: hidden;
         vertical-align: middle;
         margin-right: 6px;
@@ -171,14 +149,14 @@
       }
 
       .menu-item {
-        padding: 4px 8px;
-        border-radius: 6px;
+        padding: 2px 8px;
+        border-radius: 4px;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: background 0.12s ease;
       }
 
       .menu-item:hover {
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.12);
       }
 
       /* ── Notification bell ── */
@@ -202,37 +180,37 @@
       .notif-menu-title {
         font-size: 0.85rem;
         font-weight: 600;
-        color: #e8f0ff;
+        color: #f5f5f7;
       }
       .notif-menu-action {
         font-size: 0.72rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         cursor: pointer;
         transition: color 0.15s;
       }
-      .notif-menu-action:hover { color: #e8f0ff; }
+      .notif-menu-action:hover { color: #f5f5f7; }
       .notif-menu-action.danger:hover { color: #ff6b6b; }
       .notif-menu-filter {
         display: flex;
         gap: 5px;
         padding: 10px 16px 8px;
-        border-bottom: 1px solid rgba(79, 138, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
       .notif-pill {
         padding: 3px 9px;
         border-radius: 20px;
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         background: transparent;
-        color: #a8b4d9;
+        color: #8e8e93;
         font-size: 0.7rem;
         font-family: inherit;
         cursor: pointer;
         transition: all 0.15s;
       }
       .notif-pill.active, .notif-pill:hover {
-        border-color: rgba(79, 138, 255, 0.5);
-        background: rgba(79, 138, 255, 0.15);
-        color: #e8f0ff;
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        color: #f5f5f7;
       }
       .notif-menu-list {
         max-height: 340px;
@@ -241,7 +219,7 @@
       }
       .notif-menu-list::-webkit-scrollbar { width: 4px; }
       .notif-menu-list::-webkit-scrollbar-track { background: transparent; }
-      .notif-menu-list::-webkit-scrollbar-thumb { background: rgba(79,138,255,0.3); border-radius: 2px; }
+      .notif-menu-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 2px; }
       .nm-item {
         display: flex;
         align-items: flex-start;
@@ -249,10 +227,10 @@
         padding: 10px 16px;
         cursor: default;
         transition: background 0.15s;
-        border-bottom: 1px solid rgba(79, 138, 255, 0.07);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       }
       .nm-item:last-child { border-bottom: none; }
-      .nm-item:hover { background: rgba(79, 138, 255, 0.08); }
+      .nm-item:hover { background: rgba(255, 255, 255, 0.05); }
       .nm-item.dismissed { opacity: 0.5; }
       .nm-dot {
         width: 7px; height: 7px;
@@ -260,13 +238,13 @@
         margin-top: 5px;
         flex-shrink: 0;
       }
-      .nm-dot-update  { background: #e8f0ff; }
-      .nm-dot-message { background: #60a5fa; }
+      .nm-dot-update  { background: #f5f5f7; }
+      .nm-dot-message { background: #0a84ff; }
       .nm-body { flex: 1; min-width: 0; }
       .nm-title {
         font-size: 0.82rem;
         font-weight: 500;
-        color: #e8f0ff;
+        color: #f5f5f7;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -274,7 +252,7 @@
       }
       .nm-text {
         font-size: 0.75rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -282,7 +260,7 @@
       }
       .nm-time {
         font-size: 0.68rem;
-        color: rgba(168, 180, 217, 0.5);
+        color: rgba(142, 142, 147, 0.6);
       }
       .nm-badge {
         font-size: 0.62rem;
@@ -295,21 +273,21 @@
         flex-shrink: 0;
         margin-top: 3px;
       }
-      .nm-badge-update  { border-color: rgba(232,240,255,0.2); color: rgba(232,240,255,0.6); }
-      .nm-badge-message { border-color: rgba(96,165,250,0.3);  color: #93c5fd; }
+      .nm-badge-update  { border-color: rgba(245,245,247,0.2); color: rgba(245,245,247,0.6); }
+      .nm-badge-message { border-color: rgba(10,132,255,0.3);  color: #409cff; }
       .nm-empty {
         text-align: center;
         padding: 32px 16px;
-        color: rgba(168, 180, 217, 0.5);
+        color: rgba(142, 142, 147, 0.6);
         font-size: 0.8rem;
       }
       .nm-empty-icon { font-size: 1.5rem; margin-bottom: 8px; opacity: 0.5; }
       /* light mode */
       body.light-mode .notif-menu-title,
-      body.light-mode .nm-title { color: #1a1a2e; }
+      body.light-mode .nm-title { color: #1d1d1f; }
       body.light-mode .nm-text,
-      body.light-mode .notif-menu-action { color: #64748b; }
-      body.light-mode .nm-item:hover { background: rgba(79,138,255,0.06); }
+      body.light-mode .notif-menu-action { color: #636366; }
+      body.light-mode .nm-item:hover { background: rgba(255,255,255,0.04); }
 
       .desktop {
         flex: 1;
@@ -345,9 +323,9 @@
       }
 
       .desktop-icon:hover {
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         transform: scale(1.05);
-        box-shadow: 0 8px 32px rgba(79, 138, 255, 0.3);
+        box-shadow: none;
       }
 
       .desktop-icon:active {
@@ -356,23 +334,24 @@
 
       .desktop-icon i {
         font-size: 2rem;
-        color: #d0d8ff;
-        filter: drop-shadow(0 2px 8px rgba(79, 138, 255, 0.3));
+        color: #e0e0e5;
+        filter: none;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .desktop-icon:hover i {
         color: #ffffff;
-        filter: drop-shadow(0 4px 12px rgba(79, 138, 255, 0.5));
+        filter: none;
       }
 
       .desktop-icon span {
-        font-size: 0.75rem;
-        color: #e8f0ff;
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.85);
         font-weight: 500;
         max-width: 100%;
         word-wrap: break-word;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
       }
 
       .desktop-icon:hover span {
@@ -401,9 +380,9 @@
       }
 
       .desktop-folder-icon:hover {
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         transform: scale(1.05);
-        box-shadow: 0 8px 32px rgba(79, 138, 255, 0.3);
+        box-shadow: none;
       }
 
       .desktop-folder-icon:active { transform: scale(0.95); }
@@ -502,27 +481,27 @@
       }
 
       .folder-app-icon:hover {
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         transform: scale(1.05);
-        box-shadow: 0 8px 24px rgba(79, 138, 255, 0.3);
+        box-shadow: none;
       }
 
       .folder-app-icon:active { transform: scale(0.95); }
 
       .folder-app-icon i {
         font-size: 2rem;
-        color: #d0d8ff;
-        filter: drop-shadow(0 2px 8px rgba(79, 138, 255, 0.3));
+        color: #e0e0e5;
+        filter: none;
       }
 
       .folder-app-icon:hover i {
         color: #fff;
-        filter: drop-shadow(0 4px 12px rgba(79, 138, 255, 0.5));
+        filter: none;
       }
 
       .folder-app-icon span {
         font-size: 0.75rem;
-        color: #e8f0ff;
+        color: #f5f5f7;
         font-weight: 500;
       }
 
@@ -531,26 +510,26 @@
         min-width: 400px;
         min-height: 300px;
         max-width: calc(100vw - 40px) !important;
-        max-height: calc(100vh - 112px) !important;
-        background: rgba(20, 15, 40, 0.4);
-        backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-        -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-        border-radius: 16px;
-        box-shadow: 0 0 1px rgba(255, 255, 255, 0.15) inset,
-          0 12px 48px rgba(0, 0, 0, 0.4),
-          0 24px 80px rgba(79, 138, 255, 0.15);
-        border: 1px solid rgba(79, 138, 255, 0.15);
+        max-height: calc(100vh - 93px) !important;
+        background: rgba(30, 30, 30, 0.78);
+        backdrop-filter: blur(72px) saturate(1.6);
+        -webkit-backdrop-filter: blur(72px) saturate(1.6);
+        border-radius: 12px;
+        box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12) inset,
+          0 8px 40px rgba(0, 0, 0, 0.55),
+          0 2px 8px rgba(0, 0, 0, 0.3);
+        border: 0.5px solid rgba(255, 255, 255, 0.1);
         display: flex;
         flex-direction: column;
         z-index: 100;
         resize: both;
         overflow: hidden;
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: translateY(16px) scale(0.97);
         transform-origin: center center;
-        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-          transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-          box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+          box-shadow 0.25s ease;
       }
 
       .window.window-visible {
@@ -560,9 +539,9 @@
 
       .window.active {
         z-index: 200;
-        box-shadow: 0 0 1px rgba(255, 255, 255, 0.2) inset,
-          0 16px 64px rgba(0, 0, 0, 0.5),
-          0 32px 96px rgba(79, 138, 255, 0.2);
+        box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset,
+          0 12px 56px rgba(0, 0, 0, 0.65),
+          0 2px 12px rgba(0, 0, 0, 0.35);
       }
 
       .window.fullscreen {
@@ -586,45 +565,49 @@
       }
 
       .window-titlebar {
-        height: 44px;
-        background: #0a0a0a;
+        height: 38px;
+        background: rgba(40, 40, 40, 0.65);
         display: flex;
         align-items: center;
-        padding: 0 12px;
-        border-radius: 16px 16px 0 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0 14px;
+        border-radius: 12px 12px 0 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         cursor: move;
         user-select: none;
       }
 
       .window-controls {
         display: flex;
-        gap: 4px;
+        gap: 8px;
         margin-right: 12px;
       }
 
       .window-control {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
         cursor: pointer;
-        transition: background 0.15s ease, color 0.15s ease;
+        transition: filter 0.15s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.75rem;
-        background: transparent;
+        font-size: 0;
+        background: rgba(255, 255, 255, 0.15);
         border: none;
-        color: rgba(79, 138, 255, 0.5);
+        color: transparent;
       }
+
+      .window.active .window-control.close { background: #ff5f57; }
+      .window.active .window-control.minimize { background: #febc2e; }
+      .window.active .window-control.maximize { background: #28c840; }
 
       .window-control:hover {
-        background: rgba(255, 255, 255, 0.06);
+        filter: brightness(1.15);
       }
 
-      .window-control.close:hover {
-        color: #ef4444;
-        background: rgba(239, 68, 68, 0.12);
+      .window-controls:hover .window-control {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 7px;
       }
 
       .window-control.close::before {
@@ -633,20 +616,10 @@
         font-weight: 900;
       }
 
-      .window-control.minimize:hover {
-        color: #22c55e;
-        background: rgba(34, 197, 94, 0.12);
-      }
-
       .window-control.minimize::before {
         content: "\f2d1";
         font-family: "Font Awesome 6 Free";
         font-weight: 900;
-      }
-
-      .window-control.maximize:hover {
-        color: #22c55e;
-        background: rgba(34, 197, 94, 0.12);
       }
 
       .window-control.maximize::before {
@@ -656,16 +629,17 @@
       }
 
       .window-title {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         font-weight: 500;
         color: rgba(255, 255, 255, 0.75);
         flex: 1;
+        text-align: center;
       }
 
       .window-content {
         flex: 1;
-        background: rgba(10, 10, 25, 0.3);
-        border-radius: 0 0 16px 16px;
+        background: rgba(10, 10, 12, 0.3);
+        border-radius: 0 0 12px 12px;
         overflow: hidden;
       }
 
@@ -678,61 +652,59 @@
 
       .dock {
         position: fixed;
-        bottom: 16px;
+        bottom: 6px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(20, 15, 40, 0.5);
-        backdrop-filter: blur(60px) saturate(2) brightness(1.3);
-        -webkit-backdrop-filter: blur(60px) saturate(2) brightness(1.3);
-        border-radius: 20px;
-        padding: 12px 20px;
+        background: rgba(30, 30, 30, 0.45);
+        backdrop-filter: blur(60px) saturate(1.8);
+        -webkit-backdrop-filter: blur(60px) saturate(1.8);
+        border-radius: 18px;
+        padding: 4px 6px;
         display: flex;
         align-items: center;
-        gap: 12px;
-        box-shadow: 0 0 1px rgba(255, 255, 255, 0.2) inset,
-          0 12px 48px rgba(0, 0, 0, 0.4),
-          0 24px 60px rgba(79, 138, 255, 0.25);
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        gap: 4px;
+        box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.2) inset,
+          0 8px 32px rgba(0, 0, 0, 0.4);
+        border: 0.5px solid rgba(255, 255, 255, 0.12);
         z-index: 1000;
       }
 
       .dock-item {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
-        background: rgba(79, 138, 255, 0.1);
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.06);
+        border: none;
       }
 
       .dock-item:hover {
         transform: translateY(-8px) scale(1.15);
-        box-shadow: 0 0 30px rgba(79, 138, 255, 0.4),
-          0 12px 24px rgba(0, 0, 0, 0.4);
-        background: rgba(79, 138, 255, 0.2);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.12);
       }
 
       .dock-item.active::after {
         content: "";
         position: absolute;
-        bottom: -6px;
+        bottom: -4px;
         left: 50%;
         transform: translateX(-50%);
-        width: 6px;
-        height: 6px;
-        background: rgba(79, 138, 255, 0.8);
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.7);
         border-radius: 50%;
-        box-shadow: 0 0 12px rgba(79, 138, 255, 0.6);
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
       }
 
       .dock-item i {
         font-size: 1.5rem;
-        color: #d0d8ff;
+        color: #e0e0e5;
         z-index: 1;
         position: relative;
       }
@@ -742,18 +714,18 @@
         bottom: 100%;
         left: 50%;
         transform: translateX(-50%) translateY(-8px);
-        background: rgba(30, 25, 50, 0.9);
+        background: rgba(30, 30, 30, 0.85);
         backdrop-filter: blur(20px);
-        color: #e8f0ff;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 0.75rem;
+        color: #f5f5f7;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.72rem;
         font-weight: 500;
         white-space: nowrap;
         opacity: 0;
         pointer-events: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 0.5px solid rgba(255, 255, 255, 0.15);
         z-index: 10002;
         margin-bottom: 8px;
       }
@@ -807,7 +779,7 @@
         font-size: 5.5rem;
         color: #ffffff;
         margin-bottom: 56px;
-        filter: drop-shadow(0 0 48px rgba(150, 100, 255, 0.5));
+        filter: drop-shadow(0 0 48px rgba(255, 255, 255, 0.2));
         animation: bootFadeIn 1s ease both 0.4s;
       }
 
@@ -851,9 +823,9 @@
         left: 0;
         height: 100vh;
         width: 100vw;
-        background: rgba(10, 5, 25, 0.9);
-        backdrop-filter: blur(60px) saturate(2);
-        -webkit-backdrop-filter: blur(60px) saturate(2);
+        background: rgba(10, 10, 12, 0.9);
+        backdrop-filter: blur(60px) saturate(1.5);
+        -webkit-backdrop-filter: blur(60px) saturate(1.5);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -908,75 +880,72 @@
 
       /* Light mode styles */
       body.light-mode {
-        background: linear-gradient(135deg, #f8faff 0%, #e8f0ff 100%);
-        color: #1a1a2e;
+        background: #f5f5f7;
+        color: #1d1d1f;
       }
 
       body.light-mode::after {
-        color: rgba(79, 138, 255, 0.12);
-        text-shadow: 0 0 100px rgba(79, 138, 255, 0.2),
-          0 0 200px rgba(79, 138, 255, 0.1);
+        display: none;
       }
 
       body.light-mode::before {
-        background: radial-gradient(
-            circle at 20% 50%,
-            rgba(79, 138, 255, 0.08) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 80% 20%,
-            rgba(60, 130, 255, 0.08) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 40% 80%,
-            rgba(180, 40, 255, 0.06) 0%,
-            transparent 50%
-          );
+        background: none;
       }
 
       body.light-mode .menu-bar {
-        background: rgba(248, 250, 255, 0.8);
-        color: #1a1a2e;
-        border-bottom: 1px solid rgba(79, 138, 255, 0.3);
+        background: rgba(246, 246, 246, 0.8);
+        color: #1d1d1f;
+        box-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.12);
+        border-bottom: none;
       }
 
       body.light-mode .window {
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(79, 138, 255, 0.2);
-        color: #1a1a2e;
+        background: rgba(255, 255, 255, 0.85);
+        border: 0.5px solid rgba(0, 0, 0, 0.12);
+        color: #1d1d1f;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15),
+          0 2px 8px rgba(0, 0, 0, 0.08);
       }
 
       body.light-mode .window-titlebar {
-        background: #f5f5f5;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        background: rgba(246, 246, 246, 0.9);
+        border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
       }
 
       body.light-mode .window-title {
         color: rgba(0, 0, 0, 0.75);
       }
       body.light-mode .window-control {
-        color: rgba(79, 138, 255, 0.4);
+        background: rgba(0, 0, 0, 0.08);
       }
+      body.light-mode .window.active .window-control.close { background: #ff5f57; }
+      body.light-mode .window.active .window-control.minimize { background: #febc2e; }
+      body.light-mode .window.active .window-control.maximize { background: #28c840; }
 
 
       body.light-mode .dock {
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(79, 138, 255, 0.3);
+        background: rgba(255, 255, 255, 0.65);
+        border: 0.5px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05) inset,
+          0 8px 32px rgba(0, 0, 0, 0.12);
       }
 
       body.light-mode .dock-item {
-        background: rgba(79, 138, 255, 0.08);
-        border: 1px solid rgba(79, 138, 255, 0.15);
+        background: rgba(0, 0, 0, 0.04);
+        border: none;
       }
 
       body.light-mode .desktop-icon {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .desktop-icon i {
-        color: #3c4560;
+        color: #3a3a3c;
+      }
+
+      body.light-mode .desktop-icon span {
+        color: #1d1d1f;
+        text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
       }
 
       /* No transparency mode */
@@ -988,7 +957,7 @@
       }
 
       body.no-transparency .window {
-        background: rgba(20, 15, 40, 0.95) !important;
+        background: rgba(28, 28, 30, 0.95) !important;
       }
 
       body.no-transparency.light-mode .window {
@@ -1052,11 +1021,11 @@
         position: absolute;
         top: 100%;
         left: 0;
-        background: rgba(20, 15, 40, 0.9);
+        background: rgba(28, 28, 30, 0.9);
         backdrop-filter: blur(40px) saturate(1.8) brightness(1.2);
         -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.2);
         border-radius: 12px;
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
           0 0 0 1px rgba(255, 255, 255, 0.1) inset;
         min-width: 220px;
@@ -1085,7 +1054,7 @@
         gap: 12px;
         font-size: 0.9rem;
         font-weight: 500;
-        color: #e8f0ff;
+        color: #f5f5f7;
       }
 
       .xorbit-menu-item:first-child {
@@ -1097,7 +1066,7 @@
       }
 
       .xorbit-menu-item:hover {
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         color: #ffffff;
         transform: translateX(2px);
       }
@@ -1105,16 +1074,16 @@
       .xorbit-menu-item i {
         width: 16px;
         text-align: center;
-        color: #a8b4d9;
+        color: #8e8e93;
       }
 
       .xorbit-menu-item:hover i {
-        color: #4f8aff;
+        color: #0a84ff;
       }
 
       .xorbit-menu-divider {
         height: 1px;
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         margin: 6px 12px;
       }
 
@@ -1138,28 +1107,28 @@
       /* Light mode menu */
       body.light-mode .xorbit-menu {
         background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(79, 138, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.14);
       }
 
       body.light-mode .xorbit-menu-item {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .xorbit-menu-item:hover {
-        background: rgba(79, 138, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
         color: #000;
       }
 
       body.light-mode .xorbit-menu-item i {
-        color: #64748b;
+        color: #636366;
       }
 
       body.light-mode .xorbit-menu-item:hover i {
-        color: #4f8aff;
+        color: #0a84ff;
       }
 
       body.light-mode .xorbit-menu-divider {
-        background: rgba(79, 138, 255, 0.3);
+        background: rgba(255, 255, 255, 0.14);
       }
 
       /* Time/Weather Dropdown */
@@ -1167,11 +1136,11 @@
         position: absolute;
         top: 100%;
         right: 0;
-        background: rgba(20, 15, 40, 0.9);
+        background: rgba(28, 28, 30, 0.9);
         backdrop-filter: blur(40px) saturate(1.8) brightness(1.2);
         -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.2);
         border-radius: 16px;
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
           0 0 0 1px rgba(255, 255, 255, 0.1) inset;
         min-width: 620px;
@@ -1196,26 +1165,26 @@
         text-align: center;
         margin-bottom: 20px;
         padding-bottom: 16px;
-        border-bottom: 1px solid rgba(79, 138, 255, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .time-display {
         font-size: 2rem;
         font-weight: 600;
-        color: #e8f0ff;
+        color: #f5f5f7;
         margin-bottom: 4px;
         font-family: "Inter", monospace;
       }
 
       .date-display {
         font-size: 1rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         margin-bottom: 8px;
       }
 
       .timezone-display {
         font-size: 0.85rem;
-        color: #4f8aff;
+        color: #0a84ff;
         font-weight: 500;
       }
 
@@ -1225,9 +1194,9 @@
         gap: 16px;
         margin-bottom: 16px;
         padding: 16px;
-        background: rgba(79, 138, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 12px;
-        border: 1px solid rgba(79, 138, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .weather-icon {
@@ -1243,19 +1212,19 @@
       .weather-temp {
         font-size: 1.5rem;
         font-weight: 600;
-        color: #e8f0ff;
+        color: #f5f5f7;
         margin-bottom: 2px;
       }
 
       .weather-desc {
         font-size: 0.9rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         margin-bottom: 4px;
       }
 
       .weather-location {
         font-size: 0.8rem;
-        color: #4f8aff;
+        color: #0a84ff;
         font-weight: 500;
       }
 
@@ -1270,13 +1239,13 @@
         background: rgba(255, 255, 255, 0.03);
         padding: 12px;
         border-radius: 12px;
-        border: 1px solid rgba(79, 138, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         text-align: center;
       }
 
       .weather-detail-label {
         font-size: 0.75rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         margin-bottom: 4px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -1284,31 +1253,31 @@
 
       .weather-detail-value {
         font-size: 0.95rem;
-        color: #e8f0ff;
+        color: #f5f5f7;
         font-weight: 600;
       }
 
       .location-section {
         text-align: center;
         padding-top: 12px;
-        border-top: 1px solid rgba(79, 138, 255, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .location-text {
         font-size: 0.85rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         margin-bottom: 8px;
       }
 
       .location-update {
         font-size: 0.75rem;
-        color: #4f8aff;
+        color: #0a84ff;
         cursor: pointer;
         transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .location-update:hover {
-        color: #7aaaff;
+        color: #409cff;
       }
 
       .menu-item.time-item {
@@ -1346,28 +1315,28 @@
       /* Light mode time menu */
       body.light-mode .time-menu {
         background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(79, 138, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.14);
       }
 
       body.light-mode .time-display {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .weather-temp {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .weather-detail-value {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .weather-section {
-        background: rgba(79, 138, 255, 0.08);
+        background: rgba(255, 255, 255, 0.05);
       }
 
       body.light-mode .weather-detail {
-        background: rgba(79, 138, 255, 0.05);
-        border: 1px solid rgba(79, 138, 255, 0.15);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       /* Tutorial/Guide Overlay - Simplified and Fixed */
@@ -1394,14 +1363,14 @@
       }
 
       .tutorial-content {
-        background: rgba(20, 15, 40, 0.95);
+        background: rgba(28, 28, 30, 0.95);
         backdrop-filter: blur(40px) saturate(1.8);
         -webkit-backdrop-filter: blur(40px) saturate(1.8);
         border-radius: 20px;
-        border: 2px solid rgba(79, 138, 255, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.25);
         box-shadow: 0 0 1px rgba(255, 255, 255, 0.1) inset,
           0 24px 80px rgba(0, 0, 0, 0.8),
-          0 32px 96px rgba(79, 138, 255, 0.3);
+          0 32px 96px rgba(255, 255, 255, 0.14);
         padding: 40px;
         max-width: 500px;
         width: 90vw;
@@ -1423,7 +1392,7 @@
 
       .tutorial-icon {
         font-size: 3rem;
-        color: #4f8aff;
+        color: #0a84ff;
         margin-bottom: 16px;
         display: block;
       }
@@ -1431,40 +1400,40 @@
       .tutorial-title {
         font-size: 1.5rem;
         font-weight: 600;
-        color: #e8f0ff;
+        color: #f5f5f7;
         margin-bottom: 8px;
       }
 
       .tutorial-step {
         font-size: 0.9rem;
-        color: #a8b4d9;
+        color: #8e8e93;
         margin-bottom: 16px;
       }
 
       .tutorial-description {
-        color: #e8f0ff;
+        color: #f5f5f7;
         line-height: 1.6;
         margin-bottom: 24px;
         font-size: 0.95rem;
       }
 
       .tutorial-highlight {
-        background: rgba(79, 138, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         padding: 16px;
         border-radius: 12px;
-        border: 1px solid rgba(79, 138, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.14);
         margin-bottom: 24px;
       }
 
       .tutorial-highlight-title {
-        color: #4f8aff;
+        color: #0a84ff;
         font-weight: 600;
         margin-bottom: 8px;
         font-size: 0.9rem;
       }
 
       .tutorial-highlight-text {
-        color: #d0d8ff;
+        color: #e5e5ea;
         font-size: 0.85rem;
         line-height: 1.4;
       }
@@ -1485,12 +1454,12 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: rgba(79, 138, 255, 0.3);
+        background: rgba(255, 255, 255, 0.14);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .tutorial-dot.active {
-        background: #4f8aff;
+        background: #0a84ff;
         transform: scale(1.2);
       }
 
@@ -1514,24 +1483,24 @@
 
       .tutorial-btn.secondary {
         background: rgba(255, 255, 255, 0.1);
-        color: #a8b4d9;
+        color: #8e8e93;
         border: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .tutorial-btn.secondary:hover {
         background: rgba(255, 255, 255, 0.15);
-        color: #e8f0ff;
+        color: #f5f5f7;
       }
 
       .tutorial-btn.primary {
-        background: linear-gradient(135deg, #4f8aff 0%, #3c82ff 100%);
+        background: linear-gradient(135deg, #0a84ff 0%, #0071e3 100%);
         color: white;
-        border: 1px solid rgba(79, 138, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.14);
       }
 
       .tutorial-btn.primary:hover {
         transform: translateY(-1px);
-        box-shadow: 0 4px 15px rgba(79, 138, 255, 0.4);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
       }
 
       .tutorial-config-btn {
@@ -1539,10 +1508,10 @@
         align-items: center;
         gap: 12px;
         padding: 14px 20px;
-        background: rgba(79, 138, 255, 0.15);
-        border: 2px solid rgba(79, 138, 255, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.14);
         border-radius: 12px;
-        color: #e8f0ff;
+        color: #f5f5f7;
         font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
@@ -1552,21 +1521,21 @@
       }
 
       .tutorial-config-btn:hover {
-        background: rgba(79, 138, 255, 0.25);
-        border-color: rgba(79, 138, 255, 0.5);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(79, 138, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.14);
       }
 
       .tutorial-config-btn.selected {
-        background: rgba(79, 138, 255, 0.4);
-        border-color: rgba(79, 138, 255, 0.7);
-        box-shadow: 0 0 20px rgba(79, 138, 255, 0.4);
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.35);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
       }
 
       .tutorial-config-btn i {
         font-size: 1.2rem;
-        color: #4f8aff;
+        color: #0a84ff;
       }
 
       /* Tutorial highlighting effects */
@@ -1582,10 +1551,10 @@
         left: -4px;
         right: -4px;
         bottom: -4px;
-        border: 2px solid #4f8aff;
+        border: 2px solid #0a84ff;
         border-radius: inherit;
-        box-shadow: 0 0 20px rgba(79, 138, 255, 0.6),
-          0 0 40px rgba(79, 138, 255, 0.3);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3),
+          0 0 40px rgba(255, 255, 255, 0.14);
         animation: tutorialPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         pointer-events: none;
       }
@@ -1609,66 +1578,66 @@
 
       body.light-mode .tutorial-content {
         background: rgba(255, 255, 255, 0.98);
-        border: 2px solid rgba(79, 138, 255, 0.5);
-        box-shadow: 0 0 1px rgba(79, 138, 255, 0.1) inset,
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 0 1px rgba(255, 255, 255, 0.05) inset,
           0 24px 80px rgba(0, 0, 0, 0.2),
-          0 32px 96px rgba(79, 138, 255, 0.2);
+          0 32px 96px rgba(255, 255, 255, 0.1);
       }
 
       body.light-mode .tutorial-title {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .tutorial-description {
-        color: #3c4560;
+        color: #48484a;
       }
 
       body.light-mode .tutorial-highlight {
-        background: rgba(79, 138, 255, 0.1);
-        border: 1px solid rgba(79, 138, 255, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.14);
       }
 
       body.light-mode .tutorial-highlight-text {
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .tutorial-step {
-        color: #6b7aaa;
+        color: #8e8e93;
       }
 
       body.light-mode .tutorial-btn.secondary {
         background: rgba(0, 0, 0, 0.06);
-        color: #3c4560;
+        color: #48484a;
         border-color: rgba(0, 0, 0, 0.15);
       }
 
       body.light-mode .tutorial-btn.secondary:hover {
         background: rgba(0, 0, 0, 0.1);
-        color: #1a1a2e;
+        color: #1d1d1f;
       }
 
       body.light-mode .tutorial-btn.primary {
-        background: linear-gradient(135deg, #6040e0 0%, #2860d0 100%);
+        background: linear-gradient(135deg, #0a84ff 0%, #0071e3 100%);
       }
 
       body.light-mode .tutorial-config-btn {
-        background: rgba(79, 138, 255, 0.08);
-        border-color: rgba(79, 138, 255, 0.25);
-        color: #1a1a2e;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: #1d1d1f;
       }
 
       body.light-mode .tutorial-config-btn:hover {
-        background: rgba(79, 138, 255, 0.15);
-        border-color: rgba(79, 138, 255, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
       }
 
       body.light-mode .tutorial-config-btn.selected {
-        background: rgba(79, 138, 255, 0.2);
-        border-color: rgba(79, 138, 255, 0.6);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
       }
 
       body.light-mode .tutorial-config-btn i {
-        color: #5c3cdf;
+        color: #0a84ff;
       }
 
       /* Minimalist theme tutorial */
@@ -1778,19 +1747,19 @@
       body.light-mode #pwaInstallOverlay { background: rgba(240,238,255,0.92); }
       body.light-mode #pwaInstallCard {
         background: rgba(255,255,255,0.98);
-        border-color: rgba(79,138,255,0.3);
-        box-shadow: 0 24px 80px rgba(0,0,0,0.12), 0 32px 96px rgba(79,138,255,0.12);
+        border-color: rgba(255,255,255,0.14);
+        box-shadow: 0 24px 80px rgba(0,0,0,0.12), 0 32px 96px rgba(255,255,255,0.06);
       }
-      body.light-mode #pwaInstallCard .pwa-col-divider { background: linear-gradient(to bottom, transparent, rgba(79,138,255,0.2), transparent); }
-      body.light-mode #pwaInstallCard .pwa-title { color: #1a1a2e; }
-      body.light-mode #pwaInstallCard .pwa-domain { color: #4f8aff; }
-      body.light-mode #pwaInstallCard .pwa-feature-icon { background: rgba(79,138,255,0.07); border-color: rgba(79,138,255,0.15); color: #4f8aff; }
-      body.light-mode #pwaInstallCard .pwa-feature-label { color: #6b7aaa; }
-      body.light-mode #pwaInstallCard .pwa-right-title { color: #1a1a2e; }
-      body.light-mode #pwaInstallCard .pwa-right-header-icon { background: rgba(79,138,255,0.08); border-color: rgba(79,138,255,0.18); color: #4f8aff; }
-      body.light-mode #pwaInstallCard .pwa-monitoring-text { color: #3c4560; }
-      body.light-mode #pwaInstallCard .pwa-security-point-text { color: #4a5270; }
-      body.light-mode #pwaInstallCard .pwa-security-point-text strong { color: #1a1a2e; }
+      body.light-mode #pwaInstallCard .pwa-col-divider { background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent); }
+      body.light-mode #pwaInstallCard .pwa-title { color: #1d1d1f; }
+      body.light-mode #pwaInstallCard .pwa-domain { color: #0a84ff; }
+      body.light-mode #pwaInstallCard .pwa-feature-icon { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #0a84ff; }
+      body.light-mode #pwaInstallCard .pwa-feature-label { color: #8e8e93; }
+      body.light-mode #pwaInstallCard .pwa-right-title { color: #1d1d1f; }
+      body.light-mode #pwaInstallCard .pwa-right-header-icon { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.09); color: #0a84ff; }
+      body.light-mode #pwaInstallCard .pwa-monitoring-text { color: #48484a; }
+      body.light-mode #pwaInstallCard .pwa-security-point-text { color: #636366; }
+      body.light-mode #pwaInstallCard .pwa-security-point-text strong { color: #1d1d1f; }
       body.light-mode #pwaInstallCard .pwa-security-point-icon { background: rgba(40,160,80,0.08); border-color: rgba(40,160,80,0.2); color: #28a050; }
       body.light-mode #pwaInstallCard .pwa-dismiss-hint { color: rgba(60,69,96,0.35); }
 
@@ -1908,7 +1877,7 @@
       .update-progress-icon {
         display: block;
         font-size: 2rem;
-        color: #8b6fff;
+        color: #0a84ff;
         text-align: center;
         margin-bottom: 12px;
       }
@@ -1921,14 +1890,14 @@
       .update-progress-title {
         font-size: 0.95rem;
         font-weight: 600;
-        color: #e8e0ff;
+        color: #f5f5f7;
         text-align: center;
         margin-bottom: 4px;
         letter-spacing: -0.01em;
       }
       .update-progress-status {
         font-size: 0.78rem;
-        color: rgba(160, 148, 210, 0.8);
+        color: rgba(142, 142, 147, 0.8);
         text-align: center;
         margin-bottom: 20px;
         min-height: 1.1em;
@@ -1952,7 +1921,7 @@
       .update-progress-bar {
         width: 0%;
         height: 100%;
-        background: linear-gradient(90deg, #4f8aff 0%, #5b8fff 100%);
+        background: linear-gradient(90deg, #0a84ff 0%, #409cff 100%);
         border-radius: 99px;
         transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -1979,13 +1948,13 @@
       .update-progress-percent {
         font-size: 0.75rem;
         font-weight: 600;
-        color: rgba(180, 168, 230, 0.9);
+        color: rgba(174, 174, 178, 0.9);
         font-variant-numeric: tabular-nums;
         min-width: 34px;
       }
       .update-progress-time {
         font-size: 0.72rem;
-        color: rgba(140, 128, 190, 0.7);
+        color: rgba(142, 142, 147, 0.7);
         text-align: right;
       }
 
@@ -2001,7 +1970,7 @@
 
       /* Light mode */
       body.light-mode .update-progress-overlay { background: rgba(245, 243, 255, 0.97); }
-      body.light-mode .update-progress-title   { color: #1c1830; }
+      body.light-mode .update-progress-title   { color: #1d1d1f; }
       body.light-mode .update-progress-status  { color: rgba(80, 70, 120, 0.8); }
       body.light-mode .update-progress-bar-container { background: rgba(0,0,0,0.1); }
       body.light-mode .update-progress-percent { color: rgba(80, 70, 120, 0.9); }
@@ -2423,12 +2392,12 @@
       .xmodal-overlay.show { display: flex; }
       .xmodal-card {
         background: rgba(14, 9, 32, 0.97);
-        border: 1px solid rgba(79, 138, 255, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 16px;
         padding: 28px 26px 22px;
         width: 340px;
         max-width: calc(100vw - 40px);
-        box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(79,138,255,0.08) inset;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.05) inset;
         animation: xmodalIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
       @keyframes xmodalIn {
@@ -2437,21 +2406,21 @@
       }
       .xmodal-icon { text-align: center; font-size: 1.8rem; margin-bottom: 13px; }
       .xmodal-title {
-        font-size: 0.94rem; font-weight: 700; color: #ede6ff;
+        font-size: 0.94rem; font-weight: 700; color: #f5f5f7;
         text-align: center; margin-bottom: 7px; letter-spacing: -0.01em;
       }
       .xmodal-message {
-        font-size: 0.80rem; color: rgba(180, 165, 220, 0.82);
+        font-size: 0.80rem; color: rgba(174, 174, 178, 0.82);
         text-align: center; line-height: 1.65; margin-bottom: 22px;
       }
       .xmodal-actions { display: flex; gap: 8px; }
       .xmodal-actions button { flex: 1; }
       /* Base button style needed for modal action buttons */
       .xorbit-button {
-        background: linear-gradient(135deg, rgba(79,138,255,0.22), rgba(50,120,240,0.16));
-        border: 1px solid rgba(79,138,255,0.3);
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.16));
+        border: 1px solid rgba(255,255,255,0.14);
         border-radius: 8px;
-        color: #93c5fd;
+        color: #64a6ff;
         padding: 8px 14px;
         font-size: 0.8rem;
         font-weight: 500;
@@ -2464,20 +2433,20 @@
         font-family: inherit;
       }
       .xorbit-button:hover {
-        background: linear-gradient(135deg, rgba(79,138,255,0.38), rgba(50,120,240,0.28));
-        border-color: rgba(79,138,255,0.55);
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.28));
+        border-color: rgba(255,255,255,0.28);
         transform: translateY(-1px);
       }
       .xorbit-button.danger { background: rgba(255,60,60,0.12); border-color: rgba(255,60,60,0.28); color: #ff7878; }
       .xorbit-button.danger:hover { background: rgba(255,60,60,0.24); border-color: rgba(255,60,60,0.5); }
       .xmodal-btn-primary {
-        background: rgba(79, 138, 255, 0.22) !important;
-        border-color: rgba(79, 138, 255, 0.42) !important;
-        color: #b090ff !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.22) !important;
+        color: #409cff !important;
       }
       .xmodal-btn-primary:hover {
-        background: rgba(79, 138, 255, 0.34) !important;
-        border-color: rgba(79, 138, 255, 0.6) !important;
+        background: rgba(255, 255, 255, 0.18) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
       }
 
       /* ── Draggable desktop icons ───────────────────── */
@@ -2486,12 +2455,12 @@
         cursor: grabbing !important;
         transition: none !important;
         z-index: 9999 !important;
-        box-shadow: 0 12px 40px rgba(79,138,255,0.45) !important;
+        box-shadow: 0 12px 40px rgba(255,255,255,0.22) !important;
       }
 
       .drop-target .folder-icon-grid {
-        box-shadow: 0 0 0 3px rgba(79,138,255,0.9),
-                    0 4px 20px rgba(79,138,255,0.5) !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.5),
+                    0 4px 20px rgba(255,255,255,0.25) !important;
         transform: scale(1.08);
       }
 
@@ -2499,9 +2468,9 @@
       .desktop-context-menu {
         position: fixed;
         z-index: 99999;
-        background: rgba(14, 8, 32, 0.97);
+        background: rgba(28, 28, 30, 0.97);
         backdrop-filter: blur(24px) saturate(1.6);
-        border: 1px solid rgba(79,138,255,0.35);
+        border: 1px solid rgba(255,255,255,0.18);
         border-radius: 8px;
         padding: 5px;
         min-width: 170px;
@@ -2518,7 +2487,7 @@
       .ctx-item {
         padding: 8px 13px;
         font-size: 0.82rem;
-        color: #e8f0ff;
+        color: #f5f5f7;
         border-radius: 6px;
         cursor: pointer;
         display: flex;
@@ -2528,12 +2497,12 @@
         transition: background 0.12s;
       }
 
-      .ctx-item:hover { background: rgba(79,138,255,0.28); color: #fff; }
+      .ctx-item:hover { background: rgba(255,255,255,0.14); color: #fff; }
 
       .ctx-item i {
         width: 15px;
         text-align: center;
-        color: #a78bfa;
+        color: #0a84ff;
         font-size: 0.78rem;
       }
 
@@ -2547,13 +2516,13 @@
       .folder-bloom {
         position: absolute;
         z-index: 9998;
-        background: rgba(14,8,32,0.96);
+        background: rgba(28,28,30,0.96);
         backdrop-filter: blur(28px) saturate(1.6);
-        border: 1px solid rgba(79,138,255,0.42);
+        border: 1px solid rgba(255,255,255,0.22);
         border-radius: 16px;
         padding: 12px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04) inset,
-                    0 0 40px rgba(79,138,255,0.12);
+                    0 0 40px rgba(255,255,255,0.06);
         animation: bloomIn 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
         pointer-events: none;
       }
@@ -2569,7 +2538,7 @@
         gap: 7px;
         font-size: 0.72rem;
         font-weight: 700;
-        color: #e8f0ff;
+        color: #f5f5f7;
         padding: 0 2px 10px;
         border-bottom: 1px solid rgba(255,255,255,0.07);
         margin-bottom: 10px;
@@ -2577,7 +2546,7 @@
         letter-spacing: 0.03em;
       }
 
-      .folder-bloom-header i { color: #a78bfa; font-size: 0.78rem; }
+      .folder-bloom-header i { color: #0a84ff; font-size: 0.78rem; }
 
       .folder-bloom-grid {
         display: grid;
@@ -2589,7 +2558,7 @@
         width: 72px;
         height: 72px;
         border-radius: 12px;
-        border: 1.5px dashed rgba(79,138,255,0.22);
+        border: 1.5px dashed rgba(255,255,255,0.1);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -2605,14 +2574,14 @@
       }
 
       .folder-bloom-slot.drop-hover {
-        background: rgba(79,138,255,0.3) !important;
-        border-color: rgba(79,138,255,0.85) !important;
+        background: rgba(255,255,255,0.14) !important;
+        border-color: rgba(255,255,255,0.45) !important;
         transform: scale(1.07);
       }
 
-      .folder-bloom-slot i    { font-size: 1.4rem; color: #d0d8ff; pointer-events: none; }
+      .folder-bloom-slot i    { font-size: 1.4rem; color: #e5e5ea; pointer-events: none; }
       .folder-bloom-slot span {
-        font-size: 0.58rem; color: #b2b2c4; max-width: 64px;
+        font-size: 0.58rem; color: #aeaeb2; max-width: 64px;
         text-align: center; overflow: hidden; text-overflow: ellipsis;
         white-space: nowrap; font-family: 'Inter', sans-serif;
         pointer-events: none;
@@ -2623,7 +2592,7 @@
         width: 88px;
         height: 88px;
         border-radius: 12px;
-        border: 1.5px dashed rgba(79,138,255,0.18);
+        border: 1.5px dashed rgba(255,255,255,0.09);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -2640,20 +2609,20 @@
       }
 
       .folder-modal-slot.has-app:hover {
-        background: rgba(79,138,255,0.2);
+        background: rgba(255,255,255,0.1);
         transform: scale(1.05);
       }
 
       .folder-modal-slot.modal-dragging   { opacity: 0.35; transform: scale(0.95); }
       .folder-modal-slot.modal-drop-hover {
-        background: rgba(79,138,255,0.28) !important;
-        border-color: rgba(79,138,255,0.75) !important;
+        background: rgba(255,255,255,0.14) !important;
+        border-color: rgba(255,255,255,0.38) !important;
         transform: scale(1.06);
       }
 
-      .folder-modal-slot i    { font-size: 1.9rem; color: #d0d8ff; pointer-events: none; }
+      .folder-modal-slot i    { font-size: 1.9rem; color: #e5e5ea; pointer-events: none; }
       .folder-modal-slot span {
-        font-size: 0.68rem; color: #b2b2c4; max-width: 80px;
+        font-size: 0.68rem; color: #aeaeb2; max-width: 80px;
         text-align: center; overflow: hidden; text-overflow: ellipsis;
         white-space: nowrap; pointer-events: none;
       }
@@ -2762,7 +2731,7 @@
             <div class="panel-body">
               <div class="panel-left">
                 <div class="weather-section">
-                  <div class="weather-icon" id="weatherIcon">🌤️</div>
+                  <div class="weather-icon" id="weatherIcon"><i class="fas fa-cloud-sun"></i></div>
                   <div class="weather-info">
                     <div class="weather-temp" id="weatherTemp">22°C</div>
                     <div class="weather-desc" id="weatherDesc">Partly Cloudy</div>
@@ -2789,7 +2758,7 @@
                 </div>
                 <div class="location-section">
                   <div class="location-text">Location services enabled</div>
-                  <div class="location-update" onclick="updateLocation()">📍 Update location</div>
+                  <div class="location-update" onclick="updateLocation()"><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i> Update location</div>
                 </div>
               </div>
               <div class="panel-right">
@@ -2851,12 +2820,12 @@
             <div
               style="
                 padding: 16px;
-                border-bottom: 1px solid rgba(79, 138, 255, 0.2);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
               "
             >
               <div
                 style="
-                  color: #4f8aff;
+                  color: #0a84ff;
                   font-weight: 600;
                   font-size: 0.95rem;
                   margin-bottom: 12px;
@@ -2866,9 +2835,9 @@
                 Network Status
               </div>
               <div
-                style="color: #e8f0ff; font-size: 0.85rem; margin-bottom: 8px"
+                style="color: #f5f5f7; font-size: 0.85rem; margin-bottom: 8px"
               >
-                <span style="color: #a8b4d9">Connection:</span>
+                <span style="color: #8e8e93">Connection:</span>
                 <span
                   id="networkStatus"
                   style="margin-left: 8px; color: #28ca42"
@@ -2876,8 +2845,8 @@
                   <i class="fas fa-check-circle"></i> Online
                 </span>
               </div>
-              <div style="color: #e8f0ff; font-size: 0.85rem">
-                <span style="color: #a8b4d9">Type:</span>
+              <div style="color: #f5f5f7; font-size: 0.85rem">
+                <span style="color: #8e8e93">Type:</span>
                 <span id="networkType" style="margin-left: 8px">Unknown</span>
               </div>
             </div>
@@ -2885,12 +2854,12 @@
             <div
               style="
                 padding: 16px;
-                border-bottom: 1px solid rgba(79, 138, 255, 0.2);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
               "
             >
               <div
                 style="
-                  color: #4f8aff;
+                  color: #0a84ff;
                   font-weight: 600;
                   font-size: 0.95rem;
                   margin-bottom: 12px;
@@ -2907,12 +2876,12 @@
                     align-items: center;
                   "
                 >
-                  <span style="color: #a8b4d9; font-size: 0.85rem"
+                  <span style="color: #8e8e93; font-size: 0.85rem"
                     >Ping Latency:</span
                   >
                   <span
                     id="pingLatency"
-                    style="color: #e8f0ff; font-weight: 600; font-size: 0.9rem"
+                    style="color: #f5f5f7; font-weight: 600; font-size: 0.9rem"
                   >
                     <i class="fas fa-spinner fa-spin"></i> Testing...
                   </span>
@@ -2924,12 +2893,12 @@
                     align-items: center;
                   "
                 >
-                  <span style="color: #a8b4d9; font-size: 0.85rem"
+                  <span style="color: #8e8e93; font-size: 0.85rem"
                     >Jitter:</span
                   >
                   <span
                     id="jitterValue"
-                    style="color: #e8f0ff; font-weight: 600; font-size: 0.9rem"
+                    style="color: #f5f5f7; font-weight: 600; font-size: 0.9rem"
                   >
                     <i class="fas fa-spinner fa-spin"></i> Testing...
                   </span>
@@ -2941,10 +2910,10 @@
                     align-items: center;
                   "
                 >
-                  <span style="color: #a8b4d9; font-size: 0.85rem"
+                  <span style="color: #8e8e93; font-size: 0.85rem"
                     >Server Location:</span
                   >
-                  <span style="color: #e8f0ff; font-size: 0.85rem"
+                  <span style="color: #f5f5f7; font-size: 0.85rem"
                     >London, GB</span
                   >
                 </div>
@@ -3214,7 +3183,7 @@
     <div class="tutorial-overlay" id="tutorialOverlay">
       <div class="tutorial-content" id="tutorialContent">
         <div class="tutorial-header">
-          <i class="tutorial-icon" id="tutorialIcon">🚀</i>
+          <i class="tutorial-icon fas fa-rocket" id="tutorialIcon"></i>
           <div class="tutorial-title" id="tutorialTitle">
             Welcome to X-ORBIT!
           </div>
@@ -3228,7 +3197,7 @@
 
         <div class="tutorial-highlight" id="tutorialHighlight">
           <div class="tutorial-highlight-title" id="tutorialHighlightTitle">
-            💡 Quick Tip
+            <i class="fas fa-lightbulb" style="margin-right:5px;"></i> Quick Tip
           </div>
           <div class="tutorial-highlight-text" id="tutorialHighlightText">
             This tour will only show once. You can skip it anytime or restart it
@@ -3489,7 +3458,7 @@
       let weatherData = {
         temp: 22,
         description: "Partly Cloudy",
-        icon: "🌤️",
+        icon: "fas fa-cloud-sun",
         humidity: 65,
         wind: 12,
         pressure: 1013,
@@ -3573,7 +3542,7 @@
         if (_notifFilter === 'unread')  list = list.filter(n => !n.dismissed);
 
         if (list.length === 0) {
-          container.innerHTML = `<div class="nm-empty"><div class="nm-empty-icon">🔔</div>No notifications</div>`;
+          container.innerHTML = `<div class="nm-empty"><div class="nm-empty-icon"><i class="fas fa-bell"></i></div>No notifications</div>`;
           return;
         }
 
@@ -3991,14 +3960,14 @@
       align-items: center;
       gap: 8px;
       padding: 4px 12px;
-      background: rgba(79, 138, 255, 0.1);
-      border: 1px solid rgba(79, 138, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
       cursor: default;
     `;
 
           userDisplay.innerHTML = `
-      <i class="fas fa-user" style="color: #4f8aff;"></i>
+      <i class="fas fa-user" style="color: #0a84ff;"></i>
       <span style="font-weight: 500;">${currentUser.username}</span>
     `;
 
@@ -4734,7 +4703,7 @@
             xModal.confirm(
               "You can restart it anytime from X-ORBIT → Desktop Tour.",
               () => hideTutorial(),
-              { title: "Skip Tour?", icon: '<i class="fas fa-graduation-cap" style="color:#4f8aff"></i>', confirmText: "Skip Tour" }
+              { title: "Skip Tour?", icon: '<i class="fas fa-graduation-cap" style="color:#0a84ff"></i>', confirmText: "Skip Tour" }
             );
           };
         }
@@ -4859,7 +4828,7 @@
           case "theme":
             return `
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="font-weight: 600; color: #e8f0ff; margin-bottom: 8px;">Select Your Theme:</div>
+          <div style="font-weight: 600; color: #f5f5f7; margin-bottom: 8px;">Select Your Theme:</div>
           <button class="tutorial-config-btn" onclick="applyTutorialConfig('theme', 'minimalist')" data-theme="minimalist">
             <i class="fas fa-moon"></i>
             <span>Minimalist</span>
@@ -4877,7 +4846,7 @@
           case "dock":
             return `
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="font-weight: 600; color: #e8f0ff; margin-bottom: 8px;">Dock Settings:</div>
+          <div style="font-weight: 600; color: #f5f5f7; margin-bottom: 8px;">Dock Settings:</div>
           <div style="display: flex; gap: 12px;">
             <button class="tutorial-config-btn" onclick="applyTutorialConfig('dockPosition', 'bottom')" data-dock="bottom">
               <i class="fas fa-arrows-alt-h"></i>
@@ -4888,16 +4857,16 @@
               <span>Left</span>
             </button>
           </div>
-          <label style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(79, 138, 255, 0.1); border-radius: 8px; cursor: pointer;">
+          <label style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; cursor: pointer;">
             <input type="checkbox" id="tutorialAutohide" onchange="applyTutorialConfig('dockAutohide', this.checked)" style="width: 18px; height: 18px; cursor: pointer;">
-            <span style="color: #e8f0ff;">Enable Auto-hide Dock</span>
+            <span style="color: #f5f5f7;">Enable Auto-hide Dock</span>
           </label>
         </div>
       `;
           case "fullscreen":
             return `
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="font-weight: 600; color: #e8f0ff; margin-bottom: 8px;">Fullscreen Launch:</div>
+          <div style="font-weight: 600; color: #f5f5f7; margin-bottom: 8px;">Fullscreen Launch:</div>
           <button class="tutorial-config-btn" onclick="applyTutorialConfig('launchFullscreen', true)" data-fullscreen="true">
             <i class="fas fa-expand"></i>
             <span>Yes, Launch Fullscreen</span>
@@ -4970,7 +4939,7 @@
             localStorage.removeItem("xorbit-tutorial-completed");
             showTutorial();
           },
-          { title: "Restart Tour?", icon: '<i class="fas fa-graduation-cap" style="color:#4f8aff"></i>', confirmText: "Restart" }
+          { title: "Restart Tour?", icon: '<i class="fas fa-graduation-cap" style="color:#0a84ff"></i>', confirmText: "Restart" }
         );
       }
 
@@ -5625,7 +5594,7 @@
       .xorbit-settings-container {
         height: 100%;
         display: flex;
-        background: #080414;
+        background: #1c1c1e;
         overflow: hidden;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       }
@@ -5634,8 +5603,8 @@
       .settings-sidebar {
         width: 210px;
         min-width: 210px;
-        background: rgba(7, 3, 18, 0.97);
-        border-right: 1px solid rgba(90, 50, 200, 0.15);
+        background: rgba(28, 28, 30, 0.97);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
         padding: 0 0 20px;
         overflow-y: auto;
         display: flex;
@@ -5644,7 +5613,7 @@
 
       .settings-logo {
         padding: 18px 16px 16px;
-        border-bottom: 1px solid rgba(90, 50, 200, 0.13);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         margin-bottom: 6px;
         display: flex;
         align-items: center;
@@ -5653,7 +5622,7 @@
 
       .settings-logo i {
         font-size: 1rem;
-        color: #4f8aff;
+        color: #0a84ff;
       }
 
       .settings-group-label {
@@ -5661,14 +5630,14 @@
         font-weight: 700;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(160, 140, 230, 0.38);
+        color: rgba(255, 255, 255, 0.3);
         padding: 14px 16px 4px;
       }
 
       .settings-logo-text {
         font-size: 0.88rem;
         font-weight: 600;
-        color: #b8b0d8;
+        color: #aeaeb2;
         letter-spacing: 0.02em;
       }
 
@@ -5681,7 +5650,7 @@
         border-radius: 8px;
         cursor: pointer;
         transition: color 0.15s, background 0.15s;
-        color: #9890b8;
+        color: #8e8e93;
         font-size: 0.85rem;
         font-weight: 500;
         position: relative;
@@ -5695,9 +5664,9 @@
         flex-shrink: 0;
       }
 
-      .settings-nav-item:hover { background: rgba(100, 60, 220, 0.1); color: #ccc4ec; }
-      .settings-nav-item.active { background: rgba(100, 60, 220, 0.16); color: #93c5fd; font-weight: 600; }
-      .settings-nav-item.active i { color: #4f8aff; }
+      .settings-nav-item:hover { background: rgba(255, 255, 255, 0.06); color: #d1d1d6; }
+      .settings-nav-item.active { background: rgba(255, 255, 255, 0.08); color: #64a6ff; font-weight: 600; }
+      .settings-nav-item.active i { color: #0a84ff; }
 
       .settings-nav-item .update-indicator {
         width: 6px; height: 6px; background: #ff5757; border-radius: 50%;
@@ -5708,7 +5677,7 @@
       /* Main */
       .settings-main {
         flex: 1; overflow-y: auto; padding: 30px 32px 40px;
-        background: linear-gradient(160deg, rgba(10,5,26,0.99) 0%, rgba(14,8,38,0.99) 100%);
+        background: linear-gradient(160deg, rgba(28,28,30,0.99) 0%, rgba(36,36,38,0.99) 100%);
       }
 
       .settings-section { display: none; }
@@ -5719,29 +5688,29 @@
         to   { opacity: 1; transform: translateY(0); }
       }
 
-      .settings-header { margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid rgba(79,138,255,0.13); }
-      .settings-header h1 { font-size: 1.5rem; font-weight: 700; color: #e4dcff; margin: 0 0 5px; display: flex; align-items: center; gap: 11px; }
-      .settings-header h1 i { color: #4f8aff; font-size: 1.2rem; }
-      .settings-header p { font-size: 0.82rem; color: #6860a0; margin: 0; }
+      .settings-header { margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+      .settings-header h1 { font-size: 1.5rem; font-weight: 700; color: #f5f5f7; margin: 0 0 5px; display: flex; align-items: center; gap: 11px; }
+      .settings-header h1 i { color: #0a84ff; font-size: 1.2rem; }
+      .settings-header p { font-size: 0.82rem; color: #8e8e93; margin: 0; }
 
       .settings-subsection { margin-bottom: 22px; }
       .settings-subsection-title {
         font-size: 0.63rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
         color: rgba(255,255,255,0.45); padding-bottom: 9px; margin-bottom: 11px;
-        border-bottom: 1px solid rgba(79,138,255,0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
       }
       .settings-subsection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
       .settings-subsection-grid.single { grid-template-columns: 1fr; }
 
       .setting-card {
-        background: rgba(10,10,10,0.75); border: 1px solid rgba(79,138,255,0.14);
+        background: rgba(10,10,10,0.75); border: 1px solid rgba(255,255,255,0.07);
         border-radius: 8px; padding: 14px 16px; position: relative;
         transition: border-color 0.18s, background 0.18s; overflow: hidden;
       }
-      .setting-card:hover { border-color: rgba(79,138,255,0.28); background: rgba(12,12,12,0.85); }
+      .setting-card:hover { border-color: rgba(255,255,255,0.14); background: rgba(12,12,12,0.85); }
       .setting-card::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(79,138,255,0.35), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
         opacity: 0; transition: opacity 0.18s;
       }
       .setting-card:hover::before { opacity: 1; }
@@ -5750,17 +5719,17 @@
       .setting-card-title { display: flex; align-items: center; gap: 9px; }
       .setting-card-icon {
         width: 30px; height: 30px;
-        background: linear-gradient(135deg, rgba(79,138,255,0.22), rgba(50,120,240,0.13));
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.13));
         border-radius: 8px; display: flex; align-items: center; justify-content: center;
-        color: #4f8aff; font-size: 0.8rem; flex-shrink: 0; border: 1px solid rgba(79,138,255,0.18);
+        color: #0a84ff; font-size: 0.8rem; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.09);
       }
-      .setting-card-label { font-size: 0.87rem; font-weight: 600; color: #d4ccf0; }
-      .setting-card-desc { font-size: 0.75rem; color: #5850a0; margin-bottom: 10px; line-height: 1.4; }
+      .setting-card-label { font-size: 0.87rem; font-weight: 600; color: #e5e5ea; }
+      .setting-card-desc { font-size: 0.75rem; color: #8e8e93; margin-bottom: 10px; line-height: 1.4; }
 
       .xorbit-toggle {
-        width: 38px; height: 21px; background: rgba(79,138,255,0.4); border-radius: 12px;
+        width: 38px; height: 21px; background: rgba(255,255,255,0.2); border-radius: 12px;
         position: relative; cursor: pointer; transition: background 0.22s cubic-bezier(0.4,0,0.2,1);
-        border: 1px solid rgba(79,138,255,0.28); flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.14); flex-shrink: 0;
       }
       .xorbit-toggle::before {
         content: ''; position: absolute; width: 15px; height: 15px; background: rgba(255,255,255,0.65);
@@ -5768,32 +5737,32 @@
         transition: transform 0.22s cubic-bezier(0.68,-0.55,0.265,1.55), background 0.22s;
         box-shadow: 0 1px 3px rgba(0,0,0,0.3);
       }
-      .xorbit-toggle.active { background: linear-gradient(135deg,#4f8aff,#4f8aff); border-color: rgba(79,138,255,0.45); }
+      .xorbit-toggle.active { background: linear-gradient(135deg,#0a84ff,#0a84ff); border-color: rgba(255,255,255,0.22); }
       .xorbit-toggle.active::before { transform: translateX(17px); background: #fff; }
 
       .xorbit-select { position: relative; margin-top: 3px; }
       .xorbit-select select {
-        width: 100%; background: rgba(0,0,0,0.85); border: 1px solid rgba(79,138,255,0.22);
+        width: 100%; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.1);
         border-radius: 8px; color: rgba(255,255,255,0.65); padding: 7px 28px 7px 10px; font-size: 0.82rem;
         appearance: none; cursor: pointer; outline: none; transition: border-color 0.18s; font-family: inherit;
       }
-      .xorbit-select select:focus { border-color: rgba(79,138,255,0.45); box-shadow: 0 0 0 2px rgba(79,138,255,0.09); }
-      .xorbit-select::after { content: '▾'; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: #6860a0; pointer-events: none; font-size: 0.7rem; }
+      .xorbit-select select:focus { border-color: rgba(255,255,255,0.22); box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+      .xorbit-select::after { content: '▾'; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: #8e8e93; pointer-events: none; font-size: 0.7rem; }
 
       .xorbit-slider-container { display: flex; align-items: center; gap: 9px; margin-top: 7px; }
-      .xorbit-slider { flex: 1; -webkit-appearance: none; height: 3px; background: rgba(79,138,255,0.22); border-radius: 3px; outline: none; cursor: pointer; }
-      .xorbit-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: linear-gradient(135deg,#4f8aff,#4f8aff); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(79,138,255,0.4); transition: transform 0.14s; }
+      .xorbit-slider { flex: 1; -webkit-appearance: none; height: 3px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; cursor: pointer; }
+      .xorbit-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: linear-gradient(135deg,#0a84ff,#0a84ff); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(255,255,255,0.2); transition: transform 0.14s; }
       .xorbit-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
-      .xorbit-slider::-moz-range-thumb { width: 14px; height: 14px; background: linear-gradient(135deg,#4f8aff,#4f8aff); border-radius: 50%; border: none; cursor: pointer; }
-      .xorbit-slider-value { font-size: 0.75rem; color: #4f8aff; font-weight: 600; min-width: 34px; text-align: right; }
+      .xorbit-slider::-moz-range-thumb { width: 14px; height: 14px; background: linear-gradient(135deg,#0a84ff,#0a84ff); border-radius: 50%; border: none; cursor: pointer; }
+      .xorbit-slider-value { font-size: 0.75rem; color: #0a84ff; font-weight: 600; min-width: 34px; text-align: right; }
 
       .xorbit-button {
-        background: linear-gradient(135deg,rgba(79,138,255,0.22),rgba(50,120,240,0.16));
-        border: 1px solid rgba(79,138,255,0.3); border-radius: 8px; color: #93c5fd;
+        background: linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.16));
+        border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; color: #64a6ff;
         padding: 8px 14px; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.18s;
         display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit;
       }
-      .xorbit-button:hover { background: linear-gradient(135deg,rgba(79,138,255,0.38),rgba(50,120,240,0.28)); border-color: rgba(79,138,255,0.55); transform: translateY(-1px); }
+      .xorbit-button:hover { background: linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.28)); border-color: rgba(255,255,255,0.28); transform: translateY(-1px); }
       .xorbit-button.danger { background: rgba(255,60,60,0.12); border-color: rgba(255,60,60,0.28); color: #ff7878; }
       .xorbit-button.danger:hover { background: rgba(255,60,60,0.24); border-color: rgba(255,60,60,0.5); }
 
@@ -5804,9 +5773,9 @@
         gap: 6px;
         padding: 5px 12px 5px 8px;
         border-radius: 8px;
-        border: 1px solid rgba(79,138,255,0.2);
-        background: rgba(79,138,255,0.08);
-        color: #7aaaff;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.05);
+        color: #409cff;
         font-size: 0.78rem;
         font-weight: 500;
         cursor: pointer;
@@ -5814,7 +5783,7 @@
         margin-bottom: 18px;
         font-family: inherit;
       }
-      .settings-back-btn:hover { background: rgba(79,138,255,0.15); border-color: rgba(79,138,255,0.35); }
+      .settings-back-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); }
       .settings-back-btn.visible { display: flex; }
 
       .settings-subcat-index { display: none; flex-direction: column; gap: 8px; }
@@ -5826,38 +5795,38 @@
         gap: 14px;
         padding: 13px 16px;
         background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(79,138,255,0.12);
+        border: 1px solid rgba(255,255,255,0.06);
         border-radius: 12px;
         cursor: pointer;
         transition: all 0.18s;
         user-select: none;
       }
       .settings-subcat-card:hover {
-        background: rgba(79,138,255,0.08);
-        border-color: rgba(79,138,255,0.28);
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.14);
         transform: translateX(3px);
       }
       .settings-subcat-card-icon {
         width: 36px; height: 36px; border-radius: 8px;
-        background: rgba(79,138,255,0.12);
-        border: 1px solid rgba(79,138,255,0.2);
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
         display: flex; align-items: center; justify-content: center;
-        color: #7aaaff; font-size: 0.9rem; flex-shrink: 0;
+        color: #409cff; font-size: 0.9rem; flex-shrink: 0;
       }
       .settings-subcat-card-text { flex: 1; }
-      .settings-subcat-card-title { font-size: 0.88rem; font-weight: 600; color: #e8f0ff; }
-      .settings-subcat-card-desc { font-size: 0.72rem; color: rgba(180,165,220,0.55); margin-top: 2px; }
-      .settings-subcat-card-arrow { color: rgba(79,138,255,0.45); font-size: 0.75rem; }
+      .settings-subcat-card-title { font-size: 0.88rem; font-weight: 600; color: #f5f5f7; }
+      .settings-subcat-card-desc { font-size: 0.72rem; color: rgba(142,142,147,0.55); margin-top: 2px; }
+      .settings-subcat-card-arrow { color: rgba(255,255,255,0.22); font-size: 0.75rem; }
 
       /* Subsections hidden in index mode; JS toggles visibility */
       .settings-subsection.sub-hidden { display: none !important; }
 
       /* Light mode subcategory overrides */
-      body.light-mode .settings-subcat-card { background: rgba(0,0,0,0.03); border-color: rgba(79,138,255,0.15); }
-      body.light-mode .settings-subcat-card:hover { background: rgba(79,138,255,0.07); }
-      body.light-mode .settings-subcat-card-title { color: #1a1a2e; }
+      body.light-mode .settings-subcat-card { background: rgba(0,0,0,0.03); border-color: rgba(255,255,255,0.08); }
+      body.light-mode .settings-subcat-card:hover { background: rgba(255,255,255,0.04); }
+      body.light-mode .settings-subcat-card-title { color: #1d1d1f; }
       body.light-mode .settings-subcat-card-desc { color: rgba(60,69,96,0.55); }
-      body.light-mode .settings-back-btn { color: #5c3cdf; }
+      body.light-mode .settings-back-btn { color: #0a84ff; }
 
       /* Minimalist theme subcategory overrides */
       body.minimalist-theme .settings-subcat-card { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.08); }
@@ -5869,9 +5838,9 @@
 
       /* PWA app info grid */
       .pwa-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
-      .pwa-info-row { background: rgba(79,138,255,0.06); border: 1px solid rgba(79,138,255,0.12); border-radius: 8px; padding: 8px 11px; }
-      .pwa-info-label { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(155,112,255,0.65); font-weight: 600; margin-bottom: 2px; }
-      .pwa-info-value { font-size: 0.8rem; color: #e0d8ff; font-weight: 500; }
+      .pwa-info-row { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px 11px; }
+      .pwa-info-label { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(142,142,147,0.65); font-weight: 600; margin-bottom: 2px; }
+      .pwa-info-value { font-size: 0.8rem; color: #e5e5ea; font-weight: 500; }
       .pwa-uninstall-steps { margin-top: 10px; background: rgba(255,80,80,0.06); border: 1px solid rgba(255,80,80,0.18); border-radius: 8px; padding: 13px 14px; display: none; }
       .pwa-uninstall-steps.open { display: block; }
       .pwa-uninstall-steps-title { font-size: 0.78rem; font-weight: 700; color: #ff9090; margin-bottom: 10px; }
@@ -5880,14 +5849,14 @@
       .pwa-uninstall-step strong { color: #ffaaaa; }
 
       .wallpaper-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-      .wallpaper-preview { width: 100%; height: 76px; border-radius: 8px; border: 1px solid rgba(79,138,255,0.18); object-fit: cover; display: none; margin-top: 5px; }
-      .wallpaper-presets-label { font-size: 0.75rem; color: rgba(180,160,255,0.7); margin: 10px 0 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .wallpaper-preview { width: 100%; height: 76px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.09); object-fit: cover; display: none; margin-top: 5px; }
+      .wallpaper-presets-label { font-size: 0.75rem; color: rgba(142,142,147,0.7); margin: 10px 0 6px; text-transform: uppercase; letter-spacing: 0.05em; }
       .wallpaper-presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
       .wallpaper-preset-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; border: 2px solid transparent; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
-      .wallpaper-preset-thumb:hover { border-color: rgba(79,138,255,0.7); transform: scale(1.04); }
+      .wallpaper-preset-thumb:hover { border-color: rgba(255,255,255,0.35); transform: scale(1.04); }
 
       .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-      .backup-note { font-size: 0.72rem; color: rgba(140,128,190,0.65); margin-top: 8px; line-height: 1.5; }
+      .backup-note { font-size: 0.72rem; color: rgba(142,142,147,0.65); margin-top: 8px; line-height: 1.5; }
 
       .reset-all-button {
         width: 100%; background: rgba(255,50,50,0.09); border: 1px solid rgba(255,50,50,0.22);
@@ -5898,23 +5867,23 @@
       .reset-all-button:hover { background: rgba(255,50,50,0.18); border-color: rgba(255,50,50,0.42); transform: translateY(-1px); }
 
       /* About */
-      .about-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 0 26px; border-bottom: 1px solid rgba(79,138,255,0.11); margin-bottom: 24px; }
-      .about-logo-ring { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg,rgba(79,138,255,0.25),rgba(50,120,240,0.15)); border: 1px solid rgba(79,138,255,0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(79,138,255,0.2); }
-      .about-logo-ring i { font-size: 2rem; color: #4f8aff; }
-      .about-os-name { font-size: 1.7rem; font-weight: 800; color: #e4dcff; letter-spacing: -0.02em; margin-bottom: 3px; }
-      .about-version-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(79,138,255,0.13); border: 1px solid rgba(79,138,255,0.28); border-radius: 16px; padding: 3px 12px; font-size: 0.76rem; color: #7aaaff; font-weight: 600; margin-top: 7px; }
-      .about-description { max-width: 400px; font-size: 0.82rem; color: #5850a0; line-height: 1.6; margin: 12px auto 0; }
+      .about-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 0 26px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 24px; }
+      .about-logo-ring { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.15)); border: 1px solid rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(255,255,255,0.1); }
+      .about-logo-ring i { font-size: 2rem; color: #0a84ff; }
+      .about-os-name { font-size: 1.7rem; font-weight: 800; color: #f5f5f7; letter-spacing: -0.02em; margin-bottom: 3px; }
+      .about-version-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 3px 12px; font-size: 0.76rem; color: #409cff; font-weight: 600; margin-top: 7px; }
+      .about-description { max-width: 400px; font-size: 0.82rem; color: #8e8e93; line-height: 1.6; margin: 12px auto 0; }
       .about-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
-      .about-info-card { background: rgba(10,10,10,0.75); border: 1px solid rgba(79,138,255,0.13); border-radius: 8px; padding: 12px 14px; }
+      .about-info-card { background: rgba(10,10,10,0.75); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 12px 14px; }
       .about-info-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.42); margin-bottom: 4px; }
       .about-info-value { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.65); }
-      .about-credits-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.42); padding-bottom: 9px; margin-bottom: 10px; border-bottom: 1px solid rgba(79,138,255,0.1); }
-      .about-credit-item { display: flex; align-items: center; gap: 11px; padding: 9px 0; border-bottom: 1px solid rgba(79,138,255,0.07); }
+      .about-credits-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.42); padding-bottom: 9px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .about-credit-item { display: flex; align-items: center; gap: 11px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
       .about-credit-item:last-child { border-bottom: none; }
-      .about-credit-avatar { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg,rgba(79,138,255,0.25),rgba(50,120,240,0.15)); border: 1px solid rgba(79,138,255,0.22); display: flex; align-items: center; justify-content: center; color: #4f8aff; font-size: 0.85rem; flex-shrink: 0; }
+      .about-credit-avatar { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.15)); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: #0a84ff; font-size: 0.85rem; flex-shrink: 0; }
       .about-credit-name { font-size: 0.87rem; font-weight: 600; color: rgba(255,255,255,0.65); }
-      .about-credit-role { font-size: 0.72rem; color: #5850a0; }
-      .about-copyright { text-align: center; font-size: 0.72rem; color: rgba(255,255,255,0.38); margin-top: 22px; padding-top: 14px; border-top: 1px solid rgba(79,138,255,0.09); }
+      .about-credit-role { font-size: 0.72rem; color: #8e8e93; }
+      .about-copyright { text-align: center; font-size: 0.72rem; color: rgba(255,255,255,0.38); margin-top: 22px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
 
       /* Save indicator */
       .xorbit-save-indicator { position: fixed; bottom: 22px; right: 22px; background: linear-gradient(135deg,rgba(40,202,66,0.92),rgba(28,158,52,0.92)); color: #fff; padding: 9px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 7px; opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; box-shadow: 0 4px 14px rgba(40,202,66,0.35); z-index: 100; }
@@ -5929,81 +5898,71 @@
 
       /* ── Software Update: Settings Panel States ─────────────────────── */
       .upd-panel {
-        border-radius: 12px;
-        padding: 22px 20px;
+        border-radius: 10px;
+        padding: 20px;
         position: relative;
-        overflow: hidden;
         animation: updateFadeIn 0.28s ease;
       }
-      .upd-panel-glow {
-        position: absolute; inset: 0; border-radius: inherit;
-        background: radial-gradient(ellipse at 50% -10%, rgba(79,138,255,0.14) 0%, transparent 65%);
-        pointer-events: none;
-      }
-      .upd-body { position: relative; display: flex; flex-direction: column; align-items: center; }
+      .upd-body { position: relative; display: flex; align-items: center; gap: 14px; }
 
-      /* Icon circle */
+      /* Icon */
       .upd-icon {
-        width: 52px; height: 52px; border-radius: 50%;
+        width: 36px; height: 36px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        margin-bottom: 14px; font-size: 1.25rem; flex-shrink: 0;
+        font-size: 0.95rem; flex-shrink: 0;
       }
       .upd-icon-checking {
-        background: rgba(79, 138, 255, 0.12);
-        border: 1px solid rgba(79, 138, 255, 0.22);
-        color: #4f8aff;
+        background: rgba(255, 255, 255, 0.06);
+        color: #8e8e93;
       }
       .upd-icon-ok {
-        background: rgba(52, 199, 89, 0.12);
-        border: 1px solid rgba(52, 199, 89, 0.25);
+        background: rgba(52, 199, 89, 0.1);
         color: #34c759;
       }
       .upd-icon-available {
-        background: rgba(79, 138, 255, 0.14);
-        border: 1px solid rgba(79, 138, 255, 0.28);
-        color: #4f8aff;
+        background: rgba(10, 132, 255, 0.1);
+        color: #0a84ff;
       }
       .upd-icon-error {
         background: rgba(255, 69, 58, 0.1);
-        border: 1px solid rgba(255, 69, 58, 0.22);
         color: #ff453a;
       }
 
       /* Text */
+      .upd-text { flex: 1; min-width: 0; }
       .upd-title {
-        font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.01em;
+        font-size: 0.85rem; font-weight: 600; letter-spacing: -0.01em;
       }
-      .upd-title-checking { color: #c8bcf5; }
-      .upd-title-ok       { color: #34c759; }
-      .upd-title-available{ color: #9d80ff; }
-      .upd-title-error    { color: #ff453a; }
+      .upd-title-checking { color: #e5e5ea; }
+      .upd-title-ok       { color: #f5f5f7; }
+      .upd-title-available{ color: #f5f5f7; }
+      .upd-title-error    { color: #f5f5f7; }
       .upd-subtitle {
-        font-size: 0.76rem; color: rgba(160, 148, 200, 0.7); margin-top: 2px; text-align: center; line-height: 1.5;
+        font-size: 0.74rem; color: #8e8e93; margin-top: 2px; line-height: 1.4;
       }
 
       /* Panel backgrounds */
       .upd-panel-checking {
-        background: rgba(79, 138, 255, 0.06);
-        border: 1px solid rgba(79, 138, 255, 0.14);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
       }
       .upd-panel-ok {
-        background: rgba(52, 199, 89, 0.06);
-        border: 1px solid rgba(52, 199, 89, 0.16);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
       }
       .upd-panel-available {
-        background: rgba(79, 138, 255, 0.07);
-        border: 1px solid rgba(79, 138, 255, 0.18);
-        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 10px;
       }
 
       /* ── Update available: compact horizontal card ── */
       .upd-avail-card {
         position: relative;
-        background: rgba(79, 138, 255, 0.07);
-        border: 1px solid rgba(79, 138, 255, 0.18);
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
         padding: 14px 16px;
-        overflow: hidden;
         animation: updateFadeIn 0.28s ease;
       }
       .upd-avail-row {
@@ -6013,10 +5972,10 @@
       }
       /* Square OS icon */
       .upd-app-icon {
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
         border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(100, 60, 220, 0.45);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         overflow: hidden;
         flex-shrink: 0;
       }
@@ -6025,17 +5984,16 @@
         min-width: 0;
       }
       .upd-avail-name {
-        font-size: 0.86rem;
+        font-size: 0.84rem;
         font-weight: 600;
-        color: #e0d8ff;
+        color: #f5f5f7;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        letter-spacing: -0.01em;
       }
       .upd-avail-meta {
         font-size: 0.72rem;
-        color: rgba(160, 148, 210, 0.7);
+        color: #8e8e93;
         margin-top: 2px;
         display: flex;
         gap: 5px;
@@ -6050,25 +6008,25 @@
       .upd-btn-later {
         font-size: 0.76rem !important;
         padding: 5px 12px !important;
-        color: rgba(160, 148, 210, 0.8) !important;
+        color: #8e8e93 !important;
       }
       .upd-btn-now {
         font-size: 0.76rem !important;
         padding: 5px 13px !important;
-        background: rgba(79, 138, 255, 0.2) !important;
-        border-color: rgba(79, 138, 255, 0.4) !important;
-        color: #b090ff !important;
+        background: rgba(10, 132, 255, 0.15) !important;
+        border-color: rgba(10, 132, 255, 0.3) !important;
+        color: #0a84ff !important;
       }
       .upd-btn-now:hover {
-        background: rgba(79, 138, 255, 0.32) !important;
-        border-color: rgba(79, 138, 255, 0.6) !important;
+        background: rgba(10, 132, 255, 0.25) !important;
+        border-color: rgba(10, 132, 255, 0.45) !important;
       }
 
       /* Inline progress section */
       .upd-inline-progress {
         margin-top: 14px;
         padding-top: 12px;
-        border-top: 1px solid rgba(79, 138, 255, 0.14);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
         animation: updateFadeIn 0.25s ease;
       }
       .upd-inline-status-row {
@@ -6079,51 +6037,42 @@
       }
       .upd-inline-status {
         font-size: 0.74rem;
-        color: rgba(170, 155, 225, 0.85);
+        color: #8e8e93;
       }
       .upd-inline-pct {
         font-size: 0.72rem;
         font-weight: 600;
-        color: rgba(160, 140, 220, 0.9);
+        color: #aeaeb2;
         font-variant-numeric: tabular-nums;
       }
       .upd-inline-track {
         width: 100%;
-        height: 5px;
-        background: rgba(255, 255, 255, 0.07);
-        border-radius: 99px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 2px;
         overflow: hidden;
       }
       .upd-inline-bar {
         width: 0%;
         height: 100%;
-        background: linear-gradient(90deg, #4f8aff 0%, #5b8fff 100%);
-        border-radius: 99px;
+        background: #0a84ff;
+        border-radius: 2px;
         transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-      }
-      .upd-inline-bar::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        animation: progressShine 1.8s ease-in-out infinite;
       }
       .upd-inline-time {
         font-size: 0.68rem;
-        color: rgba(130, 118, 180, 0.6);
+        color: #636366;
         margin-top: 5px;
         text-align: right;
       }
       .upd-panel-error {
-        background: rgba(255, 69, 58, 0.06);
-        border: 1px solid rgba(255, 69, 58, 0.16);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
       }
 
-      /* Version name + badges */
+      /* Version badges */
       .upd-version-name {
-        font-size: 0.84rem; font-weight: 600; color: #ddd4ff; margin-top: 10px; margin-bottom: 8px;
+        font-size: 0.84rem; font-weight: 600; color: #e5e5ea; margin-top: 10px; margin-bottom: 8px;
       }
       .upd-version-row {
         display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
@@ -6133,28 +6082,28 @@
         padding: 3px 9px; border-radius: 99px; font-size: 0.72rem; font-weight: 600;
       }
       .upd-badge-version {
-        background: rgba(79, 138, 255, 0.14); border: 1px solid rgba(79, 138, 255, 0.22); color: #7aaaff;
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); color: #aeaeb2;
       }
       .upd-badge-size {
-        background: rgba(50, 120, 255, 0.12); border: 1px solid rgba(50, 120, 255, 0.22); color: #6e9eff;
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); color: #aeaeb2;
       }
 
       /* Action buttons */
       .upd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-      .upd-actions-single { display: block; margin-top: 12px; }
+      .upd-actions-single { display: block; margin-top: 10px; }
       .upd-btn-update {
-        background: rgba(52, 199, 89, 0.14) !important;
-        border-color: rgba(52, 199, 89, 0.3) !important;
-        color: #34c759 !important;
+        background: rgba(10, 132, 255, 0.12) !important;
+        border-color: rgba(10, 132, 255, 0.25) !important;
+        color: #0a84ff !important;
       }
       .upd-btn-update:hover {
-        background: rgba(52, 199, 89, 0.24) !important;
-        border-color: rgba(52, 199, 89, 0.45) !important;
+        background: rgba(10, 132, 255, 0.22) !important;
+        border-color: rgba(10, 132, 255, 0.4) !important;
       }
 
       .settings-sidebar::-webkit-scrollbar,.settings-main::-webkit-scrollbar{width:4px}
       .settings-sidebar::-webkit-scrollbar-track,.settings-main::-webkit-scrollbar-track{background:transparent}
-      .settings-sidebar::-webkit-scrollbar-thumb,.settings-main::-webkit-scrollbar-thumb{background:rgba(79,138,255,0.22);border-radius:4px}
+      .settings-sidebar::-webkit-scrollbar-thumb,.settings-main::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
     </style>
 
     <div class="xorbit-settings-container">
@@ -6199,33 +6148,24 @@
           <!-- Software Update -->
           <div class="settings-subsection" data-sub-id="software-update" data-sub-icon="fas fa-sync-alt" data-sub-desc="Keep X-ORBIT up to date with the latest features and fixes">
             <div class="settings-subsection-title">Software Update</div>
-            <div class="setting-card">
-              <div class="setting-card-header">
-                <div class="setting-card-title">
-                  <div class="setting-card-icon"><i class="fas fa-sync-alt"></i></div>
-                  <div><div class="setting-card-label">Software Update</div></div>
-                </div>
-              </div>
-              <div class="setting-card-desc">Keep X-ORBIT Desktop up to date with the latest features and fixes</div>
-              <div id="updateCheckContainer" style="margin-top:16px;">
+              <div id="updateCheckContainer">
 
                 <!-- Checking state -->
                 <div id="updateCheckStatus" class="upd-panel upd-panel-checking">
-                  <div class="upd-panel-glow"></div>
                   <div class="upd-body">
                     <div class="upd-icon upd-icon-checking">
                       <i class="fas fa-sync-alt" style="animation:updateSpin 1.6s linear infinite;"></i>
                     </div>
-                    <div class="upd-title upd-title-checking">Checking for Updates</div>
-                    <div class="upd-subtitle">Connecting to update servers&hellip;</div>
+                    <div class="upd-text">
+                      <div class="upd-title upd-title-checking">Checking for updates</div>
+                      <div class="upd-subtitle">Connecting to update servers&hellip;</div>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Update available state -->
                 <div id="updateAvailable" style="display:none;">
                   <div class="upd-avail-card">
-                    <div class="upd-panel-glow"></div>
-                    <!-- Row: icon + info + buttons -->
                     <div class="upd-avail-row">
                       <div class="upd-app-icon">
                         <img src="https://codehs.com/uploads/42ce6a1e246002918d2346eb0a2ce1ce" alt="X-ORBIT" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
@@ -6234,8 +6174,8 @@
                         <div class="upd-avail-name" id="updateVersionName">X-ORBIT Desktop</div>
                         <div class="upd-avail-meta">
                           <span id="updateVersionNumber"></span>
-                          <span class="upd-avail-dot">·</span>
-                          <span id="updateSize">Loading…</span>
+                          <span class="upd-avail-dot">&middot;</span>
+                          <span id="updateSize">Loading&hellip;</span>
                         </div>
                       </div>
                       <div class="upd-avail-btns">
@@ -6243,10 +6183,9 @@
                         <button class="xorbit-button upd-btn-now" id="updateNowBtn"><i class="fas fa-arrow-down"></i> Update</button>
                       </div>
                     </div>
-                    <!-- Inline progress — hidden until Update is clicked -->
                     <div id="updateInlineProgress" class="upd-inline-progress" style="display:none;">
                       <div class="upd-inline-status-row">
-                        <span class="upd-inline-status" id="updateProgressStatus">Preparing…</span>
+                        <span class="upd-inline-status" id="updateProgressStatus">Preparing&hellip;</span>
                         <span class="upd-inline-pct" id="updateProgressPercent">0%</span>
                       </div>
                       <div class="upd-inline-track">
@@ -6260,17 +6199,16 @@
                 <!-- Up to date state -->
                 <div id="upToDate" style="display:none;">
                   <div class="upd-panel upd-panel-ok">
-                    <div class="upd-panel-glow"></div>
                     <div class="upd-body">
                       <div class="upd-icon upd-icon-ok">
-                        <i class="fas fa-check" style="animation:updateSuccess 2.5s ease-in-out infinite;"></i>
+                        <i class="fas fa-check"></i>
                       </div>
-                      <div class="upd-title upd-title-ok">You're up to date!</div>
-                      <div class="upd-subtitle">X-ORBIT Desktop v5.5.8 Ventas &mdash; latest version installed</div>
+                      <div class="upd-text">
+                        <div class="upd-title upd-title-ok">Up to date</div>
+                        <div class="upd-subtitle">v6.0 Sahara &mdash; latest version</div>
+                      </div>
+                      <button class="xorbit-button" id="recheckUpdateBtn" style="margin-left:auto;font-size:0.74rem;padding:5px 12px;"><i class="fas fa-sync"></i> Check</button>
                     </div>
-                  </div>
-                  <div class="upd-actions-single">
-                    <button class="xorbit-button" id="recheckUpdateBtn" style="width:100%;"><i class="fas fa-sync"></i> Check Again</button>
                   </div>
                 </div>
 
@@ -6281,17 +6219,16 @@
                       <div class="upd-icon upd-icon-error">
                         <i class="fas fa-exclamation-triangle"></i>
                       </div>
-                      <div class="upd-title upd-title-error">Update Check Failed</div>
-                      <div class="upd-subtitle">Unable to reach update servers</div>
+                      <div class="upd-text">
+                        <div class="upd-title upd-title-error">Update check failed</div>
+                        <div class="upd-subtitle">Unable to reach update servers</div>
+                      </div>
+                      <button class="xorbit-button" id="retryUpdateBtn" style="margin-left:auto;font-size:0.74rem;padding:5px 12px;"><i class="fas fa-redo"></i> Retry</button>
                     </div>
-                  </div>
-                  <div class="upd-actions-single">
-                    <button class="xorbit-button danger" id="retryUpdateBtn" style="width:100%;"><i class="fas fa-redo"></i> Retry</button>
                   </div>
                 </div>
 
               </div>
-            </div>
           </div>
 
           <!-- Startup & Launch -->
@@ -6628,7 +6565,7 @@
                 <button class="xorbit-button" onclick="document.getElementById('backupImportInput').click()"><i class="fas fa-upload"></i> Import Backup</button>
               </div>
               <input type="file" id="backupImportInput" accept=".json" style="display:none;" onchange="importBackup(event)">
-              <div class="backup-note"><i class="fas fa-shield-alt" style="color:#4f8aff;margin-right:4px;"></i>Device ID and login session are never exported &mdash; those stay computer-specific.</div>
+              <div class="backup-note"><i class="fas fa-shield-alt" style="color:#0a84ff;margin-right:4px;"></i>Device ID and login session are never exported &mdash; those stay computer-specific.</div>
             </div>
 
             <div class="setting-card">
@@ -6669,7 +6606,7 @@
                 </div>
                 <div id="cloudSyncStatusBadge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(248,250,255,0.4);">Idle</div>
               </div>
-              <div class="setting-card-desc">Last synced: <span id="cloudSyncLastTime" style="color:#a78bfa;">Never</span></div>
+              <div class="setting-card-desc">Last synced: <span id="cloudSyncLastTime" style="color:#0a84ff;">Never</span></div>
               <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
                 <button class="xorbit-button" id="pullSettingsBtn" onclick="pullSettingsFromCloud(true)">
                   <i class="fas fa-cloud-download-alt"></i> Pull from Cloud
@@ -6714,7 +6651,7 @@
           <div class="about-hero">
             <div class="about-logo-ring"><i class="fas fa-globe"></i></div>
             <div class="about-os-name">X-ORBIT Desktop</div>
-            <div class="about-version-badge"><i class="fas fa-tag"></i> v5.5.8 Ventas</div>
+            <div class="about-version-badge"><i class="fas fa-tag"></i> v6.0 Sahara</div>
             <div class="about-description">
               X-ORBIT Desktop is a web-based proxy OS built for students. X-ORBIT allows students and people around the world to browse the world wide web without restrictions or data leaks.
             </div>
@@ -6723,7 +6660,7 @@
           <div class="about-info-grid">
             <div class="about-info-card">
               <div class="about-info-label">Version</div>
-              <div class="about-info-value">v5.5.8 Ventas</div>
+              <div class="about-info-value">v6.0 Sahara</div>
             </div>
             <div class="about-info-card">
               <div class="about-info-label">Build</div>
@@ -7033,7 +6970,7 @@
             badge.style.cssText = "font-size:0.7rem;padding:3px 9px;border-radius:20px;font-weight:600;background:rgba(60,200,100,0.15);color:#5fdf90;border:1px solid rgba(60,200,100,0.3);";
           } else if (_pwaDeferred) {
             badge.textContent  = "Not Installed";
-            badge.style.cssText = "font-size:0.7rem;padding:3px 9px;border-radius:20px;font-weight:600;background:rgba(79,138,255,0.12);color:#7aaaff;border:1px solid rgba(79,138,255,0.25);";
+            badge.style.cssText = "font-size:0.7rem;padding:3px 9px;border-radius:20px;font-weight:600;background:rgba(255,255,255,0.06);color:#409cff;border:1px solid rgba(255,255,255,0.12);";
           } else {
             badge.textContent  = "Installed / Check App";
             badge.style.cssText = "font-size:0.7rem;padding:3px 9px;border-radius:20px;font-weight:600;background:rgba(255,180,0,0.12);color:#ffc44d;border:1px solid rgba(255,180,0,0.25);";
@@ -7663,37 +7600,37 @@
             winter: {
               temp: -2,
               desc: "Snow Showers",
-              icon: "🌨️",
+              icon: "fas fa-snowflake",
               humidity: 78,
             },
             spring: {
               temp: 12,
               desc: "Partly Cloudy",
-              icon: "⛅",
+              icon: "fas fa-cloud-sun",
               humidity: 65,
             },
-            summer: { temp: 26, desc: "Sunny", icon: "☀️", humidity: 45 },
-            autumn: { temp: 8, desc: "Cloudy", icon: "☁️", humidity: 70 },
+            summer: { temp: 26, desc: "Sunny", icon: "fas fa-sun", humidity: 45 },
+            autumn: { temp: 8, desc: "Cloudy", icon: "fas fa-cloud", humidity: 70 },
           },
           "New York": {
-            winter: { temp: 2, desc: "Overcast", icon: "☁️", humidity: 72 },
+            winter: { temp: 2, desc: "Overcast", icon: "fas fa-cloud", humidity: 72 },
             spring: {
               temp: 18,
               desc: "Partly Cloudy",
-              icon: "⛅",
+              icon: "fas fa-cloud-sun",
               humidity: 68,
             },
-            summer: { temp: 28, desc: "Sunny", icon: "☀️", humidity: 65 },
-            autumn: { temp: 15, desc: "Rainy", icon: "🌧️", humidity: 80 },
+            summer: { temp: 28, desc: "Sunny", icon: "fas fa-sun", humidity: 65 },
+            autumn: { temp: 15, desc: "Rainy", icon: "fas fa-cloud-showers-heavy", humidity: 80 },
           },
           "Los Angeles": {
-            winter: { temp: 18, desc: "Sunny", icon: "☀️", humidity: 55 },
-            spring: { temp: 22, desc: "Clear", icon: "☀️", humidity: 60 },
-            summer: { temp: 32, desc: "Hot", icon: "🌞", humidity: 50 },
+            winter: { temp: 18, desc: "Sunny", icon: "fas fa-sun", humidity: 55 },
+            spring: { temp: 22, desc: "Clear", icon: "fas fa-sun", humidity: 60 },
+            summer: { temp: 32, desc: "Hot", icon: "fas fa-sun", humidity: 50 },
             autumn: {
               temp: 25,
               desc: "Partly Cloudy",
-              icon: "⛅",
+              icon: "fas fa-cloud-sun",
               humidity: 58,
             },
           },
@@ -7710,7 +7647,7 @@
           temp: seasonWeather.temp + tempVariation + (isNight ? -3 : 0),
           description: seasonWeather.desc,
           icon:
-            isNight && seasonWeather.icon === "☀️" ? "🌙" : seasonWeather.icon,
+            isNight && seasonWeather.icon === "fas fa-sun" ? "fas fa-moon" : seasonWeather.icon,
           humidity: seasonWeather.humidity + Math.floor(Math.random() * 10) - 5,
           wind: Math.floor(Math.random() * 20) + 5,
           pressure: 1013 + Math.floor(Math.random() * 40) - 20,
@@ -7732,7 +7669,7 @@
         };
 
         if (elements.weatherIcon)
-          elements.weatherIcon.textContent = weatherData.icon;
+          elements.weatherIcon.innerHTML = `<i class="${weatherData.icon}"></i>`;
         if (elements.weatherTemp)
           elements.weatherTemp.textContent = `${weatherData.temp}°C`;
         if (elements.weatherDesc)
@@ -8022,7 +7959,7 @@
         let windowListHTML = '';
         if (activeWindows.size === 0) {
           windowListHTML = `
-            <div style="text-align: center; padding: 24px; color: #a8b4d9;">
+            <div style="text-align: center; padding: 24px; color: #8e8e93;">
               <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
               No windows open
             </div>
@@ -8030,13 +7967,13 @@
         } else {
           activeWindows.forEach((windowId, title) => {
             windowListHTML += `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(79, 138, 255, 0.05); border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(79, 138, 255, 0.15);">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.08);">
                 <div style="flex: 1;">
-                  <div style="color: #e8f0ff; font-weight: 500; margin-bottom: 4px;">
-                    <i class="fas fa-window-restore" style="margin-right: 8px; color: #4f8aff;"></i>
+                  <div style="color: #f5f5f7; font-weight: 500; margin-bottom: 4px;">
+                    <i class="fas fa-window-restore" style="margin-right: 8px; color: #0a84ff;"></i>
                     ${title}
                   </div>
-                  <div style="color: #a8b4d9; font-size: 0.75rem;">
+                  <div style="color: #8e8e93; font-size: 0.75rem;">
                     ID: ${windowId}
                   </div>
                 </div>
@@ -8057,11 +7994,11 @@
         const taskContent = `
     <div style="padding: 24px; max-height: 600px; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2 style="color: #e8f0ff; font-size: 1.4rem; margin: 0;">
-          <i class="fas fa-tasks" style="margin-right: 12px; color: #4f8aff;"></i>
+        <h2 style="color: #f5f5f7; font-size: 1.4rem; margin: 0;">
+          <i class="fas fa-tasks" style="margin-right: 12px; color: #0a84ff;"></i>
           Task Manager
         </h2>
-        <div style="color: #4f8aff; font-weight: 600; background: rgba(79, 138, 255, 0.2); padding: 6px 12px; border-radius: 8px;">
+        <div style="color: #0a84ff; font-weight: 600; background: rgba(255, 255, 255, 0.1); padding: 6px 12px; border-radius: 8px;">
           ${activeWindows.size} window${activeWindows.size !== 1 ? 's' : ''}
         </div>
       </div>
@@ -8070,7 +8007,7 @@
         <button 
           onclick="killAllWindows()" 
           ${activeWindows.size === 0 ? 'disabled' : ''}
-          style="width: 100%; padding: 12px 20px; background: ${activeWindows.size === 0 ? 'rgba(79, 138, 255, 0.1)' : 'linear-gradient(135deg, rgba(255, 87, 87, 0.3), rgba(255, 107, 107, 0.3))'}; border: 2px solid ${activeWindows.size === 0 ? 'rgba(79, 138, 255, 0.2)' : 'rgba(255, 87, 87, 0.5)'}; border-radius: 12px; color: ${activeWindows.size === 0 ? '#64748b' : '#ff5757'}; font-size: 1rem; font-weight: 600; cursor: ${activeWindows.size === 0 ? 'not-allowed' : 'pointer'}; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;"
+          style="width: 100%; padding: 12px 20px; background: ${activeWindows.size === 0 ? 'rgba(255, 255, 255, 0.05)' : 'linear-gradient(135deg, rgba(255, 87, 87, 0.3), rgba(255, 107, 107, 0.3))'}; border: 2px solid ${activeWindows.size === 0 ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 87, 87, 0.5)'}; border-radius: 12px; color: ${activeWindows.size === 0 ? '#636366' : '#ff5757'}; font-size: 1rem; font-weight: 600; cursor: ${activeWindows.size === 0 ? 'not-allowed' : 'pointer'}; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;"
           ${activeWindows.size === 0 ? '' : 'onmouseover="this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 4px 16px rgba(255, 87, 87, 0.4)\';" onmouseout="this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'none\';"'}
         >
           <i class="fas fa-trash-alt"></i>
@@ -8078,28 +8015,28 @@
         </button>
       </div>
 
-      <div style="background: rgba(79, 138, 255, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(79, 138, 255, 0.2);">
-        <div style="color: #4f8aff; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+        <div style="color: #0a84ff; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
           <span>Active Windows</span>
-          <span style="font-size: 0.85rem; background: rgba(79, 138, 255, 0.2); padding: 4px 8px; border-radius: 6px;">${activeWindows.size} running</span>
+          <span style="font-size: 0.85rem; background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 6px;">${activeWindows.size} running</span>
         </div>
         <div id="taskManagerWindowList">
           ${windowListHTML}
         </div>
       </div>
       
-      <div style="background: rgba(79, 138, 255, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(79, 138, 255, 0.2); margin-top: 16px;">
-        <div style="color: #4f8aff; font-weight: 600; margin-bottom: 12px;">System Information</div>
-        <div style="color: #e8f0ff; font-size: 0.9rem; margin-bottom: 4px;">
-          <i class="fas fa-globe" style="margin-right: 8px; color: #4f8aff;"></i>
+      <div style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); margin-top: 16px;">
+        <div style="color: #0a84ff; font-weight: 600; margin-bottom: 12px;">System Information</div>
+        <div style="color: #f5f5f7; font-size: 0.9rem; margin-bottom: 4px;">
+          <i class="fas fa-globe" style="margin-right: 8px; color: #0a84ff;"></i>
           Browser: ${navigator.userAgent.split(" ").pop()}
         </div>
-        <div style="color: #a8b4d9; font-size: 0.85rem;">
-          <i class="fas fa-desktop" style="margin-right: 8px; color: #4f8aff;"></i>
+        <div style="color: #8e8e93; font-size: 0.85rem;">
+          <i class="fas fa-desktop" style="margin-right: 8px; color: #0a84ff;"></i>
           Platform: ${navigator.platform}
         </div>
-        <div style="color: #a8b4d9; font-size: 0.85rem; margin-top: 4px;">
-          <i class="fas fa-user" style="margin-right: 8px; color: #4f8aff;"></i>
+        <div style="color: #8e8e93; font-size: 0.85rem; margin-top: 4px;">
+          <i class="fas fa-user" style="margin-right: 8px; color: #0a84ff;"></i>
           User: ${currentUser.username || 'Guest'}
         </div>
       </div>
@@ -8148,7 +8085,7 @@
           });
           refreshTaskManager();
         },
-        { title: "Close All Windows?", icon: '<i class="fas fa-window-restore" style="color:#4f8aff"></i>', confirmText: "Close All", danger: true }
+        { title: "Close All Windows?", icon: '<i class="fas fa-window-restore" style="color:#0a84ff"></i>', confirmText: "Close All", danger: true }
         );
       }
 
@@ -8170,14 +8107,14 @@
       function updateLocation() {
         const locationUpdate = document.querySelector(".location-update");
         if (locationUpdate) {
-          locationUpdate.innerHTML = "🔄 Updating...";
+          locationUpdate.innerHTML = '<i class="fas fa-sync fa-spin" style="margin-right:4px;"></i> Updating...';
           locationUpdate.style.pointerEvents = "none";
         }
 
         setTimeout(() => {
           getUserLocation();
           if (locationUpdate) {
-            locationUpdate.innerHTML = "📍 Update location";
+            locationUpdate.innerHTML = '<i class="fas fa-map-marker-alt" style="margin-right:4px;"></i> Update location';
             locationUpdate.style.pointerEvents = "auto";
           }
         }, 1500);
@@ -8301,7 +8238,7 @@
         }
 
         // Fetch full profile
-        let profile = { id: userId, username, email, bio: "", avatar_url: null, banner_url: null, gradient_start: "#0a0a14", gradient_end: "#1a0a2e", gradient_angle: 135 };
+        let profile = { id: userId, username, email, bio: "", avatar_url: null, banner_url: null, gradient_start: "#1c1c1e", gradient_end: "#2c2c2e", gradient_angle: 135 };
         if (email && supabaseClient) {
           try {
             const { data } = await supabaseClient
@@ -8313,13 +8250,13 @@
         }
         window._acctProfile = profile;
 
-        const gs    = profile.gradient_start || "#0a0a14";
-        const ge    = profile.gradient_end   || "#1a0a2e";
+        const gs    = profile.gradient_start || "#1c1c1e";
+        const ge    = profile.gradient_end   || "#2c2c2e";
         const ga    = profile.gradient_angle ?? 135;
         const init  = (profile.name || username || "U")[0].toUpperCase();
         const avHtml = profile.avatar_url
           ? `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;">`
-          : `<span style="font-size:1.4rem;font-weight:700;color:#c4b0ff;">${init}</span>`;
+          : `<span style="font-size:1.4rem;font-weight:700;color:#aeaeb2;">${init}</span>`;
 
         const now  = new Date();
         const secs = Math.floor((now - sessionStartTime) / 1000);
@@ -8342,7 +8279,7 @@
             <!-- Avatar -->
             <div style="padding:0 24px;margin-top:-34px;position:relative;z-index:2;display:flex;align-items:flex-end;gap:10px;">
               <div id="acctAvatarEl" onclick="document.getElementById('acctAvatarInput').click()"
-                style="width:68px;height:68px;border-radius:50%;background:#12091f;border:3px solid rgba(0,0,0,0.6);box-shadow:0 0 0 1px rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative;flex-shrink:0;">
+                style="width:68px;height:68px;border-radius:50%;background:#2c2c2e;border:3px solid rgba(0,0,0,0.6);box-shadow:0 0 0 1px rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative;flex-shrink:0;">
                 ${avHtml}
                 <div id="acctAvatarOverlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;color:#fff;pointer-events:none;">
                   <i class="fas fa-camera"></i>
@@ -8353,12 +8290,12 @@
 
             <!-- Body scrim for readability -->
             <div style="padding:12px 24px 24px;background:rgba(0,0,0,0.35);">
-              <div style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:#e8f0ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;margin-top:10px;">${profile.name || username}</div>
+              <div style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:#f5f5f7;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;margin-top:10px;">${profile.name || username}</div>
               <div style="font-size:0.78rem;color:rgba(200,180,255,0.8);margin-bottom:18px;">${email}</div>
 
               <div style="font-size:0.6rem;color:rgba(200,180,255,0.55);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Bio</div>
               <textarea id="acctBioInput" maxlength="300" placeholder="Write something about yourself…"
-                style="width:100%;padding:10px 13px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e8f0ff;font-family:inherit;font-size:0.85rem;resize:vertical;min-height:72px;outline:none;line-height:1.6;box-sizing:border-box;">${profile.bio || ''}</textarea>
+                style="width:100%;padding:10px 13px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#f5f5f7;font-family:inherit;font-size:0.85rem;resize:vertical;min-height:72px;outline:none;line-height:1.6;box-sizing:border-box;">${profile.bio || ''}</textarea>
 
               <div style="font-size:0.6rem;color:rgba(200,180,255,0.55);letter-spacing:2px;text-transform:uppercase;margin:16px 0 8px;">Profile Gradient</div>
               <div id="acctGradPreview" style="height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);margin-bottom:12px;background:linear-gradient(${ga}deg,${gs},${ge});transition:background 0.2s;"></div>
@@ -8376,12 +8313,12 @@
               </div>
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
                 <label style="font-size:0.6rem;color:rgba(200,180,255,0.55);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">Angle</label>
-                <input type="range" id="acctGradAngle" min="0" max="360" value="${ga}" oninput="updateAccountGradientPreview()" style="flex:1;accent-color:#c4b0ff;">
+                <input type="range" id="acctGradAngle" min="0" max="360" value="${ga}" oninput="updateAccountGradientPreview()" style="flex:1;accent-color:#aeaeb2;">
                 <span id="acctGradAngleVal" style="font-size:0.72rem;color:rgba(200,180,255,0.7);min-width:34px;text-align:right;">${ga}°</span>
               </div>
 
               <button id="acctSaveBtn" onclick="saveAccountProfile()"
-                style="width:100%;padding:10px;background:rgba(0,0,0,0.4);color:#e8f0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-family:inherit;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;"
+                style="width:100%;padding:10px;background:rgba(0,0,0,0.4);color:#f5f5f7;border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-family:inherit;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;"
                 onmouseover="this.style.background='rgba(0,0,0,0.6)'" onmouseout="if(!this.disabled)this.style.background='rgba(0,0,0,0.4)'">
                 <i class="fas fa-check"></i> Save Profile
               </button>
@@ -8397,7 +8334,7 @@
               <!-- Manage button styled with the profile gradient -->
               <button onclick="openWindow('Manage Account','account.html','fas fa-user-gear')"
                 id="acctManageBtn"
-                style="width:100%;padding:11px;background:linear-gradient(${ga}deg,${gs},${ge});color:#e8f0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-family:inherit;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;filter:brightness(1.4);transition:filter 0.15s;"
+                style="width:100%;padding:11px;background:linear-gradient(${ga}deg,${gs},${ge});color:#f5f5f7;border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-family:inherit;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;filter:brightness(1.4);transition:filter 0.15s;"
                 onmouseover="this.style.filter='brightness(1.8)'" onmouseout="this.style.filter='brightness(1.4)'">
                 <i class="fas fa-user-gear"></i> Manage X-ORBIT Account
               </button>
@@ -8460,7 +8397,7 @@
           btn.style.background = "#28ca42";
           btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
           setTimeout(() => {
-            btn.style.background = "#4f8aff";
+            btn.style.background = "#0a84ff";
             btn.innerHTML = '<i class="fas fa-check"></i> Save Profile';
             btn.disabled = false;
           }, 1500);
@@ -8469,7 +8406,7 @@
           btn.style.background = "#e74c3c";
           btn.innerHTML = '<i class="fas fa-times"></i> Failed';
           setTimeout(() => {
-            btn.style.background = "#4f8aff";
+            btn.style.background = "#0a84ff";
             btn.innerHTML = '<i class="fas fa-check"></i> Save Profile';
             btn.disabled = false;
           }, 2000);
@@ -8554,7 +8491,7 @@
           const avatarEl = document.getElementById("acctAvatarEl");
           if (avatarEl) {
             avatarEl.innerHTML = `
-              <span style="font-size:1.4rem;font-weight:700;color:#c4b0ff;">${init}</span>
+              <span style="font-size:1.4rem;font-weight:700;color:#aeaeb2;">${init}</span>
               <div id="acctAvatarOverlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;color:#fff;pointer-events:none;"><i class="fas fa-camera"></i></div>
             `;
             avatarEl.addEventListener("mouseenter", () => document.getElementById("acctAvatarOverlay").style.opacity = "1");
@@ -8598,48 +8535,48 @@
       function showSystemInfo() {
         const systemContent = `
     <div style="padding: 24px;">
-      <h2 style="color: #e8f0ff; margin-bottom: 24px; font-size: 1.4rem;">
-        <i class="fas fa-desktop" style="margin-right: 12px; color: #4f8aff;"></i>
+      <h2 style="color: #f5f5f7; margin-bottom: 24px; font-size: 1.4rem;">
+        <i class="fas fa-desktop" style="margin-right: 12px; color: #0a84ff;"></i>
         System Information
       </h2>
       
       <div style="display: grid; gap: 16px;">
-        <div style="background: rgba(79, 138, 255, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(79, 138, 255, 0.2);">
-          <div style="color: #4f8aff; font-weight: 600; margin-bottom: 8px;">Browser Information</div>
-          <div style="color: #e8f0ff; font-size: 0.9rem; margin-bottom: 4px;">User Agent: ${
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="color: #0a84ff; font-weight: 600; margin-bottom: 8px;">Browser Information</div>
+          <div style="color: #f5f5f7; font-size: 0.9rem; margin-bottom: 4px;">User Agent: ${
             navigator.userAgent
           }</div>
-          <div style="color: #a8b4d9; font-size: 0.85rem;">Platform: ${
+          <div style="color: #8e8e93; font-size: 0.85rem;">Platform: ${
             navigator.platform
           }</div>
         </div>
         
-        <div style="background: rgba(79, 138, 255, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(79, 138, 255, 0.2);">
-          <div style="color: #4f8aff; font-weight: 600; margin-bottom: 8px;">Display Information</div>
-          <div style="color: #e8f0ff; font-size: 0.9rem; margin-bottom: 4px;">Resolution: ${
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="color: #0a84ff; font-weight: 600; margin-bottom: 8px;">Display Information</div>
+          <div style="color: #f5f5f7; font-size: 0.9rem; margin-bottom: 4px;">Resolution: ${
             window.screen.width
           } × ${window.screen.height}</div>
-          <div style="color: #a8b4d9; font-size: 0.85rem;">Available: ${
+          <div style="color: #8e8e93; font-size: 0.85rem;">Available: ${
             window.screen.availWidth
           } × ${window.screen.availHeight}</div>
         </div>
         
-        <div style="background: rgba(79, 138, 255, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(79, 138, 255, 0.2);">
-          <div style="color: #4f8aff; font-weight: 600; margin-bottom: 8px;">X-ORBIT Status</div>
-          <div style="color: #e8f0ff; font-size: 0.9rem; margin-bottom: 4px;">Authentication: ${
-            isAuthenticated ? "✅ Active" : "❌ Inactive"
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="color: #0a84ff; font-weight: 600; margin-bottom: 8px;">X-ORBIT Status</div>
+          <div style="color: #f5f5f7; font-size: 0.9rem; margin-bottom: 4px;">Authentication: ${
+            isAuthenticated ? '<i class="fas fa-check-circle" style="color:#34c759;margin-right:4px;"></i> Active' : '<i class="fas fa-times-circle" style="color:#ff453a;margin-right:4px;"></i> Inactive'
           }</div>
-          <div style="color: #a8b4d9; font-size: 0.85rem;">Active Windows: ${
+          <div style="color: #8e8e93; font-size: 0.85rem;">Active Windows: ${
             activeWindows.size
           }</div>
         </div>
         
-        <div style="background: rgba(79, 138, 255, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(79, 138, 255, 0.2);">
-          <div style="color: #4f8aff; font-weight: 600; margin-bottom: 8px;">Current Settings</div>
-          <div style="color: #e8f0ff; font-size: 0.9rem; margin-bottom: 4px;">Theme: ${
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="color: #0a84ff; font-weight: 600; margin-bottom: 8px;">Current Settings</div>
+          <div style="color: #f5f5f7; font-size: 0.9rem; margin-bottom: 4px;">Theme: ${
             settings.theme
           }</div>
-          <div style="color: #a8b4d9; font-size: 0.85rem;">Dock Position: ${
+          <div style="color: #8e8e93; font-size: 0.85rem;">Dock Position: ${
             settings.dockPosition
           }</div>
         </div>
@@ -8659,24 +8596,17 @@
 
       function checkForUpdates() {
         const updateContent = `
-    <div style="padding: 32px 28px 28px; display:flex; flex-direction:column; align-items:center; font-family: system-ui, -apple-system, sans-serif;">
-      <div style="width:52px;height:52px;border-radius:50%;background:rgba(79,138,255,0.12);border:1px solid rgba(79,138,255,0.22);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
-        <i class="fas fa-arrow-down" style="font-size:1.25rem;color:#8b6fff;"></i>
-      </div>
-      <div style="font-size:0.95rem;font-weight:600;color:#e8e0ff;margin-bottom:4px;letter-spacing:-0.01em;">Software Update</div>
-      <div style="font-size:0.78rem;color:rgba(160,148,210,0.75);margin-bottom:24px;">X-ORBIT Desktop</div>
-
-      <div id="updateStatus" style="width:100%;">
-        <div style="font-size:0.78rem;color:rgba(160,148,210,0.8);text-align:center;margin-bottom:14px;">
-          <i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Checking for updates…
+    <div style="padding:40px 32px 36px;display:flex;flex-direction:column;align-items:center;font-family:system-ui,-apple-system,sans-serif;">
+      <div id="updateStatus" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+        <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <i class="fas fa-sync fa-spin" style="font-size:1.1rem;color:#8e8e93;"></i>
         </div>
-        <div style="width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;">
-          <div id="updateProgress" style="width:0%;height:100%;background:linear-gradient(90deg,#4f8aff,#5b8fff);border-radius:99px;transition:width 2s cubic-bezier(0.4,0,0.2,1);"></div>
+        <div style="font-size:0.88rem;font-weight:600;color:#e5e5ea;margin-bottom:6px;">Checking for updates</div>
+        <div style="font-size:0.75rem;color:#8e8e93;margin-bottom:24px;">X-ORBIT Desktop</div>
+        <div style="width:100%;height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+          <div id="updateProgress" style="width:0%;height:100%;background:#0a84ff;border-radius:2px;transition:width 2s cubic-bezier(0.4,0,0.2,1);"></div>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:7px;">
-          <span style="font-size:0.7rem;color:rgba(140,128,190,0.6);">Connecting to server…</span>
-          <span style="font-size:0.7rem;color:rgba(140,128,190,0.6);" id="updateProgressPct">0%</span>
-        </div>
+        <div style="font-size:0.68rem;color:#636366;margin-top:10px;" id="updateProgressPct">Connecting...</div>
       </div>
     </div>
   `;
@@ -8684,9 +8614,9 @@
         const windowEl = openCustomWindow(
           "Software Update",
           updateContent,
-          "fas fa-download",
-          450,
-          300
+          "fas fa-arrow-down",
+          400,
+          260
         );
 
         // Simulate update check
@@ -8704,12 +8634,10 @@
           setTimeout(() => {
             if (statusDiv) {
               statusDiv.innerHTML = `
-          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:4px;">
-            <div style="width:40px;height:40px;border-radius:50%;background:rgba(52,199,89,0.12);border:1px solid rgba(52,199,89,0.25);display:flex;align-items:center;justify-content:center;">
-              <i class="fas fa-check" style="color:#34c759;font-size:1rem;"></i>
-            </div>
-            <div style="font-size:0.9rem;font-weight:600;color:#34c759;letter-spacing:-0.01em;">You're up to date</div>
-            <div style="font-size:0.76rem;color:rgba(160,148,210,0.7);">X-ORBIT Desktop v5.5.8 Ventas is the latest version.</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <i class="fas fa-check-circle" style="font-size:1.6rem;color:#34c759;"></i>
+            <div style="font-size:0.88rem;font-weight:600;color:#f5f5f7;margin-top:4px;">Up to date</div>
+            <div style="font-size:0.75rem;color:#8e8e93;">v6.0 Sahara &mdash; latest version</div>
           </div>
         `;
             }
@@ -8730,14 +8658,14 @@
 
             const restartDiv = document.createElement("div");
             restartDiv.innerHTML = `
-        <div style="position:fixed;inset:0;background:rgba(10,5,25,0.9);backdrop-filter:blur(60px);display:flex;align-items:center;justify-content:center;z-index:10000;color:#e8f0ff;flex-direction:column;gap:20px;">
-          <i class="fas fa-sync fa-spin" style="font-size:3rem;color:#4f8aff;"></i>
+        <div style="position:fixed;inset:0;background:rgba(18,18,20,0.9);backdrop-filter:blur(60px);display:flex;align-items:center;justify-content:center;z-index:10000;color:#f5f5f7;flex-direction:column;gap:20px;">
+          <i class="fas fa-sync fa-spin" style="font-size:3rem;color:#0a84ff;"></i>
           <div style="font-size:1.2rem;font-weight:500;">Restarting Desktop...</div>
         </div>`;
             document.body.appendChild(restartDiv);
             setTimeout(() => { window.location.reload(); }, 1500);
           },
-          { title: "Restart Desktop?", icon: '<i class="fas fa-sync-alt" style="color:#4f8aff"></i>', confirmText: "Restart" }
+          { title: "Restart Desktop?", icon: '<i class="fas fa-sync-alt" style="color:#0a84ff"></i>', confirmText: "Restart" }
         );
       }
 
@@ -8756,7 +8684,7 @@
           isAuthenticated = false;
           const logoutDiv = document.createElement("div");
           logoutDiv.innerHTML = `
-        <div style="position:fixed;inset:0;background:rgba(10,5,25,0.9);backdrop-filter:blur(60px);display:flex;align-items:center;justify-content:center;z-index:10000;color:#e8f0ff;flex-direction:column;gap:20px;">
+        <div style="position:fixed;inset:0;background:rgba(18,18,20,0.9);backdrop-filter:blur(60px);display:flex;align-items:center;justify-content:center;z-index:10000;color:#f5f5f7;flex-direction:column;gap:20px;">
           <i class="fas fa-sign-out-alt" style="font-size:3rem;color:#ff6b6b;"></i>
           <div style="font-size:1.2rem;font-weight:500;">Logging out...</div>
         </div>`;
@@ -8772,7 +8700,7 @@
           xModal.confirm(
             "An update is ready to install. Would you like to install it before logging out?",
             () => performUpdate(),
-            { title: "Update Available", icon: '<i class="fas fa-arrow-circle-up" style="color:#4f8aff"></i>', confirmText: "Install Update" }
+            { title: "Update Available", icon: '<i class="fas fa-arrow-circle-up" style="color:#0a84ff"></i>', confirmText: "Install Update" }
           );
           return;
         }
@@ -8866,7 +8794,7 @@
           title +
           "</div>" +
           "</div>" +
-          '<div class="window-content" style="padding: 0; background: rgba(10, 10, 25, 0.3); border-radius: 0 0 16px 16px; overflow: auto;">' +
+          '<div class="window-content" style="padding: 0; background: rgba(10, 10, 12, 0.3); border-radius: 0 0 12px 12px; overflow: auto;">' +
           content +
           "</div>";
 
@@ -9272,8 +9200,8 @@
       // ============================================
 
       // Add these global variables at the top with your other global variables:
-      const CURRENT_VERSION = "v5.5.8";
-      const CURRENT_VERSION_NAME = "X-ORBIT Desktop v5.5.8 Ventas";
+      const CURRENT_VERSION = "v6.0";
+      const CURRENT_VERSION_NAME = "X-ORBIT Desktop v6.0 Sahara";
       let pendingUpdateOnClose = false;
       let latestUpdateData = null;
 
@@ -9413,9 +9341,9 @@
           updateLaterBtn.addEventListener("click", function () {
             pendingUpdateOnClose = true;
             updateLaterBtn.innerHTML = '<i class="fas fa-check"></i> Scheduled';
-            updateLaterBtn.style.background = "rgba(79, 138, 255, 0.18)";
-            updateLaterBtn.style.borderColor = "rgba(79, 138, 255, 0.4)";
-            updateLaterBtn.style.color = "#7aaaff";
+            updateLaterBtn.style.background = "rgba(255, 255, 255, 0.09)";
+            updateLaterBtn.style.borderColor = "rgba(255, 255, 255, 0.2)";
+            updateLaterBtn.style.color = "#409cff";
             updateLaterBtn.disabled = true;
 
             // Show confirmation
@@ -9685,10 +9613,10 @@
 
           overlay.classList.add("show");
         },
-        alert(message, { title = "Notice", icon = '<i class="fas fa-info-circle" style="color:#4f8aff"></i>' } = {}) {
+        alert(message, { title = "Notice", icon = '<i class="fas fa-info-circle" style="color:#0a84ff"></i>' } = {}) {
           xModal._show(icon, title, message, [{ label: "OK", primary: true }]);
         },
-        confirm(message, onConfirm, { title = "Confirm", icon = '<i class="fas fa-question-circle" style="color:#4f8aff"></i>', confirmText = "Confirm", danger = false } = {}) {
+        confirm(message, onConfirm, { title = "Confirm", icon = '<i class="fas fa-question-circle" style="color:#0a84ff"></i>', confirmText = "Confirm", danger = false } = {}) {
           xModal._show(icon, title, message, [
             { label: "Cancel" },
             { label: confirmText, primary: !danger, danger, action: onConfirm }
@@ -9824,13 +9752,13 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(10, 5, 25, 0.9);
+        background: rgba(18, 18, 20, 0.9);
         backdrop-filter: blur(60px);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10000;
-        color: #e8f0ff;
+        color: #f5f5f7;
         flex-direction: column;
         gap: 20px;
       ">
@@ -9949,14 +9877,14 @@
       #pwaInstallOverlay.show { display: flex; opacity: 1; }
 
       #pwaInstallCard {
-        background: rgba(20, 15, 40, 0.97);
+        background: rgba(28, 28, 30, 0.97);
         backdrop-filter: blur(40px) saturate(1.8);
         -webkit-backdrop-filter: blur(40px) saturate(1.8);
         border-radius: 20px;
-        border: 2px solid rgba(79, 138, 255, 0.45);
+        border: 2px solid rgba(255, 255, 255, 0.22);
         box-shadow: 0 0 1px rgba(255,255,255,0.08) inset,
                     0 24px 80px rgba(0,0,0,0.85),
-                    0 32px 96px rgba(79,138,255,0.25);
+                    0 32px 96px rgba(255,255,255,0.12);
         width: min(860px, 94vw);
         display: grid;
         grid-template-columns: 1fr 1px 1fr;
@@ -9979,20 +9907,20 @@
       #pwaInstallCard .pwa-app-icon {
         width: 76px; height: 76px;
         border-radius: 20px;
-        background: linear-gradient(135deg, rgba(79,138,255,0.3), rgba(60,130,255,0.2));
-        border: 1.5px solid rgba(79,138,255,0.45);
+        background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.2));
+        border: 1.5px solid rgba(255,255,255,0.22);
         display: flex; align-items: center; justify-content: center;
-        font-size: 2.2rem; color: #7aaaff;
+        font-size: 2.2rem; color: #409cff;
         margin-bottom: 18px;
-        box-shadow: 0 8px 32px rgba(79,138,255,0.25);
+        box-shadow: 0 8px 32px rgba(255,255,255,0.12);
       }
       #pwaInstallCard .pwa-title {
         font-size: 1.4rem; font-weight: 700;
-        color: #e8f0ff; letter-spacing: -0.02em;
+        color: #f5f5f7; letter-spacing: -0.02em;
         margin-bottom: 5px;
       }
       #pwaInstallCard .pwa-domain {
-        font-size: 0.8rem; color: rgba(155,112,255,0.8);
+        font-size: 0.8rem; color: rgba(142,142,147,0.8);
         font-weight: 500; margin-bottom: 24px;
       }
       #pwaInstallCard .pwa-features {
@@ -10005,13 +9933,13 @@
       }
       #pwaInstallCard .pwa-feature-icon {
         width: 40px; height: 40px; border-radius: 12px;
-        background: rgba(79,138,255,0.12);
-        border: 1px solid rgba(79,138,255,0.2);
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.95rem; color: #7aaaff;
+        font-size: 0.95rem; color: #409cff;
       }
       #pwaInstallCard .pwa-feature-label {
-        font-size: 0.68rem; color: rgba(180,165,220,0.65); font-weight: 500;
+        font-size: 0.68rem; color: rgba(142,142,147,0.65); font-weight: 500;
       }
       #pwaInstallCard .pwa-security-points {
         width: 100%;
@@ -10026,13 +9954,13 @@
         font-size: 0.83rem; font-weight: 600;
       }
       #pwaInstallCard .pwa-dismiss-hint {
-        font-size: 0.68rem; color: rgba(155,140,200,0.35);
+        font-size: 0.68rem; color: rgba(142,142,147,0.35);
         margin-top: 12px;
       }
 
       /* ── Vertical divider ── */
       #pwaInstallCard .pwa-col-divider {
-        background: linear-gradient(to bottom, transparent, rgba(79,138,255,0.3), transparent);
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.14), transparent);
         width: 1px; align-self: stretch;
       }
 
@@ -10048,14 +9976,14 @@
       }
       #pwaInstallCard .pwa-right-header-icon {
         width: 32px; height: 32px; border-radius: 8px;
-        background: rgba(79,138,255,0.15);
-        border: 1px solid rgba(79,138,255,0.25);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
         display: flex; align-items: center; justify-content: center;
-        color: #7aaaff; font-size: 0.85rem; flex-shrink: 0;
+        color: #409cff; font-size: 0.85rem; flex-shrink: 0;
       }
       #pwaInstallCard .pwa-right-title {
         font-size: 0.9rem; font-weight: 700;
-        color: #e0d8ff; letter-spacing: -0.01em;
+        color: #e5e5ea; letter-spacing: -0.01em;
       }
       #pwaInstallCard .pwa-monitoring-text {
         font-size: 0.76rem; color: rgba(200,185,240,0.78);
@@ -10097,8 +10025,8 @@
       #spotlightBox {
         width: 600px;
         max-width: calc(100vw - 40px);
-        background: rgba(20,16,36,0.92);
-        border: 1px solid rgba(124,106,247,0.35);
+        background: rgba(28,28,30,0.92);
+        border: 1px solid rgba(10,132,255,0.25);
         border-radius: 16px;
         box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
         overflow: hidden;
@@ -10120,10 +10048,10 @@
         background: none;
         border: none;
         outline: none;
-        color: #f0eeff;
+        color: #f5f5f7;
         font-size: 1.1rem;
         font-family: inherit;
-        caret-color: #4f8aff;
+        caret-color: #0a84ff;
       }
       #spotlightInput::placeholder { color: rgba(255,255,255,0.25); }
       #spotlightResults { max-height: 340px; overflow-y: auto; padding: 8px 0; }
@@ -10136,20 +10064,20 @@
         cursor: pointer;
         transition: background 0.1s;
       }
-      .sl-result:hover, .sl-result.active { background: rgba(124,106,247,0.18); }
+      .sl-result:hover, .sl-result.active { background: rgba(10,132,255,0.12); }
       .sl-result-icon {
         width: 34px; height: 34px;
         border-radius: 8px;
-        background: rgba(124,106,247,0.15);
+        background: rgba(10,132,255,0.1);
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
         font-size: 0.95rem;
-        color: #a89aff;
+        color: #64a6ff;
       }
       .sl-result-icon.web { background: rgba(56,189,248,0.15); color: #7dd3fc; }
       .sl-result-icon.search { background: rgba(52,211,153,0.12); color: #6ee7b7; }
       .sl-result-icon.math { background: rgba(251,191,36,0.12); color: #fcd34d; }
-      .sl-result-icon.ai { background: rgba(124,106,247,0.18); color: #a89aff; }
+      .sl-result-icon.ai { background: rgba(10,132,255,0.12); color: #64a6ff; }
       .sl-result-label { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 500; }
       .sl-result-sub { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 1px; }
       /* AI chat mode */
@@ -10181,7 +10109,7 @@
         white-space: pre-wrap;
         word-break: break-word;
       }
-      .sl-msg.user .sl-msg-bubble { background: #4f8aff; color: #fff; border-bottom-right-radius: 3px; }
+      .sl-msg.user .sl-msg-bubble { background: #0a84ff; color: #fff; border-bottom-right-radius: 3px; }
       .sl-msg.ai .sl-msg-bubble { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); border-bottom-left-radius: 3px; }
       .sl-msg.ai.loading .sl-msg-bubble { color: rgba(255,255,255,0.35); font-style: italic; }
       #slChatHeader {
@@ -10202,7 +10130,7 @@
         <div id="spotlightResults"></div>
         <div id="spotlightChat">
           <div id="slChatHeader">
-            <span><i class="fas fa-robot" style="margin-right:5px;color:#4f8aff;"></i>Gemini</span>
+            <span><i class="fas fa-robot" style="margin-right:5px;color:#0a84ff;"></i>Gemini</span>
             <span id="slChatClear">Clear chat</span>
           </div>
           <div id="slChatMessages"></div>
@@ -10258,7 +10186,7 @@
           </div>
           <div class="pwa-dismiss-hint">
             You can install later from Settings → Install App &nbsp;·&nbsp;
-            <a href="https://xorbit.org/privacy-policy.html" target="_blank" rel="noopener" style="color:rgba(155,112,255,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(155,112,255,0.9)'" onmouseout="this.style.color='rgba(155,112,255,0.6)'">Privacy Policy</a>
+            <a href="https://xorbit.org/privacy-policy.html" target="_blank" rel="noopener" style="color:rgba(142,142,147,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(142,142,147,0.9)'" onmouseout="this.style.color='rgba(142,142,147,0.6)'">Privacy Policy</a>
           </div>
         </div>
 
@@ -10476,8 +10404,8 @@
         const p = cellPos(col, row);
         ghostEl.style.left       = p.x + 'px';
         ghostEl.style.top        = p.y + 'px';
-        ghostEl.style.background = free ? 'rgba(79,138,255,0.18)' : 'rgba(255,80,80,0.12)';
-        ghostEl.style.border     = free ? '1.5px dashed rgba(79,138,255,0.55)' : '1.5px dashed rgba(255,80,80,0.45)';
+        ghostEl.style.background = free ? 'rgba(255,255,255,0.09)' : 'rgba(255,80,80,0.12)';
+        ghostEl.style.border     = free ? '1.5px dashed rgba(255,255,255,0.28)' : '1.5px dashed rgba(255,80,80,0.45)';
       }
 
       // ── folder bloom ─────────────────────────────────────
@@ -10944,6 +10872,35 @@
       document.addEventListener('click',   ()  => hideCtxMenu());
       document.addEventListener('keydown', e   => { if (e.key === 'Escape') hideCtxMenu(); });
 
+      // ── reflow icons on resize ─────────────────────────────
+      let _resizeTimer = null;
+      window.addEventListener('resize', () => {
+        clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(() => {
+          const { cols, rows } = gridDims();
+          occupiedCells.clear();
+
+          iconsContainer.querySelectorAll('.desktop-icon, .desktop-folder-icon').forEach(el => {
+            let col = +el.dataset.col || 0;
+            let row = +el.dataset.row || 0;
+
+            col = Math.max(0, Math.min(col, cols - 1));
+            row = Math.max(0, Math.min(row, rows - 1));
+
+            if (occupiedCells.has(cellKey(col, row))) {
+              const free = nearestFree(col, row, occupiedCells);
+              col = free.col;
+              row = free.row;
+            }
+
+            occupiedCells.add(cellKey(col, row));
+            snapToCell(el, col, row);
+          });
+
+          saveLayout();
+        }, 150);
+      });
+
       // ── create new folder ────────────────────────────────
       function createNewFolder(clickX, clickY) {
         const name = prompt('Folder name:');
@@ -11001,13 +10958,13 @@
             const wrap = document.createElement('div');
             wrap.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;';
             wrap.innerHTML = `
-              <div style="background:#16121f;border:1px solid rgba(124,106,247,0.4);border-radius:14px;padding:28px 28px 24px;width:420px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,0.6);">
+              <div style="background:#1c1c1e;border:1px solid rgba(10,132,255,0.25);border-radius:14px;padding:28px 28px 24px;width:420px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,0.6);">
                 <div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:6px;">Gemini API Key</div>
                 <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:18px;">Enter your Google Gemini API key. It's stored only in your browser.</div>
-                <input id="geminiKeyInput" type="password" placeholder="AIza…" autocomplete="off" style="width:100%;background:#0d0a14;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;color:#f0eeff;font-size:0.9rem;font-family:inherit;outline:none;box-sizing:border-box;" />
+                <input id="geminiKeyInput" type="password" placeholder="AIza…" autocomplete="off" style="width:100%;background:#1c1c1e;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;color:#f5f5f7;font-size:0.9rem;font-family:inherit;outline:none;box-sizing:border-box;" />
                 <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
                   <button id="geminiKeyCancel" style="background:none;border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:8px 18px;color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.82rem;cursor:pointer;">Cancel</button>
-                  <button id="geminiKeySave" style="background:#4f8aff;border:none;border-radius:7px;padding:8px 18px;color:#fff;font-family:inherit;font-size:0.82rem;cursor:pointer;font-weight:600;">Save & Continue</button>
+                  <button id="geminiKeySave" style="background:#0a84ff;border:none;border-radius:7px;padding:8px 18px;color:#fff;font-family:inherit;font-size:0.82rem;cursor:pointer;font-weight:600;">Save & Continue</button>
                 </div>
               </div>`;
             document.body.appendChild(wrap);
