@@ -9,7 +9,7 @@ Features:
 - Full windowed desktop environment with resizable/draggable windows, dock, and menu bar
 - macOS Catalina-style login screen powered by Supabase auth with login attempt logging
 - Built-in proxy browser (Orbix engine on Ultraviolet + Rammerhead backend)
-- Spotify music player, Minecraft (Eaglercraft), Jitter.video, and direct messaging
+- Minecraft (Eaglercraft), Jitter.video, and direct messaging
 - In-OS notification center, terminal emulator, changelogs viewer, and admin dashboard
 - Live alert system (downtime, maintenance, info) fetched from Supabase and shown on login
 - PWA support — installable as a standalone desktop or mobile app via Web App Manifest
@@ -72,8 +72,6 @@ xorbit-main/
 ├── render.html                 # Render page
 ├── uv-render.html              # Ultraviolet render page
 ├── build-info.html             # Build metadata display
-├── spotify-player.html         # Spotify music app
-├── X-MUSIC.html                # X-MUSIC player
 ├── minecraft.html              # Minecraft (Eaglercraft) embed
 ├── jittery.html                # Jitter.video client
 ├── studios.html                # X-ORBIT Studios hub
