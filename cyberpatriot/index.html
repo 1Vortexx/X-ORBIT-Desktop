@@ -200,6 +200,14 @@
         color: var(--text-2);
         tab-size: 4;
       }
+      .image {
+        display: block;
+        max-width: calc(100% - 36px);
+        max-height: 75vh;
+        margin: 14px auto 18px;
+        border-radius: 8px;
+        border: 1px solid var(--hairline);
+      }
 
       @media (max-width: 640px) {
         body { padding: 16px; }
@@ -258,6 +266,7 @@
           <button class="btn primary" id="downloadBtn"><i class="fa-solid fa-download"></i> Download</button>
         </div>
         <pre class="content" id="viewerContent"></pre>
+        <img class="image" id="viewerImage" alt="" hidden />
       </div>
     </div>
 
@@ -270,6 +279,8 @@
       var files = [];         // [{ path, size, updated_at }]
       var cwd = "";           // "" is the root, otherwise "26:27" or "26:27/sub"
       var openFile = null;    // { path, bytes, text }
+      var imageUrl = null;    // object URL for the image being previewed
+      var IMAGE_TYPES = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp" };
 
       var $ = function (id) { return document.getElementById(id); };
 
@@ -502,12 +513,24 @@
         $("viewerTitle").textContent = file.path.split("/").pop();
         $("viewerMeta").textContent = formatSize(file.size) + " · " + formatDate(file.updated_at);
         $("viewerContent").textContent = "Loading…";
+        $("viewerContent").hidden = false;
+        $("viewerImage").hidden = true;
+        if (imageUrl) { URL.revokeObjectURL(imageUrl); imageUrl = null; }
         $("copyBtn").hidden = true;
         openFile = null;
+        var imageType = IMAGE_TYPES[(file.path.split(".").pop() || "").toLowerCase()];
         fetchFile(file)
           .then(function (loaded) {
             if (currentHashPath() !== file.path) return;
             openFile = loaded;
+            if (imageType) {
+              imageUrl = URL.createObjectURL(new Blob([loaded.bytes], { type: imageType }));
+              $("viewerImage").src = imageUrl;
+              $("viewerImage").alt = file.path.split("/").pop();
+              $("viewerImage").hidden = false;
+              $("viewerContent").hidden = true;
+              return;
+            }
             $("copyBtn").hidden = loaded.text === null;
             $("viewerContent").textContent =
               loaded.text === null ? "Binary file — use Download to save it." : loaded.text;
@@ -559,6 +582,7 @@
         var ext = (name.split(".").pop() || "").toLowerCase();
         if (["ps1", "psm1", "sh", "bat", "cmd", "py", "js"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-code"></i>';
         if (["txt", "md", "log", "csv"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-lines"></i>';
+        if (["jpg", "jpeg", "png", "gif", "webp", "heic"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-image"></i>';
         if (ext === "pdf") return '<i class="fa-solid fa-file-pdf"></i>';
         if (["zip", "7z", "gz", "tar"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-zipper"></i>';
         return '<i class="fa-solid fa-file"></i>';
