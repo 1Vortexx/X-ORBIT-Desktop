@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>X-ORBIT CyberPatriot</title>
+    <link rel="icon" href="https://xorbit.org/assets/favicon.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+      /* Same tokens as the X-ORBIT Desktop shell (app.html) */
+      :root {
+        color-scheme: dark;
+        --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+        --bg: #050506;
+        --bg-glow-1: rgba(90, 110, 160, 0.16);
+        --bg-glow-2: rgba(60, 60, 80, 0.14);
+        --surface-window: rgba(14, 14, 17, 0.80);
+        --surface-titlebar: rgba(255, 255, 255, 0.025);
+        --surface-raised: rgba(255, 255, 255, 0.04);
+        --surface-hover: rgba(255, 255, 255, 0.07);
+        --hairline: rgba(255, 255, 255, 0.08);
+        --hairline-2: rgba(255, 255, 255, 0.13);
+        --text: #f4f4f6;
+        --text-2: rgba(255, 255, 255, 0.62);
+        --text-3: rgba(255, 255, 255, 0.38);
+        --accent: #5c9dff;
+        --accent-soft: rgba(92, 157, 255, 0.14);
+        --accent-line: rgba(92, 157, 255, 0.35);
+        --danger: #ff6b6b;
+        --danger-soft: rgba(255, 107, 107, 0.12);
+      }
+
+      html, body { height: 100%; }
+      body {
+        font-family: var(--font-ui);
+        background: var(--bg);
+        background-image:
+          radial-gradient(1200px 600px at 15% -10%, var(--bg-glow-1), transparent 60%),
+          radial-gradient(900px 500px at 100% 110%, var(--bg-glow-2), transparent 60%);
+        background-attachment: fixed;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+        padding: 40px 16px;
+      }
+      button, input { font: inherit; color: inherit; }
+      [hidden] { display: none !important; }
+
+      .window {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--surface-window);
+        border: 1px solid var(--hairline);
+        border-radius: 14px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+      .titlebar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        background: var(--surface-titlebar);
+        border-bottom: 1px solid var(--hairline);
+      }
+      .titlebar .logo {
+        width: 28px; height: 28px;
+        display: grid; place-items: center;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 13px;
+      }
+      .titlebar h1 { font-size: 14px; font-weight: 600; }
+      .titlebar .sub { font-size: 12px; color: var(--text-3); }
+      .titlebar .spacer { flex: 1; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--hairline-2);
+        background: var(--surface-raised);
+        font-size: 13px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .btn:hover { background: var(--surface-hover); }
+      .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+      .btn.primary:hover { filter: brightness(1.08); }
+      .btn:disabled { opacity: 0.6; cursor: default; }
+
+      /* Login */
+      .login { max-width: 380px; margin: 60px auto; }
+      .login .body { padding: 28px; }
+      .login h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+      .login p { font-size: 13px; color: var(--text-2); margin-bottom: 22px; }
+      .field { margin-bottom: 14px; }
+      .field label { display: block; font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+      .field input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--hairline-2);
+        background: rgba(0, 0, 0, 0.3);
+        outline: none;
+      }
+      .field input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+      .login .btn.primary { width: 100%; justify-content: center; padding: 10px; margin-top: 6px; }
+      .error {
+        font-size: 13px;
+        color: var(--danger);
+        background: var(--danger-soft);
+        border-radius: 8px;
+        padding: 9px 12px;
+        margin-bottom: 14px;
+      }
+
+      /* Browser */
+      .toolbar {
+        display: flex; align-items: center; gap: 6px;
+        padding: 10px 18px;
+        border-bottom: 1px solid var(--hairline);
+        font-size: 13px;
+        overflow-x: auto;
+      }
+      .crumb {
+        background: none; border: 0; cursor: pointer;
+        color: var(--text-2);
+        padding: 4px 6px; border-radius: 6px;
+        white-space: nowrap;
+      }
+      .crumb:hover { background: var(--surface-hover); color: var(--text); }
+      .crumb.current { color: var(--text); font-weight: 500; cursor: default; background: none; }
+      .crumb-sep { color: var(--text-3); font-size: 10px; }
+
+      .list { list-style: none; }
+      .row {
+        display: grid;
+        grid-template-columns: 28px 1fr 90px 150px 40px;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        border-bottom: 1px solid var(--hairline);
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .row:hover { background: var(--surface-hover); }
+      .row.head { cursor: default; color: var(--text-3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .row.head:hover { background: none; }
+      .row .icon { color: var(--text-3); text-align: center; }
+      .row .icon.folder { color: #f2c94c; }
+      .row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .row .meta { color: var(--text-3); font-size: 12px; }
+      .row .dl {
+        background: none; border: 0; cursor: pointer;
+        color: var(--text-3);
+        width: 30px; height: 30px; border-radius: 6px;
+      }
+      .row .dl:hover { background: var(--surface-raised); color: var(--accent); }
+      .empty, .loading { padding: 40px 18px; text-align: center; color: var(--text-3); font-size: 13px; }
+
+      /* File viewer */
+      .viewer-head {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--hairline);
+      }
+      .viewer-head .title { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .viewer-head .meta { font-size: 12px; color: var(--text-3); }
+      .cmd {
+        display: flex; align-items: center; gap: 10px;
+        margin: 14px 18px 0;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--hairline);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-2);
+      }
+      .cmd code { flex: 1; overflow-x: auto; white-space: nowrap; }
+      pre.content {
+        margin: 14px 18px 18px;
+        padding: 14px;
+        max-height: 65vh;
+        overflow: auto;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--hairline);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--text-2);
+        tab-size: 4;
+      }
+
+      @media (max-width: 640px) {
+        body { padding: 16px; }
+        .row { grid-template-columns: 24px 1fr 40px; }
+        .row .meta { display: none; }
+        .titlebar .sub { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Login -->
+    <div class="window login" id="loginView" hidden>
+      <div class="titlebar">
+        <div class="logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <h1>CyberPatriot</h1>
+      </div>
+      <form class="body" id="loginForm" autocomplete="on">
+        <h2>Sign in</h2>
+        <p>Team files are locked. Enter the team login to continue.</p>
+        <div class="error" id="loginError" hidden></div>
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" autocapitalize="characters" spellcheck="false" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+        <button class="btn primary" type="submit" id="loginBtn">Unlock</button>
+      </form>
+    </div>
+
+    <!-- Browser -->
+    <div class="window" id="appView" hidden>
+      <div class="titlebar">
+        <div class="logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div>
+          <h1>CyberPatriot Files</h1>
+          <div class="sub" id="whoami"></div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" id="refreshBtn" title="Refresh"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+      </div>
+      <nav class="toolbar" id="crumbs"></nav>
+
+      <div id="listPane">
+        <ul class="list" id="list"></ul>
+      </div>
+
+      <div id="viewerPane" hidden>
+        <div class="viewer-head">
+          <div class="title" id="viewerTitle"></div>
+          <div class="meta" id="viewerMeta"></div>
+          <button class="btn" id="copyBtn"><i class="fa-regular fa-copy"></i> Copy</button>
+          <button class="btn primary" id="downloadBtn"><i class="fa-solid fa-download"></i> Download</button>
+        </div>
+        <pre class="content" id="viewerContent"></pre>
+      </div>
+    </div>
+
+    <script>
+      var SUPABASE_URL = "https://rujvmtvozorylfzsqppc.supabase.co";
+      var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1anZtdHZvem9yeWxmenNxcHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NjQxNDEsImV4cCI6MjA3MzA0MDE0MX0.b7jJz3Se_oXXDwwd0dWQ8-rEvhY0aU4JDHQVioE39iY";
+      var SESSION_KEY = "cyberpatriot_login";
+
+      var creds = null;       // { username, password }
+      var files = [];         // [{ path, size, updated_at }]
+      var cwd = "";           // "" is the root, otherwise "26:27" or "26:27/sub"
+      var openFile = null;    // { path, bytes, text }
+
+      var $ = function (id) { return document.getElementById(id); };
+
+      function rpc(name, args) {
+        return fetch(SUPABASE_URL + "/rest/v1/rpc/" + name, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: "Bearer " + SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(args),
+          cache: "no-store",
+        }).then(function (res) {
+          return res.json().catch(function () { return null; }).then(function (body) {
+            if (res.ok) return body;
+            var err = new Error((body && body.message) || "Request failed (" + res.status + ")");
+            err.code = body && body.code;
+            throw err;
+          });
+        });
+      }
+
+      function authArgs(extra) {
+        var args = { p_username: creds.username, p_password: creds.password };
+        for (var k in extra) args[k] = extra[k];
+        return args;
+      }
+
+      function saveSession() {
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(creds)); } catch (e) {}
+      }
+      function loadSession() {
+        try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (e) { return null; }
+      }
+      function clearSession() {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+      }
+
+      // ── Login ──────────────────────────────────────────────────────
+      function showLogin(message) {
+        $("appView").hidden = true;
+        $("loginView").hidden = false;
+        $("loginError").hidden = !message;
+        $("loginError").textContent = message || "";
+        $("password").value = "";
+        $(creds && creds.username ? "password" : "username").focus();
+      }
+
+      $("loginForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        creds = { username: $("username").value.trim(), password: $("password").value };
+        $("loginBtn").disabled = true;
+        $("loginBtn").textContent = "Checking…";
+        loadFiles()
+          .then(function () {
+            saveSession();
+            showApp();
+          })
+          .catch(handleError)
+          .finally(function () {
+            $("loginBtn").disabled = false;
+            $("loginBtn").textContent = "Unlock";
+          });
+      });
+
+      function handleError(err) {
+        if (err.code === "28P01") {
+          clearSession();
+          showLogin("Wrong username or password.");
+        } else if ($("appView").hidden) {
+          showLogin("Couldn't reach the server: " + err.message);
+        } else {
+          alert(err.message);
+        }
+      }
+
+      $("logoutBtn").addEventListener("click", function () {
+        clearSession();
+        creds = null;
+        files = [];
+        $("username").value = "";
+        showLogin();
+      });
+
+      // ── Files ──────────────────────────────────────────────────────
+      function loadFiles() {
+        return rpc("cyberpatriot_list", authArgs({})).then(function (rows) { files = rows || []; });
+      }
+
+      function showApp() {
+        $("loginView").hidden = true;
+        $("appView").hidden = false;
+        $("whoami").textContent = "Signed in as " + creds.username;
+        route();
+      }
+
+      // Location hash holds the open folder or file, e.g. #/26:27/hardening.ps1
+      function currentHashPath() {
+        return decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+      }
+      function go(path) {
+        location.hash = "/" + path.split("/").map(encodeURIComponent).join("/");
+      }
+      window.addEventListener("hashchange", function () { if (creds) route(); });
+
+      function route() {
+        var path = currentHashPath();
+        var file = files.find(function (f) { return f.path === path; });
+        if (file) {
+          cwd = path.split("/").slice(0, -1).join("/");
+          renderCrumbs(path);
+          viewFile(file);
+        } else {
+          cwd = isDir(path) ? path : "";
+          renderCrumbs(cwd);
+          renderList();
+        }
+      }
+
+      function isDir(path) {
+        if (!path) return true;
+        return files.some(function (f) { return f.path.indexOf(path + "/") === 0; });
+      }
+
+      function renderCrumbs(path) {
+        var nav = $("crumbs");
+        nav.innerHTML = "";
+        var parts = path ? path.split("/") : [];
+        var add = function (label, target, current) {
+          var b = document.createElement("button");
+          b.className = "crumb" + (current ? " current" : "");
+          b.innerHTML = label;
+          if (!current) b.addEventListener("click", function () { go(target); });
+          nav.appendChild(b);
+        };
+        add('<i class="fa-solid fa-house"></i> CyberPatriot', "", parts.length === 0);
+        parts.forEach(function (part, i) {
+          var sep = document.createElement("i");
+          sep.className = "fa-solid fa-chevron-right crumb-sep";
+          nav.appendChild(sep);
+          add(escapeHtml(part), parts.slice(0, i + 1).join("/"), i === parts.length - 1);
+        });
+      }
+
+      function renderList() {
+        $("viewerPane").hidden = true;
+        $("listPane").hidden = false;
+        var prefix = cwd ? cwd + "/" : "";
+        var folders = {};
+        var here = [];
+        files.forEach(function (f) {
+          if (f.path.indexOf(prefix) !== 0) return;
+          var rest = f.path.slice(prefix.length);
+          var slash = rest.indexOf("/");
+          if (slash === -1) {
+            here.push(f);
+          } else {
+            var name = rest.slice(0, slash);
+            var folder = folders[name] || (folders[name] = { count: 0, updated_at: f.updated_at });
+            folder.count++;
+            if (f.updated_at > folder.updated_at) folder.updated_at = f.updated_at;
+          }
+        });
+
+        var list = $("list");
+        list.innerHTML =
+          '<li class="row head"><span></span><span>Name</span><span>Size</span><span>Modified</span><span></span></li>';
+
+        var names = Object.keys(folders).sort(collate);
+        if (!names.length && !here.length) {
+          list.insertAdjacentHTML("beforeend", '<li class="empty">This folder is empty.</li>');
+          return;
+        }
+
+        names.forEach(function (name) {
+          var folder = folders[name];
+          var li = row(
+            '<i class="fa-solid fa-folder"></i>', "folder", name,
+            folder.count + (folder.count === 1 ? " item" : " items"),
+            formatDate(folder.updated_at), null
+          );
+          li.addEventListener("click", function () { go(prefix + name); });
+          list.appendChild(li);
+        });
+
+        here.sort(function (a, b) { return collate(a.path, b.path); }).forEach(function (f) {
+          var name = f.path.slice(prefix.length);
+          var li = row(fileIcon(name), "", name, formatSize(f.size), formatDate(f.updated_at), f);
+          li.addEventListener("click", function () { go(f.path); });
+          list.appendChild(li);
+        });
+      }
+
+      function row(icon, iconClass, name, size, date, file) {
+        var li = document.createElement("li");
+        li.className = "row";
+        li.innerHTML =
+          '<span class="icon ' + iconClass + '">' + icon + "</span>" +
+          '<span class="name">' + escapeHtml(name) + "</span>" +
+          '<span class="meta">' + size + "</span>" +
+          '<span class="meta">' + date + "</span>" +
+          "<span></span>";
+        if (file) {
+          var dl = document.createElement("button");
+          dl.className = "dl";
+          dl.title = "Download";
+          dl.innerHTML = '<i class="fa-solid fa-download"></i>';
+          dl.addEventListener("click", function (e) {
+            e.stopPropagation();
+            fetchFile(file).then(download).catch(handleError);
+          });
+          li.lastChild.appendChild(dl);
+        }
+        return li;
+      }
+
+      function fetchFile(file) {
+        return rpc("cyberpatriot_get", authArgs({ p_path: file.path })).then(function (b64) {
+          var bin = atob(b64);
+          var bytes = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          return { file: file, bytes: bytes, text: decodeText(bytes) };
+        });
+      }
+
+      function viewFile(file) {
+        $("listPane").hidden = true;
+        $("viewerPane").hidden = false;
+        $("viewerTitle").textContent = file.path.split("/").pop();
+        $("viewerMeta").textContent = formatSize(file.size) + " · " + formatDate(file.updated_at);
+        $("viewerContent").textContent = "Loading…";
+        $("copyBtn").hidden = true;
+        openFile = null;
+        fetchFile(file)
+          .then(function (loaded) {
+            if (currentHashPath() !== file.path) return;
+            openFile = loaded;
+            $("copyBtn").hidden = loaded.text === null;
+            $("viewerContent").textContent =
+              loaded.text === null ? "Binary file — use Download to save it." : loaded.text;
+          })
+          .catch(function (err) {
+            $("viewerContent").textContent = "Couldn't load this file: " + err.message;
+            handleError(err);
+          });
+      }
+
+      $("downloadBtn").addEventListener("click", function () { if (openFile) download(openFile); });
+      $("copyBtn").addEventListener("click", function () {
+        if (!openFile || openFile.text === null) return;
+        navigator.clipboard.writeText(openFile.text).then(function () {
+          $("copyBtn").innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          setTimeout(function () { $("copyBtn").innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; }, 1500);
+        });
+      });
+      $("refreshBtn").addEventListener("click", function () {
+        loadFiles().then(route).catch(handleError);
+      });
+
+      function download(loaded) {
+        var blob = new Blob([loaded.bytes], { type: "application/octet-stream" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = loaded.file.path.split("/").pop();
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      }
+
+      // ── Helpers ────────────────────────────────────────────────────
+      // PowerShell files are often saved as UTF-16 by Windows editors
+      function decodeText(bytes) {
+        try {
+          if (bytes[0] === 0xff && bytes[1] === 0xfe) return new TextDecoder("utf-16le").decode(bytes);
+          if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder("utf-16be").decode(bytes);
+          var text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+          return text.indexOf("\u0000") === -1 ? text : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function fileIcon(name) {
+        var ext = (name.split(".").pop() || "").toLowerCase();
+        if (["ps1", "psm1", "sh", "bat", "cmd", "py", "js"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-code"></i>';
+        if (["txt", "md", "log", "csv"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-lines"></i>';
+        if (ext === "pdf") return '<i class="fa-solid fa-file-pdf"></i>';
+        if (["zip", "7z", "gz", "tar"].indexOf(ext) !== -1) return '<i class="fa-solid fa-file-zipper"></i>';
+        return '<i class="fa-solid fa-file"></i>';
+      }
+
+      function formatSize(n) {
+        if (n < 1024) return n + " B";
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+        return (n / 1024 / 1024).toFixed(1) + " MB";
+      }
+
+      function formatDate(iso) {
+        return new Date(iso).toLocaleString(undefined, {
+          month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
+        });
+      }
+
+      function collate(a, b) {
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      // ── Start ──────────────────────────────────────────────────────
+      creds = loadSession();
+      if (creds) {
+        loadFiles().then(showApp).catch(handleError);
+      } else {
+        showLogin();
+      }
+    </script>
+  </body>
+</html>
