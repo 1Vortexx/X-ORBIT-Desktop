@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Jitter</title>
+    <!-- Home Screen app (iOS): launches here, then opens Jitter in app mode -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Jitter">
+    <!-- Solid black, not black-translucent: with the translucent bar iOS shows the page 62pt short at the bottom -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#0d1834">
+    <link rel="manifest" href="/jitter/manifest.json">
+    <link rel="apple-touch-icon" href="/jitter/apple-touch-icon.png">
+    <link rel="icon" href="/jitter/icon-192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Installed on an iPhone / iPad → straight into Jitter
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        // Pass along ?ring= / ?chat= from a tapped notification
+        if (isIOS && navigator.standalone) {
+            const params = new URLSearchParams(location.search);
+            params.set('app', 'ios');
+            location.replace('/jittery.html?' + params.toString());
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #000;
+            --surface: #1c1c1e;
+            --surface-2: #2c2c2e;
+            --border: rgba(255,255,255,0.09);
+            --text: #fff;
+            --text-muted: rgba(235,235,245,0.6);
+            --accent: #0a84ff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { min-height: 100%; }
+        html { background-color: #0d1834; } /* iOS colours the status bar from this */
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Segoe UI', Roboto, sans-serif;
+            -webkit-text-size-adjust: 100%;
+            display: flex;
+            justify-content: center;
+            padding: calc(32px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+        }
+        main { width: 100%; max-width: 420px; display: none; }
+        main.show { display: block; }
+        .icon { width: 88px; height: 88px; border-radius: 22px; display: block; margin: 8px auto 18px; box-shadow: 0 10px 30px rgba(10,132,255,0.35); }
+        h1 { font-size: 1.7rem; font-weight: 700; text-align: center; letter-spacing: -0.02em; }
+        .sub { color: var(--text-muted); text-align: center; margin: 8px 0 28px; line-height: 1.45; font-size: 0.98rem; }
+        .steps { list-style: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .steps li { display: flex; align-items: center; gap: 14px; padding: 15px 16px; font-size: 0.98rem; line-height: 1.35; }
+        .steps li + li { border-top: 1px solid var(--border); }
+        .num {
+            width: 28px; height: 28px; flex-shrink: 0;
+            border-radius: 50%;
+            background: var(--surface-2);
+            display: grid; place-items: center;
+            font-size: 0.85rem; font-weight: 700;
+        }
+        .glyph { color: var(--accent); margin: 0 2px; }
+        .share-glyph { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+        .note { color: var(--text-muted); font-size: 0.82rem; text-align: center; margin-top: 18px; line-height: 1.45; }
+        .url {
+            display: block;
+            margin: 6px auto 0;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent);
+            user-select: all;
+        }
+        /* Points at Safari's Share button (bottom bar on iPhone) */
+        .hint-arrow {
+            position: fixed;
+            left: 50%;
+            bottom: calc(6px + env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            color: var(--accent);
+            width: 30px;
+            height: 30px;
+            animation: bob 1.2s ease-in-out infinite;
+        }
+        @keyframes bob { 50% { transform: translate(-50%, 6px); } }
+        @media (min-width: 700px) { .hint-arrow { display: none; } }
+
+        /* Developer preview: the iPhone app in a phone-sized frame (iPhone 16 Pro, 402×874) */
+        .dev-preview {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: radial-gradient(80% 60% at 50% 20%, #12224a 0%, #05070d 70%);
+        }
+        .dev-preview.show { display: flex; }
+        .dev-scale { width: calc(402px * var(--s, 1) + 24px * var(--s, 1)); height: calc(874px * var(--s, 1) + 24px * var(--s, 1)); }
+        .dev-phone {
+            position: relative;
+            width: 402px;
+            height: 874px;
+            border-radius: 56px;
+            overflow: hidden;
+            background: #0d1834;
+            border: 12px solid #1b1d22;
+            box-sizing: content-box;
+            box-shadow: 0 0 0 2px #3a3d45, 0 30px 80px rgba(0,0,0,0.7);
+            transform: scale(var(--s, 1));
+            transform-origin: top left;
+        }
+        .dev-status {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 34px 0 46px;
+            background: #0d1834;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            box-sizing: border-box;
+        }
+        .dev-island {
+            position: absolute;
+            top: 11px;
+            left: 50%;
+            width: 126px;
+            height: 37px;
+            margin-left: -63px;
+            border-radius: 20px;
+            background: #000;
+        }
+        .dev-icons { display: flex; gap: 6px; font-size: 14px; }
+        .dev-frame { position: absolute; top: 62px; left: 0; width: 402px; height: 812px; border: 0; display: block; }
+        .dev-home {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            width: 140px;
+            height: 5px;
+            margin-left: -70px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.7);
+            pointer-events: none;
+        }
+        .dev-caption { color: var(--text-muted); font-size: 0.8rem; }
+        .dev-caption a { color: var(--accent); text-decoration: none; }
+
+        /* ── Mobile install experience ─────────────────────────────── */
+        .install-shell { padding-top: calc(20px + env(safe-area-inset-top)); }
+        .brand-lockup { display: flex; align-items: center; justify-content: center; gap: 11px; margin-bottom: 30px; color: #a9cfff; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .brand-lockup::before, .brand-lockup::after { content: ''; width: 34px; height: 1px; background: linear-gradient(90deg, transparent, rgba(44,158,255,.7)); }
+        .brand-lockup::after { transform: scaleX(-1); }
+        .install-shell .icon { width: 104px; height: 104px; margin: 0 auto 22px; border-radius: 26px; }
+        .install-shell h1 { font-size: clamp(2rem, 9vw, 2.6rem); line-height: 1.02; letter-spacing: -0.055em; }
+        .install-shell .sub { margin: 13px auto 28px; max-width: 330px; color: rgba(235,244,255,.72); }
+        .safari-note { display: flex; align-items: center; gap: 9px; margin: 0 2px 12px; color: #a9cfff; font-size: 0.78rem; text-align: left; }
+        .safari-note i { color: #40a7ff; font-size: 1rem; }
+        .install-shell .steps { border-radius: 20px; background: linear-gradient(145deg, rgba(28,39,72,.96), rgba(17,21,38,.96)); box-shadow: 0 22px 45px rgba(0,0,0,.28); }
+        .install-shell .steps li { gap: 13px; padding: 17px 16px; text-align: left; }
+        .install-shell .num { width: 30px; height: 30px; background: rgba(10,132,255,.2); color: #85caff; border: 1px solid rgba(55,159,255,.38); }
+        .install-shell .note { max-width: 330px; margin: 19px auto 0; }
+        .install-shell .note a { color: #77c1ff; }
+        #unsupported .url { overflow-wrap: anywhere; }
+        @media (min-width: 700px) { .install-shell { padding-top: 42px; } }
+        @media (prefers-reduced-motion: reduce) { .hint-arrow { animation: none; } }
+    </style>
+</head>
+<body>
+    <!-- iPhone / iPad in the browser: install first -->
+    <main id="install" class="install-shell">
+        <div class="brand-lockup">Jitter for iPhone</div>
+        <img class="icon" src="/jitter/apple-touch-icon.png" alt="">
+        <h1>Put Jitter on your Home Screen.</h1>
+        <p class="sub">Install it once in Safari, then messages and calls are a tap away.</p>
+        <p class="safari-note"><i class="fab fa-safari" aria-hidden="true"></i> This takes about 15 seconds in Safari.</p>
+        <ol class="steps">
+            <li><span class="num">1</span><span>Tap <svg class="glyph share-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M8 10H6.5A1.5 1.5 0 0 0 5 11.5v8A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5v-8a1.5 1.5 0 0 0-1.5-1.5H16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <b>Share</b> in Safari's toolbar</span></li>
+            <li><span class="num">2</span><span>Scroll down and tap <b>Add to Home Screen</b> <i class="far fa-square-plus glyph"></i></span></li>
+            <li><span class="num">3</span><span>Tap <b>Add</b>, then open <b>Jitter</b> from your Home Screen</span></li>
+        </ol>
+        <p class="note">Using Chrome or another browser? Open this page in Safari first. Looking for desktop? <a href="/jitter-app.html">Install Jitter for desktop</a>.</p>
+        <svg class="hint-arrow" id="hintArrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </main>
+
+    <!-- Anything that isn't iOS -->
+    <main id="unsupported">
+        <img class="icon" src="/jitter/apple-touch-icon.png" alt="">
+        <h1>Jitter belongs on your phone.</h1>
+        <p class="sub">Open this page in Safari on your iPhone or iPad to add Jitter to your Home Screen.</p>
+        <span class="url" id="jitterUrl"></span>
+        <p class="note">Want the desktop app instead? <a href="/jitter-app.html" style="color:var(--accent)">Install Jitter for desktop</a>.</p>
+    </main>
+
+    <!-- Developer preview (type "developer" on a computer) -->
+    <div class="dev-preview" id="devPreview">
+        <div class="dev-scale">
+            <div class="dev-phone">
+                <div class="dev-status">
+                    <span id="devClock"></span>
+                    <div class="dev-island"></div>
+                    <span class="dev-icons"><i class="fas fa-signal"></i><i class="fas fa-wifi"></i><i class="fas fa-battery-full"></i></span>
+                </div>
+                <iframe class="dev-frame" id="devFrame" title="Jitter on iPhone (preview)" allow="microphone; camera; autoplay; clipboard-write"></iframe>
+                <div class="dev-home"></div>
+            </div>
+        </div>
+        <div class="dev-caption">Developer preview · iPhone 16 Pro (402×874) · <a href="#" onclick="exitDevPreview(); return false;">Exit</a></div>
+    </div>
+
+    <script>
+        document.getElementById('jitterUrl').textContent = location.host + '/jitter';
+        if (isIOS && !navigator.standalone) {
+            document.getElementById('install').classList.add('show');
+            // iPad's Share button is at the top, so the arrow would point the wrong way
+            if (/iPad/.test(navigator.userAgent) || navigator.maxTouchPoints > 1 && navigator.platform === 'MacIntel') {
+                document.getElementById('hintArrow').style.display = 'none';
+            }
+        } else if (!isIOS) {
+            document.getElementById('unsupported').classList.add('show');
+
+            // Typing "developer" opens the iPhone app in a phone-sized frame; #developer keeps it on reload
+            let typed = '';
+            window.addEventListener('keydown', (e) => {
+                if (e.key.length !== 1) return;
+                typed = (typed + e.key.toLowerCase()).slice(-9);
+                if (typed === 'developer') enterDevPreview();
+            });
+            if (location.hash === '#developer') enterDevPreview();
+        }
+
+        function enterDevPreview() {
+            const frame = document.getElementById('devFrame');
+            if (!frame.src) frame.src = '/jittery.html?app=ios&dev=1';
+            document.getElementById('devPreview').classList.add('show');
+            if (location.hash !== '#developer') history.replaceState(null, '', '#developer');
+            fitDevPreview();
+            tickDevClock();
+        }
+
+        function exitDevPreview() {
+            document.getElementById('devPreview').classList.remove('show');
+            document.getElementById('devFrame').removeAttribute('src');
+            history.replaceState(null, '', location.pathname + location.search);
+        }
+
+        // Scale the phone down to fit shorter windows
+        function fitDevPreview() {
+            const s = Math.min(1, (window.innerHeight - 70) / 898, (window.innerWidth - 32) / 426);
+            document.querySelector('.dev-preview').style.setProperty('--s', s.toFixed(3));
+        }
+        window.addEventListener('resize', fitDevPreview);
+
+        function tickDevClock() {
+            const d = new Date();
+            document.getElementById('devClock').textContent = `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+        setInterval(tickDevClock, 10000);
+    </script>
+</body>
+</html>
