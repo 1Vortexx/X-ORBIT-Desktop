@@ -145,6 +145,15 @@ const SFX = {
   starter_click: () => { for (let i = 0; i < 3; i++) burst(0.025, { f: 1800, q: 3, vol: 0.16, delay: i * 0.1 }); },
   engine_catch: () => { burst(0.22, { type: "lowpass", f: 420, vol: 0.25 }); tone(55, 0.35, { type: "sawtooth", vol: 0.06, to: 95 }); },
   engine_stop: () => { tone(85, 0.32, { type: "sawtooth", vol: 0.06, to: 18 }); burst(0.15, { f: 250, vol: 0.12, delay: 0.12 }); },
+  engine_blow: (o) => {   // the engine letting go: a crack, a deep low blow, metal clattering and a long hiss
+    const v = vol01(o.vol, 1);
+    burst(0.05, { f: 1600, q: 0.5, vol: 0.3 * v });
+    tone(46, 1.1, { vol: 0.45 * v, to: 24 });
+    tone(68, 0.6, { type: "triangle", vol: 0.18 * v, to: 30 });
+    burst(0.9, { type: "lowpass", f: 280, vol: 0.5 * v, to: 60 });
+    for (let i = 0; i < 6; i++) burst(0.05, { f: 800 + Math.random() * 1600, q: 5, vol: (0.1 - i * 0.012) * v, delay: 0.1 + i * 0.07 + Math.random() * 0.04 });
+    burst(2.2, { f: 2600, q: 0.4, vol: 0.06 * v, delay: 0.3, attack: 0.2, to: 1400 });
+  },
   engine_fail: () => { burst(0.15, { type: "lowpass", f: 330, vol: 0.18 }); tone(75, 0.2, { type: "triangle", vol: 0.07, to: 25 }); },
   parking_brake: () => { for (let i = 0; i < 4; i++) burst(0.025, { f: 1700 + i * 150, q: 3, vol: 0.11, delay: i * 0.035 }); },
   gear_shift: () => { burst(0.06, { f: 700, q: 2, vol: 0.12 }); tone(110, 0.08, { type: "triangle", vol: 0.06, to: 75 }); },
@@ -154,6 +163,44 @@ const SFX = {
     burst(0.24, { f: 1400, q: 1.5, vol: 0.35 * v, to: 400 });
     tone(190, 0.32, { type: "triangle", vol: 0.13 * v, to: 70 });
     if (v > 0.55) burst(0.2, { f: 3800, vol: 0.16 * v, delay: 0.04 });
+  },
+  // Crash damage (vehicles/models.js): a panel folding, a body sliding along something, the windscreen going, bits falling
+  metal_crunch: (o) => {
+    const v = vol01(o.vol, 0.7);
+    burst(0.3, { type: "lowpass", f: 520, vol: 0.34 * v, to: 160 });
+    tone(140, 0.26, { type: "triangle", vol: 0.12 * v, to: 55 });
+    for (let i = 0; i < 4 + v * 6; i++) {                   // the crumple: stuttering creaks and tears of sheet steel
+      burst(0.04 + Math.random() * 0.05, { f: 700 + Math.random() * 1800, q: 4 + Math.random() * 6, vol: (0.07 + Math.random() * 0.08) * v, delay: Math.random() * 0.22 });
+    }
+    burst(0.18, { f: 2900, q: 1.2, vol: 0.08 * v, delay: 0.03, to: 1500 });
+  },
+  metal_scrape: (o) => {
+    const v = vol01(o.vol, 0.6);
+    burst(0.11, { f: 1900 + Math.random() * 900, q: 7, vol: 0.12 * v, attack: 0.01 });
+    burst(0.11, { f: 4200 + Math.random() * 1500, q: 3, vol: 0.05 * v, attack: 0.01 });
+    burst(0.1, { type: "lowpass", f: 300, vol: 0.12 * v });
+  },
+  glass_crack: (o) => {
+    const v = vol01(o.vol, 0.9);
+    burst(0.05, { f: 5200, q: 1.5, vol: 0.32 * v });
+    burst(0.16, { f: 3200, q: 2.5, vol: 0.12 * v, delay: 0.02, to: 6000 });
+    for (let i = 0; i < 7; i++) tone(3000 + Math.random() * 4200, 0.05 + Math.random() * 0.08, { vol: 0.025 * v, delay: 0.03 + Math.random() * 0.3 });
+  },
+  debris: (o) => {         // chips and trim pattering down
+    const v = vol01(o.vol, 0.6);
+    for (let i = 0; i < 5 + v * 7; i++) {
+      const at = 0.18 + Math.random() * 0.55;
+      burst(0.03, { f: 1600 + Math.random() * 2600, q: 5, vol: 0.06 * v, delay: at });
+      if (Math.random() < 0.4) tone(1800 + Math.random() * 2400, 0.06, { vol: 0.012 * v, delay: at });
+    }
+  },
+  // Where a bullet stops
+  bullet_dirt: (o) => { const v = vol01(o.vol, 1); burst(0.09, { type: "lowpass", f: 600, vol: 0.2 * v }); burst(0.05, { f: 1500, q: 0.8, vol: 0.06 * v }); },
+  bullet_flesh: (o) => { const v = vol01(o.vol, 1); burst(0.07, { type: "lowpass", f: 380, vol: 0.32 * v }); tone(90, 0.08, { vol: 0.12 * v, to: 50 }); },
+  ricochet: (o) => {
+    const v = vol01(o.vol, 1);
+    burst(0.03, { f: 3400, q: 2, vol: 0.18 * v });
+    tone(2600 + Math.random() * 1600, 0.32, { type: "sine", vol: 0.045 * v, to: 900 + Math.random() * 400, delay: 0.01 });
   },
   ui_click: () => tone(660, 0.07, { vol: 0.04 }),
   ui_back: () => tone(440, 0.08, { vol: 0.04, to: 330 }),
@@ -363,6 +410,17 @@ function dropOthers() {
 }
 on("sfx", ({ name, opts }) => play(name, opts));
 
+// Dying: two recorded clips (audio/sfx) on their own <audio> elements, since main suspends the WebAudio context the
+// moment you die. A hard crash crunches the moment it happens (crunch()); a death flatlines once that has finished.
+const CRUNCH_MS = 2400;
+let deathClips = [], crunchAt = -1e9;
+function deathClip(src, delay, level) {
+  const a = new Audio(src);
+  a.volume = Math.max(0, Math.min(1, (muted ? 0 : vol.master * vol.sfx) * level));
+  const t = setTimeout(() => { a.play().catch(() => {}); }, delay);
+  deathClips.push({ a, t });
+}
+
 export const audio = {
   get ready() { return !!ctx; },
   get context() { return ctx; },
@@ -370,6 +428,26 @@ export const audio = {
   // Must be called from a user gesture the first time (browser autoplay rules)
   start() { try { if (!ctx) init(); if (ctx.state !== "running") ctx.resume(); } catch (e) {} },
   suspend() { try { if (pour) pour.out.gain.value = 0; dropOthers(); ctx && ctx.suspend(); } catch (e) {} },
+  // A bone-crunching hit, played on impact (a hard crash, survived or not)
+  crunch() {
+    if (performance.now() - crunchAt < 700) return;
+    crunchAt = performance.now();
+    deathClip("audio/sfx/death_crunch.mp3", 0, 1);
+  },
+  // violent: a crash, fall, beating or stabbing. The flatline waits for the crunch to finish: the one already playing
+  // from the impact, or one played now
+  death(violent) {
+    for (const { a, t } of deathClips) if (!/death_crunch/.test(a.src)) { clearTimeout(t); try { a.pause(); a.src = ""; } catch (e) {} }
+    deathClips = deathClips.filter(({ a }) => /death_crunch/.test(a.src));
+    const since = performance.now() - crunchAt;
+    if (violent && since > 20000) { this.crunch(); deathClip("audio/sfx/flatline.mp3", CRUNCH_MS, 0.85); }      // not crunched on impact
+    else deathClip("audio/sfx/flatline.mp3", since < CRUNCH_MS ? CRUNCH_MS - since : 0, 0.85);
+  },
+  // Leaving the game-over screen cuts the flatline off
+  stopDeath() {
+    for (const { a, t } of deathClips) { clearTimeout(t); try { a.pause(); a.src = ""; } catch (e) {} }
+    deathClips = []; crunchAt = -1e9;
+  },
   // Where the player's ears are (absolute world position); main calls this every frame.
   setListener(pos) {
     if (!pos) { listener = null; return; }
@@ -390,7 +468,7 @@ export const audio = {
     const running = tel && tel.ignition === "running";
     if (running) {
       const rpm = Math.max(500, tel.rpm), load = Math.max(0, Math.min(1, tel.load || 0));
-      const f = (rpm / 60) * 3; // six-cylinder four-stroke firing frequency
+      const f = (rpm / 60) * (tel.cyl || 6) / 2; // four-stroke firing frequency (a six unless the engine says)
       set(eng.o1.frequency, f, 0.04); set(eng.o2.frequency, f / 2, 0.04); set(eng.o3.frequency, f * 1.5, 0.04);
       set(eng.lp.frequency, 180 + rpm * 0.12 + load * 900 * (s.inCab ? 0.7 : 1), 0.08);
       set(eng.nf.frequency, 120 + rpm * 0.1, 0.1);
@@ -405,7 +483,7 @@ export const audio = {
       const o = list && list[i], t = o && o.tel;
       if (t && t.ignition === "running" && (o.dist || 0) < FAR) {
         const v = others[i] || (others[i] = otherVoice());
-        const rpm = Math.max(500, t.rpm || 0), load = Math.max(0, Math.min(1, t.load || 0)), f = (rpm / 60) * 3;
+        const rpm = Math.max(500, t.rpm || 0), load = Math.max(0, Math.min(1, t.load || 0)), f = (rpm / 60) * (t.cyl || 6) / 2;
         const a = Math.max(0, 1 - (o.dist || 0) / FAR) ** 2;
         set(v.o1.frequency, f, 0.05); set(v.o2.frequency, f / 2, 0.05);
         set(v.lp.frequency, (160 + rpm * 0.1 + load * 700) * (s.inCab ? 0.6 : 1), 0.1);

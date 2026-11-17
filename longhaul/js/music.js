@@ -38,8 +38,11 @@ function readList(raw, name) {
     const why = playable(t.file);
     if (why) { problems.push(`${t.file}: ${why}`); continue; }
     out.push({
+      cover: t.cover ? "audio/music/" + t.cover : null,
       file: t.file, url: "audio/music/" + t.file.replace(/^\.?\//, ""),
       title: t.title || t.file.replace(/\.[^.]+$/, ""), artist: t.artist || "", license: t.license || "", bad: false,
+      achievement: t.achievement,
+      chance: typeof t.chance === "number" && t.chance > 0 && t.chance < 1 ? t.chance : 0,
     });
   }
   return out;
@@ -70,8 +73,11 @@ function fadeOutCurrent() {
 }
 
 function pick(name, dir = 1) {
-  const list = lists[name].filter((t) => !t.bad);
-  if (!list.length) return null;
+  // Rare tracks ("chance") sit outside the rotation: each new track is one of them with that probability
+  const all = lists[name].filter((t) => !t.bad);
+  for (const t of all) if (t.chance > 0 && t !== (current && current.track) && Math.random() < t.chance) return t;
+  const list = all.filter((t) => !(t.chance > 0));
+  if (!list.length) return all[0] || null;
   const order = name === "menu" ? options.menuOrder : options.radioOrder;
   if (order === "shuffle" && list.length > 1) {
     let i; do { i = Math.floor(Math.random() * list.length); } while (list[i] === (current && current.track));
@@ -91,6 +97,11 @@ function startTrack(name, dir = 1) {
   el.src = track.url;
   el.volume = 0;
   const cur = { el, track, list: name, level: 0, target: 1 };
+  el.onplaying = () => {
+    if (current === cur && context === "menu" && track.achievement) {
+      emit("music:discovery", track.achievement);
+    }
+  };
   el.onended = () => {
     if (my !== serial || context !== name) return;
     if (!options.loop && lists[name].filter((t) => !t.bad).length <= 1) { fadeOutCurrent(); return; }
@@ -106,7 +117,7 @@ function startTrack(name, dir = 1) {
   ensureTimer();
   const p = el.play();
   if (p && p.catch) p.catch(() => { /* blocked until a user gesture; resume() retries */ });
-  emit("music:track", { title: track.title, artist: track.artist, list: name });
+  emit("music:track", { title: track.title, artist: track.artist, cover: track.cover, list: name });
 }
 
 function sync() {
@@ -158,7 +169,7 @@ export const music = {
     const all = [...lists.menu, ...lists.radio];
     return {
       loaded, menu: lists.menu.length, radio: lists.radio.length, tracks: all.length,
-      current: current ? { title: current.track.title, artist: current.track.artist, list: current.list } : null,
+      current: current ? { title: current.track.title, artist: current.track.artist, cover: current.track.cover, list: current.list } : null,
       credits: all.filter((t, i) => all.findIndex((u) => u.file === t.file) === i).map((t) => ({ title: t.title, artist: t.artist, license: t.license })),
       problems: [...problems],
     };

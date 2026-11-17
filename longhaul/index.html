@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Long Haul</title>
-  <link rel="icon" href="data:,"/>
+  <link rel="icon" type="image/png" href="assets/branding/long-haul-icon.png"/>
   <link rel="stylesheet" href="css/base.css"/>
   <link rel="stylesheet" href="css/hud.css"/>
   <link rel="stylesheet" href="css/menus.css"/>
@@ -23,11 +23,40 @@
   <!-- Menus and overlay screens: rendered by js/ui/menus.js (menus.init / menus.show) -->
   <div id="menus" hidden></div>
 
+  <div id="splash" aria-label="X-ORBIT Studios presents Long Haul">
+    <div class="studio-first">
+      <img src="assets/branding/xorbit-studios.png" alt="X-ORBIT Studios" width="2172" height="724">
+      <button id="studio-start" type="button">Click or press any key to start</button>
+    </div>
+  </div>
+  <script>
+    window.longHaulStart = new Promise(function (resolve) {
+      var started = false;
+      function start(event) {
+        if (started || (event.type === "keydown" && (event.repeat || event.ctrlKey || event.metaKey || event.altKey || ["Tab", "Shift", "Control", "Alt", "Meta"].includes(event.key)))) return;
+        started = true;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.removeEventListener("pointerdown", start, true);
+        window.removeEventListener("keydown", start, true);
+        // Unlock music synchronously if game modules are ready.
+        window.dispatchEvent(new Event("longhaul-start-audio"));
+        var splash = document.getElementById("splash");
+        splash.classList.add("studio-finish");
+        setTimeout(function () {
+          splash.remove();
+          resolve();
+        }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 450);
+      }
+      window.addEventListener("pointerdown", start, true);
+      window.addEventListener("keydown", start, true);
+    });
+  </script>
   <!-- Shown until the modules have loaded; removed by menus.init -->
   <div id="boot">Long Haul</div>
   <noscript><div id="boot">Long Haul needs JavaScript.</div></noscript>
 
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js?startup=slow-loading-2"></script>
   <script src="./install.js"></script>
 </body>
 </html>

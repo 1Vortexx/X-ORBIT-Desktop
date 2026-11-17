@@ -1,6 +1,13 @@
 # Long Haul – architecture and shared contracts
 
-Static browser game. No build step, no backend. `index.html` loads ES modules; Three.js 0.170 is vendored in
+Static browser game. No build step, and nothing needs a server to play. The one exception is optional: `js/career.js`
+keeps lifetime totals and achievements on the browser, and `js/online.js` mirrors them to the player's X-ORBIT account
+and the global leaderboard (Supabase, `supabase/longhaul-career-setup.sql`) when they've signed in on the Account screen (never X-ORBIT's own session), along
+with a cloud copy of the journey (`supabase/longhaul-cloud-saves.sql`). `js/convoy.js` is multiplayer: players on the
+same seed share only their positions over a Supabase Realtime broadcast channel (`js/net/realtime.js`) and draw each
+other as ghosts; every world stays private. Ghost trucks take part in vehicle collisions (`Vehicles.step`'s `extra`), and a player can ride in another's truck (the driver's game holds the seat as `"convoy:<id>"`, never saved). `js/map.js` draws the minimap and the full map from what the player has
+seen (saved as `map` in the journey); the Digimap's catch turns some fuel and service sites into ruins through
+`setSiteFilter` in `js/world/index.js`, decided once per site and saved as a `fate:<id>` world flag. Every network call fails quietly; the game never waits on one. `index.html` loads ES modules; Three.js 0.170 is vendored in
 `vendor/three/` and mapped by the import map (`three`, `three/addons/`). Only the addons already in
 `vendor/three/addons/` may be imported; if you need another one, copy it there from the same Three.js version.
 

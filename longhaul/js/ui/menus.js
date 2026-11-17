@@ -24,40 +24,15 @@ const STAT_LABELS = {
   itemsUsed: "Items used", sites: "Places discovered", discovered: "Places discovered", playtime: "Time played", topSpeed: "Top speed",
 };
 
-const LOGO = (() => {
-  const L = "M0 0V8H4.300", O = "M1.300 0H3.700Q5 0 5 1.300V6.700Q5 8 3.700 8H1.300Q0 8 0 6.700V1.300Q0 0 1.300 0Z";
-  const N = "M0 8V0L5 8V0", G = "M5 1.800V1.300Q5 0 3.700 0H1.300Q0 0 0 1.300V6.700Q0 8 1.300 8H3.700Q5 8 5 6.700V4.300H2.700";
-  const H = "M0 0V8M5 0V8M0 4H5", A = "M0 8V1.300Q0 0 1.300 0H3.700Q5 0 5 1.300V8M0 4.700H5", U = "M0 0V6.700Q0 8 1.300 8H3.700Q5 8 5 6.700V0";
-  const word = [L, O, N, G, null, H, A, U, L];
-  let x = 0, paths = "", cuts = "";
-  for (const d of word) {
-    if (!d) { x += 2.600; continue; }
-    paths += `<path transform="translate(${x.toFixed(1)} 0)" d="${d}"/>`;
-    if (d === O || d === G || d === A || d === U) cuts += `<rect x="${(x + 2.180).toFixed(2)}" y="-1" width="0.640" height="10"/>`;
-    x += 6.700;
-  }
-  const w = x - 1.700;
-  return `<svg class="lh-logo" viewBox="-1 -1 ${(w + 2).toFixed(1)} 10" role="img" aria-label="Long Haul">
-    <defs>
-      <filter id="lh-worn" x="-5%" y="-10%" width="110%" height="120%">
-        <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" seed="4" result="n"/>
-        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -20 6.4" result="m"/>
-        <feComposite in="SourceGraphic" in2="m" operator="out"/>
-      </filter>
-      <mask id="lh-stencil" maskUnits="userSpaceOnUse" x="-1" y="-1" width="${(w + 2).toFixed(1)}" height="10">
-        <rect x="-1" y="-1" width="${(w + 2).toFixed(1)}" height="10" fill="#fff"/><g fill="#000">${cuts}</g>
-      </mask>
-    </defs>
-    <g filter="url(#lh-worn)"><g mask="url(#lh-stencil)" fill="none" stroke="currentColor" stroke-width="1.550" stroke-linejoin="miter" stroke-linecap="butt">${paths}</g></g>
-  </svg>`;
-})();
-const brand = (sub) => `<div class="lh-brand"><div class="lh-kicker">Desert road-trip survival</div>${LOGO}<div class="lh-lines" aria-hidden="true"><i></i><i></i></div>${sub ? `<p class="lh-tag">${esc(sub)}</p>` : ""}</div>`;
+const logoUrl = new URL("../../assets/branding/long-haul-logo.png", import.meta.url).href;
+const LOGO = `<img class="lh-logo" src="${logoUrl}" alt="Long Haul" width="2172" height="724">`;
+const brand = (sub) => `<div class="lh-brand"><div class="lh-kicker">Desert road-trip survival</div>${LOGO}${sub ? `<p class="lh-tag">${esc(sub)}</p>` : ""}</div>`;
 
 let root = null, prefs = null, handlers = {};
 let rootName = null, data = {}, stack = [];
 let nowPlaying = null, message = "", gestureDone = false;
 let dlgPicked = false, dlgReadyAt = 0;   // a dialogue answers once; a short guard after (re)opening absorbs double clicks
-const ui = { tabs: { settings: "graphics", inventory: "pockets", controls: "driving" }, nj: { difficulty: null, seed: "", hostile: true, confirm: false } };
+const ui = { tabs: { settings: "graphics", inventory: "pockets", controls: "driving", career: "stats", board: "trip" }, nj: { difficulty: null, seed: "", hostile: true, confirm: false }, code: "", login: { id: "", pass: "" } };
 
 const call = (name, ...args) => { const f = handlers[name]; if (typeof f === "function") return f(...args); };
 const screen = () => (stack.length ? stack[stack.length - 1] : rootName);
@@ -102,6 +77,10 @@ function fmtStat(k, v) {
   if (k === "playtime") { const m = Math.round(v / 60); return m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`; }
   return Number.isInteger(v) ? String(v) : v.toFixed(1);
 }
+function achSummary() {
+  const c = data.career;
+  return c ? `${c.list.filter((x) => c.ach[x.id]).length} of ${c.list.length} achievements` : "";
+}
 function statRows(stats) {
   if (!stats) return [];
   if (Array.isArray(stats)) return stats.map((s) => (Array.isArray(s) ? [String(s[0]), String(s[1])] : [String(s.label), String(s.value)]));
@@ -113,8 +92,14 @@ const keys = (labels) => labels.map((l) => `<kbd>${esc(l)}</kbd>`).join("");
 const k = (action) => `<kbd>${esc(bindingLabel(action))}</kbd>`;
 const item = (act, label, opts = {}) =>
   `<button type="button" class="lh-item${opts.cls ? " " + opts.cls : ""}" data-act="${act}"${opts.arg != null ? ` data-arg="${esc(opts.arg)}"` : ""}${opts.focus ? " data-autofocus" : ""}><span>${esc(label)}</span>${opts.sub ? `<small>${esc(opts.sub)}</small>` : ""}</button>`;
-const npLine = () => `<div class="lh-np"${nowPlaying ? "" : " hidden"}>${icon("note")}<span>${nowPlaying ? esc(npText()) : ""}</span></div>`;
-const npText = () => (nowPlaying.artist ? `${nowPlaying.title} – ${nowPlaying.artist}` : nowPlaying.title);
+function npContents() {
+  if (!nowPlaying) return "";
+  const { cover, title, artist } = nowPlaying;
+  return `${cover ? `<img class="lh-cover" src="${esc(cover)}" alt="">` : icon("note")}
+    <div class="lh-np-copy"><strong class="lh-track-title">${esc(title)}</strong>
+      ${artist ? `<span>${esc(artist)}</span>` : ""}</div>`;
+}
+const npLine = (inline = false) => `<div class="lh-np${inline ? " lh-np-inline" : ""}"${nowPlaying ? "" : " hidden"}>${npContents()}</div>`;
 const navHint = (back) => `<div class="lh-keys" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd> Select</span><span><kbd>Enter</kbd> Confirm</span>${back ? `<span><kbd>Esc</kbd> ${back}</span>` : ""}</div>`;
 const panel = (title, body, opts = {}) => `
   <section class="lh-panel${opts.cls ? " " + opts.cls : ""}" role="dialog" aria-label="${esc(title)}">
@@ -150,44 +135,112 @@ function bindingTable(groups) {
   const names = { always: "Always", drive: "Driving", foot: "On foot", photo: "Photo mode" };
   return groups.map((g) => {
     const rows = BINDINGS.filter((b) => b.group === g && !/^slot[2-6]$/.test(b.action)).map((b) =>
-      b.action === "slot1" ? `<div><span>Select pocket 1–6</span><span class="lh-kc"><kbd>1</kbd>–<kbd>6</kbd></span></div>`
+      b.action === "slot1" ? `<div><span>Pocket 1–6 to hands</span><span class="lh-kc"><kbd>1</kbd>–<kbd>6</kbd></span></div>`
         : `<div><span>${esc(b.desc)}</span><span class="lh-kc">${keys(bindingLabels(b))}</span></div>`).join("");
     return `<h3>${names[g]}</h3><div class="lh-binds">${rows}</div>`;
   }).join("");
 }
 
+// The two halves of the Leaderboard screen
+function careerPane() {
+    const c = data.career, t = ui.tabs.career;
+    if (!c) return `<p class="lh-empty">No career yet.</p>`;
+    let body;
+    if (t === "stats") {
+      const a = c.totals, cl = data.cloud;
+      body = `<h3>On this browser</h3>${kv([
+        ["Distance driven", fmtDist(a.distance, units())], ["Journeys", a.trips], ["Days on the road", a.days],
+        ["Longest journey", fmtDist(c.best.km * 1000, units())], ["Most days in one journey", c.best.days],
+        ["Places discovered", a.sites], ["Fuel bought", `${Math.round(a.litres)} L`], ["Pursuits escaped", a.escapes],
+        ["Passengers delivered", a.rides], ["Time played", fmtStat("playtime", a.playTime)],
+      ])}`;
+      if (data.account) {
+        body += `<h3>On your X-ORBIT account</h3>` + (cl ? kv([
+          ["Distance driven", fmtDist(cl.total_m, units())], ["Journeys", cl.trips], ["Longest journey", fmtDist(cl.best_m, units())],
+          ["Most days in one journey", cl.best_days], ["Achievements", cl.achievements],
+        ]) : `<p class="lh-empty">${data.cloud === null ? "Nothing on your account yet, or X-ORBIT can't be reached right now." : "Loading…"}</p>`)
+          + `<p class="lh-help">Your account adds up journeys from every device you play on. Journeys under 0.5 km don't count.</p>`;
+      } else {
+        body += `<p class="lh-help">${icon("person")} Sign in from Account on the main menu to keep your career on your X-ORBIT account and join the global leaderboard.</p>`;
+      }
+    } else {
+      const got = c.list.filter((x) => c.ach[x.id]).length;
+      body = `<p class="lh-lead">${got} of ${c.list.length} unlocked</p><ul class="lh-achs">${[...c.list].sort((x, y) => !!c.ach[y.id] - !!c.ach[x.id]).map((x) => {
+        const on = !!c.ach[x.id];
+        return `<li class="${on ? "lh-got" : ""}">${icon(on ? "good" : "box")}<div><b>${esc(x.name)}</b><span>${esc(x.desc)}</span></div>
+          <em>${on ? esc(new Date(c.ach[x.id]).toLocaleDateString()) : "Locked"}</em></li>`;
+      }).join("")}</ul>`;
+    }
+    return body;
+}
+function boardPane() {
+    const kind = ui.tabs.board, b = data.board && data.board.kind === kind ? data.board : { loading: true };
+    const col = { trip: "Longest journey", total: "Total distance", days: "Most days" }[kind];
+    const val = (r) => (kind === "days" ? `${r.best_days} ${r.best_days === 1 ? "day" : "days"}` : fmtDist(kind === "total" ? r.total_m : r.best_m, units()));
+    const row = (r, rank) => `<li class="${r.username === data.account ? "lh-me" : ""}"><b class="lh-rank${rank <= 3 ? " lh-top" : ""}">${rank}</b>
+      <span>@${esc(r.username)}</span><strong>${esc(val(r))}</strong><em>${r.trips} ${r.trips === 1 ? "trip" : "trips"}</em></li>`;
+    let body;
+    if (b.loading) body = `<p class="lh-empty">Loading the leaderboard…</p>`;
+    else if (b.error) body = `<p class="lh-empty">${icon("warn")} The leaderboard can't be reached right now. Try again later.</p>`;
+    else if (!b.rows.length) body = `<p class="lh-empty">No journeys on the board yet. Sign in and drive to be the first.</p>`;
+    else body = `<ol class="lh-board"><li class="lh-bhead"><b>#</b><span>Driver</span><strong>${esc(col)}</strong><em></em></li>
+      ${b.rows.map((r, i) => row(r, i + 1)).join("")}${b.me ? `<li class="lh-gap" aria-hidden="true">…</li>${row(b.me, b.rank)}` : ""}</ol>`;
+    body += data.account ? `<p class="lh-help">Signed in as @${esc(data.account)}. Your journeys are added as you drive.</p>`
+      : `<p class="lh-help">${icon("person")} Sign in from Account on the main menu to put your journeys on the board.</p>`;
+    return body;
+}
+
 // ── screens ───────────────────────────────────────────────────────────────
 const SCREENS = {
-  gate: () => `<div class="lh-col lh-gate">${brand("One road. One truck. Keep it running.")}
-    <button type="button" class="lh-gatebtn" data-act="gate" data-autofocus><span>Click or press any key to start</span></button></div>`,
+  gate: () => `<div class="lh-col lh-gate lh-studio-splash">
+    <img src="${new URL("../../download/xorbit-studios-logo.png", import.meta.url).href}" width="2172" height="724" alt="X-ORBIT Studios">
+    <button type="button" class="lh-gatebtn" data-act="gate" data-autofocus><span>Click or press any key to start</span></button>
+  </div>`,
 
   loading: () => `<div class="lh-col lh-loading">${brand()}
     <div class="lh-load" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Loading">
       <div class="lh-loadbar"><i></i></div>
       <div class="lh-loadrow"><span class="lh-loadlabel"></span><b class="lh-loadpct"></b></div>
+      <p class="lh-help lh-loading-tip" role="status"></p>
     </div></div>`,
 
+  // Four doors: Play (journeys, convoys, controls), Career (your career + the global leaderboard), Settings, What's New.
+  // Account and Credits are small links underneath.
   main() {
-    const s = data.save, parts = summaryParts(s);
     let h = `<div class="lh-col lh-main">${brand("One road. One truck. Keep it running.")}`;
     if (data.saveError) {
       h += `<div class="lh-alert" role="alert">${icon("warn")}<p>${esc(SAVE_ERRORS[data.saveError] || (typeof data.saveError === "string" ? data.saveError : SAVE_ERRORS.corrupt))}</p></div>`;
     }
-    h += `<nav class="lh-nav" aria-label="Main menu">`;
-    if (s) {
-      h += `<button type="button" class="lh-item lh-continue" data-act="continue" data-autofocus><span>Continue</span>
-        <small>${parts.length ? parts.map(esc).join(" <i>·</i> ") : "Saved journey"}</small></button>`;
-    }
-    h += item("newjourney", "New Journey", { focus: !s });
-    h += item("settings", "Settings") + item("controls", "Controls / How to Play") + item("whatsnew", "What's New", { sub: "v" + CHANGELOG[0].version }) + item("credits", "Credits");
+    const s = data.save || data.cloudSave, parts = summaryParts(s);
+    h += `<nav class="lh-nav" aria-label="Main menu">`
+      + item("play", "Play", { focus: true, sub: s ? `Continue · ${parts.slice(0, 2).join(" · ")}` : "Singleplayer or convoy" })
+      + item("leaderboard", "Career", { sub: data.career ? achSummary() : "" })
+      + item("download", "Download", { sub: "Windows & Mac desktop app" })
+      + item("settings", "Settings") + item("whatsnew", "What's New", { sub: "v" + CHANGELOG[0].version });
     if (data.hostAvailable) h += item("host", "Return to X-ORBIT", { cls: "lh-quiet" });
-    h += `</nav>`;
-    const b = data.best;
-    if (b && (b.km > 0 || b.distance > 0)) {
-      const days = b.days ?? b.day;
-      h += `<p class="lh-note">Best journey: ${esc(fmtDist(b.km != null ? b.km * 1000 : b.distance, units()))}${days ? ` in ${days} ${days === 1 ? "day" : "days"}` : ""}</p>`;
-    }
+    h += `</nav><div class="lh-links">
+      <button type="button" class="lh-link" data-act="account">${icon("person")}<span>${data.account ? `@${esc(data.account)}` : "Sign in"}</span></button>
+      <button type="button" class="lh-link" data-act="credits"><span>Credits</span></button></div>`;
     return h + `</div>${navHint()}`;
+  },
+
+  play() {
+    const s = data.save, parts = summaryParts(s);
+    let h = `<div class="lh-col lh-main"><div class="lh-brand lh-brand-s"><div class="lh-kicker">Long Haul</div><h1 class="lh-h1">Play</h1><div class="lh-lines" aria-hidden="true"><i></i><i></i></div></div>`;
+    h += `<nav class="lh-nav" aria-label="Play">`;
+    // cloudSave: the journey kept on the X-ORBIT account, when it is newer or different from this device's
+    const cs = data.cloudSave, cparts = cs ? summaryParts(cs) : [];
+    const cont = (act, label, p, note, focus) => `<button type="button" class="lh-item lh-continue" data-act="${act}"${focus ? " data-autofocus" : ""}><span>${esc(label)}</span>
+        <small>${p.length ? p.map(esc).join(" <i>·</i> ") : "Saved journey"}${note ? ` <i>·</i> ${esc(note)}` : ""}</small></button>`;
+    if (s && cs && cs.same) h += cont("continue", "Continue", cparts, "synced from your X-ORBIT account", true);
+    else if (s) h += cont("continue", "Continue", parts, "", true);
+    if (cs && !cs.same) h += cont("continuecloud", s ? "Continue from X-ORBIT" : "Continue", cparts, s ? "replaces the journey on this device" : "from your X-ORBIT account", !s);
+    h += item("newjourney", "Singleplayer", { focus: !s && !cs, sub: "a new journey on your own" })
+      + item("convoy", "Convoy", { sub: "drive the same road with friends" })
+      + item("controls", "Controls / How to Play");
+    if (data.dev) h += item("devmap", "Dev Map", { sub: "test range · not saved", cls: "lh-quiet" });
+    h += item("back", "Back", { cls: "lh-quiet" });
+    return h + `</nav></div>${navHint("Back")}`;
   },
 
   pause() {
@@ -195,7 +248,7 @@ const SCREENS = {
     return `<div class="lh-col lh-pause"><div class="lh-brand lh-brand-s"><div class="lh-kicker">Long Haul</div><h1 class="lh-h1">Paused</h1><div class="lh-lines" aria-hidden="true"><i></i><i></i></div>
       ${parts.length ? `<p class="lh-tag">${parts.map(esc).join(" · ")}</p>` : ""}</div>
       <nav class="lh-nav" aria-label="Pause menu">
-        ${item("resume", "Resume", { focus: true })}${item("settings", "Settings")}${item("controls", "Controls / How to Play")}
+        ${item("resume", "Resume", { focus: true })}${item("convoy", "Convoy", { sub: data.convoy && data.convoy.code ? `code ${data.convoy.code}` : "drive with friends" })}${item("settings", "Settings")}${item("controls", "Controls / How to Play")}
         ${item("savemenu", "Save & Return to Menu")}
       </nav>
       <p class="lh-note">${data.saved === false ? `${icon("warn")} Your journey could not be saved: this window cannot store data. Leaving now loses your progress.`
@@ -205,7 +258,7 @@ const SCREENS = {
   newjourney() {
     const nj = ui.nj, list = diffs();
     if (!list.some((d) => d.id === nj.difficulty)) nj.difficulty = (list.find((d) => d.id === (data.difficulty || "survival")) || list[Math.min(1, list.length - 1)]).id;
-    const parts = summaryParts(data.save);
+    const saved = data.save || data.cloudSave, parts = summaryParts(saved);
     if (nj.confirm) {
       return panel("Replace your journey?", `
         <div class="lh-confirm">${icon("warn")}<div><p class="lh-lead">This replaces your current journey${parts.length ? `: <b>${parts.slice(0, 2).map(esc).join(" · ")}</b>` : ""}.</p>
@@ -224,7 +277,7 @@ const SCREENS = {
       <div class="lh-seedrow"><input type="text" id="lh-seed" class="lh-input" maxlength="32" autocomplete="off" spellcheck="false" placeholder="Leave blank for a random world" value="${esc(nj.seed)}">
         <button type="button" class="lh-btn lh-btn-s" data-act="randseed">${icon("dice")}<span>Randomise</span></button></div>
       <p class="lh-help">Words or numbers. The same seed always builds the same road, places and loot.</p>
-      ${data.save ? `<p class="lh-help lh-warnline">${icon("warn")}<span>You already have a journey${parts.length ? ` (${parts.slice(0, 2).map(esc).join(" · ")})` : ""}. Starting a new one replaces it – you will be asked to confirm.</span></p>` : ""}
+      ${saved ? `<p class="lh-help lh-warnline">${icon("warn")}<span>You already have a journey${parts.length ? ` (${parts.slice(0, 2).map(esc).join(" · ")})` : ""}. Starting a new one replaces it – you will be asked to confirm.</span></p>` : ""}
       <div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="start" data-autofocus>Start journey</button></div>`,
     { foot: navHint("Back") });
   },
@@ -264,7 +317,8 @@ const SCREENS = {
     } else if (t === "camera") {
       body = slider("fov", "Field of view", 55, 100, 1, "deg")
         + slider("camMotion", "Camera motion", 0, 1.5, 0.05, "pct", "Head bob, suspension sway and engine vibration. 0% keeps the camera still.")
-        + seg("camera", "Default driving camera", [["cab", "Cab"], ["chase", "Chase"]], `Switch any time while driving with ${k("camera")}.`);
+        + seg("camera", "Default driving camera", [["cab", "Cab"], ["chase", "Chase"]], `Switch any time while driving with ${k("camera")}.`)
+        + slider("chaseZoom", "Chase camera distance", 0.5, 2.5, 0.05, "x", `Also the mouse wheel, or ${k("camZoomIn")} / ${k("camZoomOut")}, while driving in chase view.`);
     } else if (t === "controls") {
       body = slider("sens", "Mouse sensitivity", 0.3, 2.5, 0.05, "x")
         + toggle("invertY", "Invert mouse Y")
@@ -283,12 +337,14 @@ const SCREENS = {
         + slider("vol.music", "Music", 0, 1, 0.05, "pct")
         + slider("vol.sfx", "Engine & effects", 0, 1, 0.05, "pct")
         + slider("vol.ambience", "Ambience", 0, 1, 0.05, "pct")
-        + toggle("muted", "Mute all sound", `Also on ${k("mute")} while playing.`)
+        + slider("vol.voice", "Convoy voice chat", 0, 1, 0.05, "pct")
+        + seg("voiceMode", "Your microphone", [["open", "Open mic"], ["ptt", "Push to talk"]], `Push to talk: hold ${k("talk")} while you speak.`)
+        + toggle("muted", "Mute all sound", "Silences music, engine, effects and ambience.")
         + toggle("radio", "Radio", "Plays the soundtrack while you travel.")
         + rowWrap("Soundtrack", "", m && m.tracks === 0
           ? `<span class="lh-empty">No soundtrack files installed</span>`
           : `<button type="button" class="lh-btn lh-btn-s" data-act="radionext">${icon("skip")}<span>Next track</span></button>`, "", "trk")
-        + `<div class="lh-np lh-np-inline"${nowPlaying ? "" : " hidden"}>${icon("note")}<span>${nowPlaying ? esc(npText()) : ""}</span></div>`;
+        + npLine(true);
     } else {
       body = toggle("a11y.reduceMotion", "Reduce motion", "Turns off menu and HUD animation and blinking. Your system setting is respected as well.")
         + toggle("a11y.highContrast", "High-contrast HUD", "Solid black plates, white text and stronger borders.");
@@ -317,7 +373,7 @@ const SCREENS = {
         <ul class="lh-list"><li>${k("grab")} picks up what you are looking at and puts it down again. ${k("throw")} throws it.</li>
         <li>Hold ${k("rotate")} and move the mouse to turn the item in your hands.</li>
         <li>${k("stow")} moves the held item into a pocket if it fits, or takes the selected pocket item into your hands.</li>
-        <li>${k("slot1")}–${k("slot6")} or the mouse wheel select a pocket. ${k("consume")} eats, drinks or uses the selected item.</li>
+        <li>${k("slot1")}–${k("slot6")} take that pocket's item into your hands; press the same key again to put it away, or another to swap. The mouse wheel only selects a pocket. ${k("consume")} eats, drinks or uses the selected item.</li>
         <li><b>Securing cargo:</b> aim a held item at a truck bed or boot floor. An outline shows where it will sit; put it down to secure it. Secured cargo rides with the vehicle and does not fall out. Pick it up to free it.</li></ul>`;
     } else if (t === "maint") {
       body = `<p class="lh-lead">The truck is worn. Keep an eye on the gauges and carry spares.</p>
@@ -352,6 +408,95 @@ const SCREENS = {
     });
   },
 
+  // Your career on the left, the global leaderboard on the right (stacked on narrow windows)
+  leaderboard() {
+    return panel("Career", `<div class="lh-split">
+      <section class="lh-pane" aria-label="Your career"><h3>Your career</h3>${tabsBar("career", [["stats", "Stats"], ["achievements", "Achievements"]])}<div class="lh-panebody">${careerPane()}</div></section>
+      <section class="lh-pane" aria-label="Global leaderboard"><h3>Global leaderboard</h3>${tabsBar("board", [["trip", "Longest journey"], ["total", "Total distance"], ["days", "Most days"]])}<div class="lh-panebody">${boardPane()}</div></section>
+    </div>`, { cls: "lh-wide", foot: `<div class="lh-keys" aria-hidden="true"><span><kbd>←</kbd><kbd>→</kbd> Tab</span><span><kbd>Esc</kbd> Back</span></div>` });
+  },
+
+  // Multiplayer: start one (pause menu), join one by code, or see who is in yours
+  convoy() {
+    const c = data.convoy || {};
+    let body;
+    if (c.code) {
+      const rows = (c.members || []).map((m) => `<li><b>@${esc(m.name)}${m.paused ? ` <i class="lh-paused" role="img" aria-label="paused"></i>` : ""}${m.voice ? ` <i class="lh-vc${m.speaking ? " lh-vc-talk" : ""}" role="img" aria-label="on voice"></i>` : ""}</b><span>${esc(m.where)}</span><em>${m.paused ? "paused" : m.voice ? (m.connected ? "on voice" : c.voice && c.voice.on ? "connecting voice…" : "on voice") : ""}</em></li>`).join("");
+      body = `<p class="lh-lead">Your convoy code</p><div class="lh-code" tabindex="0" data-autofocus aria-label="Convoy code ${esc(c.code.split("").join(" "))}">${esc(c.code)}</div>
+        <p class="lh-help">Friends join from the main menu → Join a Convoy, or from their pause menu if they're already on this road. Up to 6 drivers.</p>
+        <h3>Drivers</h3><ul class="lh-tracks"><li><b>@${esc(c.me)}</b><span>you</span><em></em></li>${rows}</ul>
+        ${c.status !== "joined" ? `<p class="lh-help">${icon("warn")} ${c.status === "reconnecting" ? "Connection lost. Reconnecting…" : "Connecting…"}</p>` : ""}
+        <h3>Voice chat</h3>
+        ${c.voice.on ? `<p class="lh-help">${c.voice.muted ? `${icon("warn")} Your microphone is muted.` : c.voice.mode === "ptt" ? `Push to talk: hold ${k("talk")} while you speak.` : "Open mic: everyone with voice on hears you."}</p>
+          <div class="lh-btns"><button type="button" class="lh-btn" data-act="voicemute">${c.voice.muted ? "Unmute mic" : "Mute mic"}</button>
+          <button type="button" class="lh-btn" data-act="voicemode">${c.voice.mode === "ptt" ? "Use open mic" : "Use push to talk"}</button>
+          <button type="button" class="lh-btn" data-act="voiceoff">Turn voice off</button></div>`
+        : `<p class="lh-help">Talk to the rest of the convoy. Your browser will ask to use the microphone.</p>
+          ${c.voice.error ? `<p class="lh-help lh-warnline">${icon("warn")}<span>${c.voice.error === "denied" ? "The microphone was blocked. Allow it for this site in your browser and try again." : "Voice chat doesn't work in this browser."}</span></p>` : ""}
+          <div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="voiceon">Turn voice on</button></div>`}
+        ${c.msg ? `<p class="lh-msg">${esc(c.msg)}</p>` : ""}
+        <div class="lh-btns"><button type="button" class="lh-btn lh-danger" data-act="convoyleave">Leave convoy</button></div>`;
+    } else {
+      body = `<p class="lh-lead">Drive the same road with friends. You see each other's vehicles and where everyone is.</p>
+        <ul class="lh-list"><li>Everyone keeps their own supplies, loot, strangers and damage. Only where you are is shared.</li>
+        <li>Other drivers are see-through to collisions: you can't crash into each other.</li></ul>`;
+      if (c.inJourney && !c.dev) {
+        body += `<h3>Start a convoy</h3><p class="lh-help">Get a code to share. Friends who join appear right behind you on this road.</p>
+          <div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="convoyhost" data-autofocus>Start a convoy</button></div>`;
+      } else if (c.dev) {
+        body += `<p class="lh-help">${icon("info")} Convoys aren't available on the Dev Map.</p>`;
+      }
+      if (!c.dev) {
+        body += `<h3><label for="lh-code">Join with a code</label></h3>
+          <div class="lh-seedrow"><input type="text" id="lh-code" class="lh-input" maxlength="5" autocomplete="off" spellcheck="false" placeholder="ABCDE" value="${esc(ui.code)}"${c.inJourney ? "" : " data-autofocus"}>
+          <button type="button" class="lh-btn lh-btn-s" data-act="convoyjoin"${c.busy ? " disabled" : ""}><span>${c.busy ? "Joining…" : "Join"}</span></button></div>
+          <p class="lh-help">${c.inJourney ? "You must be on the same road (world seed) as the convoy. You'll be moved right behind one of them."
+            : "Starts a new journey on the convoy's road, right behind one of its drivers."}</p>`;
+        if (!c.inJourney && (data.save || data.cloudSave)) body += `<p class="lh-help lh-warnline">${icon("warn")}<span>Joining replaces your current journey.</span></p>`;
+        if (!c.account) body += `<p class="lh-help">${icon("person")} You're not signed in (Account on the main menu), so you'll show up as a guest.</p>`;
+      }
+      if (c.msg) body += `<p class="lh-msg" role="status">${esc(c.msg)}</p>`;
+    }
+    return panel("Convoy", body, { cls: "lh-narrow", foot: `<div class="lh-keys" aria-hidden="true"><span><kbd>Enter</kbd> Confirm</span><span><kbd>Esc</kbd> Back</span></div>` });
+  },
+
+  // Which X-ORBIT account Long Haul plays as: only one signed in here. X-ORBIT's own sign-in is never used or changed.
+  account() {
+    const a = data.acct || {}, L = ui.login;
+    let body = a.user
+      ? `<p class="lh-lead">Signed in as <b>@${esc(a.user)}</b></p><p class="lh-help">Signed in to Long Haul only. Your X-ORBIT sign-in isn't used or changed.</p>`
+      : `<p class="lh-lead">Not signed in</p><p class="lh-help">Your career stays on this browser, you're not on the leaderboard, there are no cloud saves, and convoys show you as a guest.</p>`;
+    body += `<h3>${a.user ? "Use a different account" : "Sign in to X-ORBIT"}</h3>
+      <div class="lh-login">
+        <label for="lh-user">Username or email</label><input type="text" id="lh-user" class="lh-input" autocomplete="username" spellcheck="false" maxlength="120" value="${esc(L.id)}"${a.user ? "" : " data-autofocus"}>
+        <label for="lh-pass">Password</label><input type="password" id="lh-pass" class="lh-input" autocomplete="current-password" maxlength="200" value="${esc(L.pass)}">
+      </div>
+      <div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="signin"${a.busy ? " disabled" : ""}><span>${a.busy ? "Signing in…" : "Sign in"}</span></button></div>
+      ${a.msg ? `<p class="lh-msg" role="status">${esc(a.msg)}</p>` : ""}`;
+    if (a.user) body += `<h3>Sign out</h3><div class="lh-btns"><button type="button" class="lh-btn" data-act="signout" data-autofocus><span>Sign out of @${esc(a.user)}</span></button></div>`;
+    body += `<p class="lh-help">Each account keeps its own career and achievements. Your journey on this device carries on with whichever account is signed in.</p>`;
+    return panel("Account", body, { cls: "lh-narrow", foot: `<div class="lh-keys" aria-hidden="true"><span><kbd>Enter</kbd> Confirm</span><span><kbd>Esc</kbd> Back</span></div>` });
+  },
+
+  // The full map (M). The canvas is drawn by js/map.js through handlers.onMapCanvas.
+  map() {
+    const legend = (data.legend || []).filter((l) => l.kind !== "wreck").map((l) =>
+      `<li><i class="lh-mapdot" style="background:${esc(l.color)}">${esc(l.letter)}</i>${esc(l.label)}</li>`).join("");
+    let side = `<h3>Key</h3><ul class="lh-mapkey"><li><i class="lh-mapme"></i>You</li>${data.convoy ? `<li><i class="lh-mapdot lh-mapmember"></i>Convoy driver</li>` : ""}${legend}
+      <li><i class="lh-mapdot lh-mapruin">F</i>Closed down</li></ul>`;
+    if (data.digimap) {
+      side += `<h3>Digimap: next ahead</h3><ul class="lh-mapkey">${data.next.map((n) =>
+        `<li><i class="lh-mapdot lh-mapintel" style="color:${esc(n.color)}">${esc(n.letter)}</i><span>${esc(n.label)}<small>${n.name ? `${esc(n.name)} · ${esc(n.dist)}` : "none open in range"}</small></span></li>`).join("")}</ul>
+        <p class="lh-help">${icon("warn")} While you carry the Digimap, far fewer places ahead are still open.</p>`;
+    } else {
+      side += `<p class="lh-help">Only the road you've driven and places you've found are on the map. A Digimap shows what's ahead.</p>`;
+    }
+    return panel("Map", `<div class="lh-mapwrap"><canvas class="lh-mapcv" aria-label="Map of the road you've travelled"></canvas><aside class="lh-mapside">${side}</aside></div>`, {
+      cls: "lh-over lh-mapscreen", backLabel: "Close",
+      foot: `<div class="lh-keys" aria-hidden="true"><span>Drag Move</span><span>Wheel <kbd>+</kbd><kbd>−</kbd> Zoom</span><span><kbd>C</kbd> Centre</span><span><kbd>M</kbd> Close</span></div>`,
+    });
+  },
+
   whatsnew() {
     const body = CHANGELOG.map((r) => `
       <h3>v${esc(r.version)}${r.name ? ` · ${esc(r.name)}` : ""} <small>${esc(r.date)}</small></h3>
@@ -369,6 +514,12 @@ const SCREENS = {
         <h3>Long Haul</h3>
         <p>A desert road-trip survival sandbox, made for X-ORBIT.</p>
         <p>All models, textures and sound effects are generated procedurally by the game.</p>
+        <h3>People</h3>
+        <ul class="lh-tracks">
+          <li><b>1Vortexx</b><span>Creator and developer</span><em></em></li>
+          <li><b>Michael Lester</b><span>Contributor and Music Composer</span><em></em></li>
+          ${["ZeeAnimate", "$GlitzerX$"].map((n) => `<li><b>${esc(n)}</b><span>Contributor</span><em></em></li>`).join("")}
+        </ul>
         <h3>Technology</h3>
         <p><b>Three.js</b> r170 – 3D rendering library. MIT License, © 2010–2024 three.js authors.</p>
         <h3>Music</h3>${music}
@@ -502,6 +653,7 @@ function render(keep) {
   root.dataset.root = rootName;
   root.innerHTML = `<div class="lh-scrim"></div><div class="lh-stage">${SCREENS[name]()}</div>${name === "main" || name === "pause" ? npLine() : ""}`;
   if (name === "loading") updateLoading();
+  if (name === "map") call("onMapCanvas", root.querySelector(".lh-mapcv"));
   const list = focusables();
   let target = prevKey ? list.find((e) => fkey(e) === prevKey) : null;
   if (!target) target = root.querySelector("[data-autofocus]") || list.find((e) => !e.classList.contains("lh-back") && e.getAttribute("role") !== "tab") || list[0];
@@ -515,6 +667,10 @@ function updateLoading() {
   bar.style.setProperty("--v", String(p));
   root.querySelector(".lh-load").setAttribute("aria-valuenow", String(Math.round(p * 100)));
   root.querySelector(".lh-loadlabel").textContent = data.label || "Loading";
+  const tips = ["Keep fuel, oil and coolant topped up before a long drive.", "Stop beside a hitchhiker and press E to talk.", "A paid roadblock gives you safe passage.", "Bring food and water before leaving a station.", "A spare wheel and a wrench can save a long walk."];
+  const tip = root.querySelector(".lh-loading-tip");
+  if (tip) tip.textContent = data.error ? "" : "Tip · " + tips[Math.min(tips.length - 1, Math.floor((data.pct || 0) * tips.length))];
+
   root.querySelector(".lh-loadpct").textContent = data.error ? "" : `${Math.round(p * 100)}%`;
   root.querySelector(".lh-load").classList.toggle("lh-loaderr", !!data.error);
 }
@@ -528,7 +684,7 @@ function back() {
   }
   if (rootName === "dialogue") { if (dlgChoices().some((c) => c.id === "back" && !c.disabled)) choose("back"); return; }
   if (rootName === "pause") { sfx("ui_back"); call("onResume"); }
-  else if (rootName === "inventory" || rootName === "shop") { sfx("ui_back"); call("onCloseOverlay"); }
+  else if (rootName === "inventory" || rootName === "shop" || rootName === "map") { sfx("ui_back"); call("onCloseOverlay"); }
 }
 function move(dir) {
   const list = focusables();
@@ -557,13 +713,35 @@ function act(e, a) {
   switch (a) {
     case "gate": firstGesture(); break;
     case "continue": sfx("ui_click"); call("onContinue"); break;
+    case "continuecloud": sfx("ui_click"); call("onContinueCloud"); break;
     case "newjourney": case "settings": case "controls": case "credits": case "whatsnew": push(a); break;
+    case "play": push(a); break;
+    case "career": case "leaderboard": data.cloud = undefined; push("leaderboard"); call("onOpenCareer"); call("onOpenBoard", ui.tabs.board); break;
+    case "convoy": push(a); call("onOpenConvoy"); break;
+    case "account": push(a); call("onOpenAccount"); break;
+    case "signin": {
+      sfx("ui_click");
+      const L = ui.login, p = call("onSignIn", L.id, L.pass);
+      L.pass = "";                     // never kept around after an attempt
+      if (p && p.then) p.then((ok) => { if (ok) L.id = ""; });
+      break;
+    }
+    case "signout": sfx("ui_click"); call("onSignOut"); break;
+    case "convoyhost": sfx("ui_click"); call("onConvoyHost"); break;
+    case "convoyjoin": sfx("ui_click"); call("onConvoyJoin", ui.code); break;
+    case "convoyleave": sfx("ui_back"); call("onConvoyLeave"); break;
+    case "voiceon": sfx("ui_click"); call("onVoice", "on"); break;
+    case "voiceoff": sfx("ui_back"); call("onVoice", "off"); break;
+    case "voicemute": sfx("ui_click"); call("onVoice", "mute"); break;
+    case "voicemode": sfx("ui_click"); call("onVoice", "mode"); break;
+    case "download": sfx("ui_click"); window.open("https://beta.xorbit.org/longhaul/download/", "_blank", "noopener,noreferrer"); break;
     case "host": sfx("ui_click"); call("onReturnToHost"); break;
+    case "devmap": sfx("ui_click"); call("onDevMap"); break;
     case "back": back(); break;
     case "resume": sfx("ui_click"); call("onResume"); break;
     case "savemenu": sfx("ui_click"); call("onSaveAndMenu"); break;
     case "mainmenu": sfx("ui_click"); if (handlers.onMainMenu) call("onMainMenu"); else call("onSaveAndMenu"); break;
-    case "tab": { const [id, tid] = arg.split(":"); if (ui.tabs[id] !== tid) { ui.tabs[id] = tid; sfx("ui_click"); render(true); } break; }
+    case "tab": { const [id, tid] = arg.split(":"); if (ui.tabs[id] !== tid) { ui.tabs[id] = tid; sfx("ui_click"); render(true); if (id === "board") call("onOpenBoard", tid); } break; }
     case "seg": setPref(e.dataset.pref, e.dataset.val); sfx("ui_click"); render(true); break;
     case "toggle": setPref(e.dataset.pref, !getPref(e.dataset.pref)); sfx("ui_click"); render(true); break;
     case "fullscreen":
@@ -578,7 +756,7 @@ function act(e, a) {
     case "choice": choose(arg); break;
     case "diff": ui.nj.difficulty = arg; sfx("ui_click"); render(true); break;
     case "randseed": ui.nj.seed = String(Math.floor(Math.random() * 900000) + 100000); sfx("ui_click"); render(true); break;
-    case "start": if (data.save) { ui.nj.confirm = true; sfx("ui_click"); render(); } else startJourney(); break;
+    case "start": if (data.save || data.cloudSave) { ui.nj.confirm = true; sfx("ui_click"); render(); } else startJourney(); break;
     case "confirmstart": startJourney(); break;
     case "cancelconfirm": back(); break;
     case "use": call("onUseSlot", Number(arg)); break;
@@ -594,6 +772,9 @@ function onClick(ev) {
 function onInput(ev) {
   const e = ev.target;
   if (e.id === "lh-seed") { ui.nj.seed = e.value; return; }
+  if (e.id === "lh-user") { ui.login.id = e.value; return; }
+  if (e.id === "lh-pass") { ui.login.pass = e.value; return; }
+  if (e.id === "lh-code") { ui.code = e.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5); if (e.value !== ui.code) e.value = ui.code; return; }
   if (e.type !== "range" || !e.dataset.pref) return;
   const v = Number(e.value), txt = FMT[e.dataset.fmt](v);
   setPref(e.dataset.pref, v);
@@ -605,7 +786,7 @@ function onKey(ev) {
   if (!rootName || !root || root.hidden) return;
   const name = screen();
   if (name === "gate" || name === "loading" || name === "sleep") return;   // the gate is handled by the first-gesture listener
-  const t = ev.target, isText = t.tagName === "INPUT" && t.type === "text", isRange = t.tagName === "INPUT" && t.type === "range";
+  const t = ev.target, isText = t.tagName === "INPUT" && (t.type === "text" || t.type === "password"), isRange = t.tagName === "INPUT" && t.type === "range";
   const stop = () => { ev.preventDefault(); ev.stopPropagation(); };
   if (name === "dialogue") {
     if (/^[1-9]$/.test(ev.key) && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
@@ -632,7 +813,8 @@ function onKey(ev) {
       if (isText || isRange) { ev.stopPropagation(); return; }
       const dir = ev.key === "ArrowRight" ? 1 : -1;
       stop();
-      const tabs = [...root.querySelectorAll(".lh-tab")];
+      const bar = t.closest(".lh-tabs") || t.closest(".lh-pane")?.querySelector(".lh-tabs") || root.querySelector(".lh-tabs");
+      const tabs = bar ? [...bar.querySelectorAll(".lh-tab")] : [];
       const group = t.closest ? t.closest(".lh-seg, .lh-cards") : null;
       if (group) {
         const opts = [...group.querySelectorAll("button")], n = opts[opts.indexOf(t) + dir];
@@ -645,22 +827,38 @@ function onKey(ev) {
       } else move(dir);
       return;
     }
-    case "Enter": if (isText) { stop(); const b = root.querySelector('[data-act="start"]'); if (b) b.focus(); } else ev.stopPropagation(); return;
+    case "Enter":
+      if (isText && t.id === "lh-code") { stop(); act(t, "convoyjoin"); return; }
+      if (isText && t.id === "lh-user") { stop(); const pw = root.querySelector("#lh-pass"); if (pw) pw.focus(); return; }
+      if (isText && t.id === "lh-pass") { stop(); act(t, "signin"); return; }
+      if (isText) { stop(); const b = root.querySelector('[data-act="start"]'); if (b) b.focus(); } else ev.stopPropagation(); return;
     case "i": case "I": if (rootName === "inventory" && !stack.length && !isText) { stop(); if (!ev.repeat) back(); } return;
+    case "m": case "M": if (rootName === "map" && !stack.length && !isText) { stop(); if (!ev.repeat) back(); } return;
+    case "c": case "C": if (rootName === "map" && !isText) { stop(); call("onMapCentre"); } return;
+    case "+": case "=": if (rootName === "map") { stop(); call("onMapZoom", 1.25); } return;
+    case "-": case "_": if (rootName === "map") { stop(); call("onMapZoom", 0.8); } return;
     default: ev.stopPropagation();
   }
 }
 
+let gateFading = false;
 function firstGesture() {
+  if (gateFading || screen() !== "gate") return;
+  gateFading = true;
   if (!gestureDone) { gestureDone = true; call("onFirstGesture"); }
-  if (screen() === "gate") {
-    if (stack.length) { stack.pop(); sfx("ui_click"); render(); }
-    else { const s = root.querySelector(".lh-gatebtn span"); if (s) s.textContent = "Starting…"; }
-  }
+  call("onStudioStart");
+  root.classList.add("lh-splash-exit");
+  setTimeout(() => {
+    root.classList.remove("lh-splash-exit");
+    gateFading = false;
+    call("onStudioContinue");
+  }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 450);
 }
+
 function onAnyGesture(ev) {
+  if (document.getElementById("splash")) return;      // the opening handles its own keys (main.js → menus.gesture)
   if (ev.type === "keydown" && (["Shift", "Control", "Alt", "Meta", "Escape", "Tab"].includes(ev.key) || ev.metaKey || ev.ctrlKey || ev.altKey)) return;
-  if (gestureDone && screen() !== "gate") return;
+  if (screen() !== "gate") return;
   if (!root) return;
   if (screen() === "gate") { ev.preventDefault(); ev.stopPropagation(); }
   firstGesture();
@@ -702,9 +900,8 @@ export const menus = {
     stack = [];
     message = "";
     if (name === "dialogue") { dlgPicked = false; dlgReadyAt = performance.now() + 200; }
-    // Audio needs a user gesture: the first time the main menu appears without one, a start gate is shown first.
-    if (name === "main" && !gestureDone && !(navigator.userActivation && navigator.userActivation.hasBeenActive)) stack = ["gate"];
-    else if (name === "main" && !gestureDone) { gestureDone = true; call("onFirstGesture"); }
+    // The studio splash appears once per page load, including after earlier loading-screen input.
+    // The opening prompt is owned by index.html. Never insert another gate.
     document.documentElement.dataset.lhMenu = name;
     render();
   },
@@ -731,14 +928,16 @@ export const menus = {
     if (m) m.textContent = message;
   },
   setNowPlaying(np) {
-    nowPlaying = np && np.title ? { title: String(np.title), artist: np.artist ? String(np.artist) : "" } : null;
+    nowPlaying = np && np.title ? { title: String(np.title), cover: np.cover, artist: np.artist ? String(np.artist) : "" } : null;
     if (!root) return;
     for (const n of root.querySelectorAll(".lh-np")) {
       n.hidden = !nowPlaying;
-      n.querySelector("span").textContent = nowPlaying ? npText() : "";
+      n.innerHTML = npContents();
     }
   },
+  // The player has pressed a key or clicked (the opening): sound may start, and no start gate is needed
+  gesture() { firstGesture(); },
   get current() { return rootName; },   // the name passed to show(), or null
-  get screen() { return rootName ? screen() : null; },   // includes sub-screens: "settings", "controls", "credits", "whatsnew", "newjourney", "gate"
+  get screen() { return rootName ? screen() : null; },   // includes sub-screens: "settings", "controls", "credits", "whatsnew", "newjourney", "play", "leaderboard", "convoy", "account", "gate"
 };
 export default menus;
