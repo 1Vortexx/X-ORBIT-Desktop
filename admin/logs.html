@@ -384,6 +384,23 @@ body {
 .failed-badge  { color: #f87171; border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.05); }
 .success-badge i, .failed-badge i { font-size: 0.6rem; }
 
+/* sign-in source: Jitter vs the X-ORBIT desktop */
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid;
+    white-space: nowrap;
+}
+.source-badge.jitter { color: #7dd3fc; border-color: rgba(125,211,252,0.3); background: rgba(125,211,252,0.05); }
+.source-badge.xorbit { color: var(--text-faint); border-color: rgba(255,255,255,0.12); background: transparent; }
+.source-badge i { font-size: 0.6rem; }
+
 .uuid-badge {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.7rem;
@@ -505,6 +522,14 @@ body {
                 <option value="all">All</option>
                 <option value="true">Success</option>
                 <option value="false">Failed</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <label>Source</label>
+            <select id="sourceFilter" onchange="applyFilters()">
+                <option value="all">All</option>
+                <option value="jitter">Jitter</option>
+                <option value="xorbit">X-ORBIT</option>
             </select>
         </div>
     </div>
@@ -682,6 +707,7 @@ function displayLogs(logs) {
                 <tr>
                     <th>Timestamp</th>
                     <th>Status</th>
+                    <th>Source</th>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Client</th>
@@ -700,6 +726,7 @@ function displayLogs(logs) {
                                 ${log.success ? 'Success' : 'Failed'}
                             </span>
                         </td>
+                        <td>${sourceBadge(log)}</td>
                         <td class="col-user">${log.attempted_username || '—'}</td>
                         <td class="col-email">${log.attempted_email || '—'}</td>
                         <td>${log.client_name || '—'}</td>
@@ -723,6 +750,7 @@ function switchLogTab(tab) {
 function applyFilters() {
     const searchTerm = document.getElementById('searchFilter').value.toLowerCase();
     const successFilter = document.getElementById('successFilter').value;
+    const sourceFilter = document.getElementById('sourceFilter').value;
 
     let filtered = allLogs;
 
@@ -741,8 +769,18 @@ function applyFilters() {
         filtered = filtered.filter(log => log.success === filterValue);
     }
 
+    if (sourceFilter !== 'all') {
+        filtered = filtered.filter(log => !!log.is_jitter === (sourceFilter === 'jitter'));
+    }
+
     displayLogs(filtered);
     updateLogCount(filtered.length);
+}
+
+function sourceBadge(log) {
+    return log.is_jitter
+        ? '<span class="source-badge jitter"><i class="fas fa-comment-dots"></i> Jitter</span>'
+        : '<span class="source-badge xorbit"><i class="fas fa-desktop"></i> X-ORBIT</span>';
 }
 
 function refreshLogs() {
