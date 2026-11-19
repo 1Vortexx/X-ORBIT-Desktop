@@ -4,24 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X-ORBIT Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg:           #000;
-            --surface:      #070707;
-            --surface-2:    #050505;
-            --border:       #1a1a1a;
-            --border-hi:    #2a2a2a;
-            --text:         #fff;
-            --text-dim:     #ccc;
-            --text-muted:   #888;
-            --text-faint:   #555;
-            --text-ghost:   #444;
-            --text-dead:    #333;
+            /* Orbit Control, dark: charcoal workspace, near-black chrome, lime + lavender accents */
+            color-scheme: dark;
+            --bg:           #1b181a;
+            --surface:      #242022;
+            --surface-2:    #2c2729;
+            --border:       #342f31;
+            --border-hi:    #433d40;
+            --text:         #f1ede7;
+            --text-dim:     #d2ccc5;
+            --text-muted:   #a39b97;
+            --text-faint:   #857e7b;
+            --text-ghost:   #6c6563;
+            --text-dead:    #514b4a;
+            --hover:        rgba(255,255,255,0.035);
+            --bubble-in:    #322d2f;
+
+            --chrome:       #121012;
+            --chrome-2:     #262124;
+            --chrome-line:  #2f2a2c;
+            --chrome-text:  #ece8e2;
+            --chrome-muted: #9c9496;
+
+            --lime:         #d8f06c;
+            --lime-strong:  #c2e04a;
+            --lime-soft:    rgba(216,240,108,0.11);
+            --lime-text:    #d8f06c;
+            --lime-ink:     #3e4f0a;
+            --on-accent:    #1f1b1c;
+            --lav:          #b9a6f0;
+            --lav-strong:   #a28af0;
+            --lav-soft:     rgba(185,166,240,0.16);
+            --lav-ink:      #cdbdff;
+            --amber:        #f2c35b;
+            --amber-soft:   rgba(242,195,91,0.15);
+            --amber-ink:    #f2c35b;
+            --amber-line:   rgba(242,195,91,0.35);
+            --red:          #ef6b66;
+            --red-soft:     rgba(239,107,102,0.14);
+            --red-line:     rgba(239,107,102,0.4);
+            --green:        #6cc066;
+            --green-soft:   rgba(108,192,102,0.15);
+            --green-ink:    #95d68f;
+            --green-line:   rgba(108,192,102,0.4);
+
+            --radius:       14px;
+            --radius-sm:    9px;
+            --shadow:       0 1px 0 rgba(0,0,0,0.25), 0 10px 28px -18px rgba(0,0,0,0.7);
+            --heading:      'Outfit', 'Inter', sans-serif;
         }
 
         body {
@@ -693,6 +730,34 @@
             margin-top: 4px;
             opacity: 0.6;
         }
+
+        /* Locked ticket banner: the user can't reply until they reopen it */
+        .ticket-lock-banner {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 0.72rem;
+            color: var(--text-faint);
+            flex-shrink: 0;
+        }
+        .ticket-lock-banner.show { display: flex; }
+        .ticket-lock-banner i { font-size: 15px; color: var(--text-ghost); }
+        .ticket-lock-banner strong {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+            margin-right: 6px;
+        }
+        .ticket-lock-reason { color: var(--text-dim); }
+
+        /* Read receipts on staff messages */
+        .msg-receipt { margin-left: 6px; }
+        .msg-receipt.seen { color: var(--text-muted); }
 
         /* ─── INPUT AREA ────────────────────────────────── */
         .message-input-area {
@@ -1542,6 +1607,543 @@
             border: 1px solid var(--border-hi);
             color: var(--text-ghost);
         }
+
+        /* ════════════════════════════════════════════════
+           ORBIT CONTROL — layout + component layer
+           (loaded last so it wins over the older rules above)
+        ════════════════════════════════════════════════ */
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+        button, input, select, textarea { font-family: inherit; }
+
+        #dashboard { display: none; flex-direction: column; height: 100vh; background: var(--bg); }
+
+        /* ─── Top bar ─── */
+        .ops-topbar {
+            display: flex; align-items: center; gap: 22px;
+            height: 64px; padding: 0 22px 0 26px;
+            background: var(--chrome); color: var(--chrome-text);
+            flex-shrink: 0; position: relative; z-index: 20;
+        }
+        .ops-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .ops-brand svg { width: 34px; height: 34px; }
+        .ops-logo { font-family: var(--heading); font-weight: 800; font-size: 1.45rem; letter-spacing: -0.5px; color: #fff; }
+        .ops-divider { width: 1px; height: 22px; background: var(--chrome-line); flex-shrink: 0; }
+        .ops-product { font-size: 0.86rem; letter-spacing: 1.6px; color: var(--chrome-muted); white-space: nowrap; }
+        .ops-crumbs { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: var(--chrome-muted); white-space: nowrap; margin-left: 30px; }
+        .ops-crumbs b { color: #fff; font-weight: 600; }
+        .ops-tabs { display: flex; align-items: stretch; height: 100%; gap: 6px; margin-left: 18px; }
+        .ops-tab {
+            position: relative; background: none; border: none; cursor: pointer;
+            padding: 0 22px; color: var(--chrome-text); font-size: 0.95rem; font-weight: 500;
+        }
+        .ops-tab:hover { color: #fff; }
+        .ops-tab.active { color: #fff; font-weight: 700; }
+        .ops-tab.active::after {
+            content: ''; position: absolute; left: 14px; right: 14px; bottom: 6px;
+            height: 3px; border-radius: 3px; background: var(--lime);
+        }
+        .ops-spacer { flex: 1; }
+        .ops-duty {
+            display: flex; align-items: center; gap: 9px; background: none; border: none;
+            color: var(--chrome-text); font-size: 0.92rem; cursor: pointer; white-space: nowrap;
+        }
+        .ops-duty .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--lime-strong); box-shadow: 0 0 0 3px rgba(216,240,108,0.18); }
+        .ops-duty.away .dot { background: var(--amber); box-shadow: 0 0 0 3px rgba(242,195,91,0.18); }
+        .ops-duty i { font-size: 0.7rem; color: var(--chrome-muted); }
+        .ops-user { position: relative; display: flex; align-items: center; gap: 12px; cursor: pointer; background: none; border: none; color: inherit; text-align: left; }
+        .ops-user-name { font-weight: 600; font-size: 0.92rem; color: #fff; white-space: nowrap; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+        .ops-user-role { font-size: 0.78rem; color: var(--chrome-muted); }
+        .ops-user > i { color: var(--chrome-muted); font-size: 0.7rem; margin-left: 8px; }
+
+        .ops-avatar {
+            width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--lav-soft); color: var(--lav-ink);
+            font-family: var(--heading); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.3px;
+            position: relative;
+        }
+        .ops-avatar.sm { width: 32px; height: 32px; font-size: 0.72rem; }
+        .ops-avatar.lg { width: 48px; height: 48px; font-size: 1rem; }
+        .ops-avatar.me { background: var(--lime); color: var(--lime-ink); }
+        .ops-avatar .presence {
+            position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border-radius: 50%;
+            background: var(--lime-strong); border: 2px solid var(--chrome);
+        }
+
+        .ops-menu {
+            display: none; position: absolute; top: calc(100% + 10px); right: 0; z-index: 60;
+            min-width: 200px; padding: 6px; background: var(--surface); color: var(--text);
+            border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 18px 40px -12px rgba(0,0,0,0.65);
+        }
+        .ops-menu.open { display: block; }
+        .ops-menu.up { top: auto; bottom: calc(100% + 10px); }
+        .ops-menu button {
+            display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px;
+            background: none; border: none; border-radius: 8px; cursor: pointer;
+            color: var(--text-dim); font-size: 0.86rem; text-align: left;
+        }
+        .ops-menu button:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+        .ops-menu button:disabled { opacity: 0.45; cursor: not-allowed; }
+        .ops-menu button i { width: 16px; text-align: center; color: var(--text-faint); }
+        .ops-menu .menu-label { padding: 8px 12px 4px; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-ghost); }
+        .ops-menu .menu-sep { height: 1px; background: var(--border); margin: 6px 4px; }
+        .ops-menu .danger, .ops-menu .danger i { color: var(--red); }
+
+        /* ─── Body: sidebar + main ─── */
+        .ops-body { flex: 1; display: flex; min-height: 0; }
+        .ops-sidebar {
+            width: 258px; flex-shrink: 0; display: flex; flex-direction: column;
+            background: var(--chrome); color: var(--chrome-text); padding: 30px 12px 18px;
+        }
+        .ops-side-heading { font-size: 0.78rem; font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase; color: var(--chrome-text); padding: 0 16px 14px; }
+        .ops-side-item {
+            display: flex; align-items: center; gap: 16px; width: 100%;
+            padding: 13px 16px; margin-bottom: 4px; border-radius: 10px;
+            background: none; border: none; cursor: pointer; text-align: left;
+            color: var(--chrome-text); font-size: 0.95rem; position: relative;
+        }
+        .ops-side-item i { width: 20px; text-align: center; font-size: 1rem; color: var(--chrome-text); opacity: 0.9; }
+        .ops-side-item:hover { background: rgba(255,255,255,0.04); }
+        .ops-side-item.active { background: var(--chrome-2); color: #fff; font-weight: 700; }
+        .ops-side-item.active::before { content: ''; position: absolute; left: -2px; top: 8px; bottom: 8px; width: 4px; border-radius: 4px; background: var(--lime); }
+        .ops-side-badge {
+            margin-left: auto; min-width: 34px; padding: 3px 9px; border-radius: 20px;
+            background: var(--lime); color: var(--lime-ink); font-weight: 700; font-size: 0.8rem; text-align: center;
+        }
+        .ops-side-spacer { flex: 1; }
+        .ops-side-more { margin-left: auto; background: none; border: none; color: var(--chrome-muted); font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+        .ops-side-more:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+        .ops-main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+
+        /* ─── Inbox view ─── */
+        .ops-view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 18px; padding: 26px 18px 22px 24px; overflow: hidden; }
+        .ops-pagehead { display: flex; align-items: center; gap: 30px; flex-shrink: 0; }
+        .ops-pagehead h1 { font-family: var(--heading); font-weight: 700; font-size: 2.35rem; letter-spacing: -0.6px; line-height: 1; color: var(--text); }
+        .ops-vsep { width: 1px; height: 32px; background: var(--border-hi); }
+        .ops-date { font-size: 0.86rem; font-weight: 600; letter-spacing: 2.2px; text-transform: uppercase; color: var(--text-dim); }
+        .ops-primary {
+            display: inline-flex; align-items: center; gap: 10px; padding: 13px 24px; border-radius: 10px;
+            background: var(--lime); color: var(--on-accent); border: none; cursor: pointer;
+            font-family: var(--heading); font-weight: 600; font-size: 1.02rem;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .ops-primary:hover { background: #cfe95a; }
+        .ops-primary:active { transform: translateY(1px); }
+        .ops-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .ops-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+        .ops-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; flex-shrink: 0; }
+        .ops-stat {
+            display: flex; align-items: center; gap: 18px; padding: 16px 20px 16px 18px; cursor: pointer;
+            text-align: left; font: inherit; color: inherit; transition: border-color 0.15s, transform 0.1s;
+        }
+        .ops-stat:hover { border-color: var(--border-hi); }
+        .ops-stat:active { transform: translateY(1px); }
+        .ops-stat-bar { width: 4px; align-self: stretch; border-radius: 4px; background: var(--lime-strong); }
+        .ops-stat.lav .ops-stat-bar { background: var(--lav-strong); }
+        .ops-stat-label { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 4px; white-space: nowrap; }
+        .ops-stat-num { font-family: var(--heading); font-weight: 700; font-size: 2rem; line-height: 1; color: var(--text); }
+        .ops-spark { flex: 1; height: 38px; min-width: 60px; margin-left: auto; overflow: visible; }
+
+        .ops-split { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(360px, 1fr); gap: 14px; }
+        body.queue-focus .ops-stats, body.queue-focus .ops-pulse { display: none; }
+
+        /* Queue */
+        .ops-queue { display: flex; flex-direction: column; min-height: 0; padding: 16px 14px 0; overflow: hidden; }
+        .queue-head { display: flex; align-items: center; gap: 10px; padding: 0 2px 14px; flex-wrap: nowrap; }
+        .queue-head h2 { font-family: var(--heading); font-weight: 700; font-size: 1.55rem; letter-spacing: -0.3px; margin-right: auto; white-space: nowrap; }
+        .ops-search {
+            display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px;
+            border: 1px solid var(--border-hi); border-radius: 8px; background: var(--surface);
+            width: 265px; min-width: 120px; flex-shrink: 1;
+        }
+        .ops-search:focus-within { border-color: var(--text-faint); }
+        .ops-search i { font-size: 0.85rem; color: var(--text-dim); }
+        .ops-search input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-size: 0.84rem; color: var(--text); }
+        .ops-search input::placeholder { color: var(--text-faint); }
+        .ops-select {
+            height: 40px; padding: 0 30px 0 13px; border: 1px solid var(--border-hi); border-radius: 8px;
+            background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23d2ccc5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 11px center;
+            -webkit-appearance: none; appearance: none; cursor: pointer;
+            font-size: 0.84rem; color: var(--text-dim); outline: none; flex-shrink: 0;
+        }
+        .ops-select:hover, .ops-select:focus { border-color: var(--text-faint); }
+        .ops-icon-btn {
+            width: 40px; height: 40px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border-hi); border-radius: 8px; background: var(--surface); color: var(--text-dim); cursor: pointer;
+        }
+        .ops-icon-btn:hover { border-color: var(--text-faint); color: var(--text); }
+
+        .queue-bulk {
+            display: none; align-items: center; gap: 10px; margin: 0 2px 12px; padding: 8px 10px 8px 14px;
+            border-radius: 10px; background: var(--lime-soft); font-size: 0.86rem; color: var(--lime-text);
+        }
+        .queue-bulk.show { display: flex; }
+        .queue-bulk b { color: var(--text); }
+        .queue-bulk .ops-select { height: 34px; margin-left: auto; }
+        .bulk-btn { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border-hi); background: var(--surface); cursor: pointer; font-size: 0.84rem; color: var(--text-dim); }
+        .bulk-btn.primary { background: var(--lime); color: var(--on-accent); border-color: var(--lime); }
+        .bulk-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .queue-table-wrap { flex: 1; min-height: 0; overflow: auto; margin: 0 -14px; padding: 0 14px; }
+        .queue-table { width: 100%; border-collapse: collapse; }
+        .queue-table thead th {
+            position: sticky; top: 0; z-index: 2; background: var(--surface);
+            padding: 14px 10px; text-align: left; font-size: 0.74rem; font-weight: 600;
+            letter-spacing: 1.8px; text-transform: uppercase; color: var(--text-dim);
+            border-bottom: 1px solid var(--border); white-space: nowrap;
+        }
+        .queue-table thead th.sortable { cursor: pointer; user-select: none; }
+        .queue-table thead th.sortable:hover { color: var(--text); }
+        .queue-table th.num, .queue-table td.num { text-align: right; padding-right: 14px; }
+        .queue-table td { padding: 15px 10px; border-bottom: 1px solid var(--border); font-size: 0.94rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
+        .queue-table tbody tr { cursor: pointer; transition: background 0.12s; }
+        .queue-table tbody tr:hover td { background: var(--hover); }
+        .queue-table tbody tr.active td { background: var(--lime-soft); }
+        .queue-table tbody tr.active td:first-child { border-top-left-radius: 0; }
+        .queue-table td.chk, .queue-table th.chk { width: 34px; padding-left: 2px; padding-right: 0; }
+        .queue-table input[type=checkbox] {
+            width: 17px; height: 17px; cursor: pointer; accent-color: var(--lime-strong);
+        }
+        .q-ticket { display: flex; align-items: center; gap: 14px; }
+        .q-bar { width: 3px; height: 26px; border-radius: 3px; background: var(--border-hi); flex-shrink: 0; }
+        .q-bar.st-open { background: var(--lime-strong); }
+        .q-bar.st-in_progress { background: var(--lav-strong); }
+        .q-bar.st-waiting_response { background: var(--amber); }
+        .q-bar.st-resolved { background: var(--green); }
+        .q-num { font-weight: 700; color: var(--text); letter-spacing: 0.2px; }
+        .q-elapsed { font-weight: 700; color: var(--text); }
+        .q-sub { color: var(--text-dim); }
+        .q-pri { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
+        .q-pri.high { background: var(--amber); }
+        .q-pri.urgent { background: var(--red); }
+        .queue-empty { padding: 50px 20px; text-align: center; color: var(--text-faint); font-size: 0.9rem; }
+        .queue-empty i { display: block; font-size: 1.6rem; color: var(--text-dead); margin-bottom: 10px; }
+
+        /* Detail pane */
+        .ops-detail { display: flex; flex-direction: column; min-height: 0; overflow: hidden; padding: 18px 18px 16px 20px; position: relative; }
+        .ops-detail .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+        .ops-detail .empty-state i { font-size: 2rem; color: var(--text-dead); }
+        .ops-detail .empty-state p { font-size: 0.92rem; letter-spacing: 0; text-transform: none; color: var(--text-faint); }
+        #chatContent { flex: 1; min-height: 0; flex-direction: column; }
+
+        .detail-head { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; flex-shrink: 0; }
+        .detail-tid { font-family: var(--heading); font-weight: 700; font-size: 1.55rem; letter-spacing: -0.2px; color: var(--text); white-space: nowrap; }
+        .detail-vsep { width: 1px; height: 24px; background: var(--border-hi); }
+        .detail-pri-label { font-size: 0.86rem; color: var(--text-dim); white-space: nowrap; }
+        .pill-select {
+            -webkit-appearance: none; appearance: none; border: none; cursor: pointer; outline: none;
+            padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.6px;
+            background: var(--surface-2); color: var(--text-dim);
+        }
+        .pill-select.status { text-transform: uppercase; }
+        .pill-select.st-open { background: var(--lime); color: var(--lime-ink); }
+        .pill-select.st-in_progress { background: var(--lav-soft); color: var(--lav-ink); }
+        .pill-select.st-waiting_response { background: var(--amber-soft); color: var(--amber-ink); }
+        .pill-select.st-resolved { background: var(--green-soft); color: var(--green-ink); }
+        .pill-select.st-closed, .pill-select.st-inactive { background: var(--surface-2); color: var(--text-muted); }
+        .pill-select.priority { background: var(--lav-soft); color: var(--lav-ink); font-weight: 600; letter-spacing: 0; }
+        .pill-select.priority.pr-high { background: var(--amber-soft); color: var(--amber-ink); }
+        .pill-select.priority.pr-urgent { background: var(--red-soft); color: var(--red); }
+        .pill-select option { background: var(--surface); color: var(--text); font-weight: 500; }
+        .detail-more-wrap { position: relative; margin-left: auto; }
+        .detail-more { background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 1.2rem; letter-spacing: 1px; color: var(--text-dim); }
+        .detail-more:hover { background: var(--surface-2); color: var(--text); }
+
+        .detail-requester {
+            display: flex; align-items: center; gap: 18px; padding: 14px 0; flex-shrink: 0;
+            border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+        }
+        .req-col { min-width: 0; }
+        .req-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
+        .req-name { font-weight: 700; font-size: 1rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .req-account { margin-left: auto; padding-left: 20px; border-left: 1px solid var(--border); display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .req-email { font-size: 0.92rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .req-link { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.95rem; padding: 4px; border-radius: 6px; flex-shrink: 0; }
+        .req-link:hover { color: var(--text); background: var(--surface-2); }
+
+        .detail-subject { padding: 14px 0 6px; flex-shrink: 0; }
+        .detail-subject h3 { font-family: var(--heading); font-weight: 700; font-size: 1.4rem; letter-spacing: -0.2px; color: var(--text); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .detail-meta { display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 0.9rem; color: var(--text-dim); flex-wrap: wrap; }
+        .detail-meta .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-faint); }
+
+        .ops-detail .ticket-lock-banner {
+            margin: 8px 0 0; padding: 10px 14px; border-radius: 10px; border: none;
+            background: var(--surface-2); color: var(--text-dim); font-size: 0.84rem;
+        }
+        .ops-detail .ticket-lock-banner i { color: var(--text-muted); }
+        .ops-detail .ticket-lock-banner strong { font-family: var(--heading); font-size: 0.8rem; letter-spacing: 0.6px; color: var(--text); }
+
+        .ops-detail .messages-container { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 4px 12px; }
+        .ops-detail .messages-container::-webkit-scrollbar { width: 6px; }
+        .ops-detail .messages-container::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 6px; }
+        .ops-detail .message { display: flex; align-items: flex-start; gap: 12px; max-width: 88%; margin: 0 0 16px; text-align: left; }
+        .ops-detail .message.user { margin-left: 0; margin-right: auto; }
+        .ops-detail .message.staff { margin-left: auto; flex-direction: row-reverse; }
+        .ops-detail .msg-body { min-width: 0; display: flex; flex-direction: column; }
+        .ops-detail .message.staff .msg-body { align-items: flex-end; }
+        .ops-detail .msg-sender { display: none; }
+        .ops-detail .msg-bubble {
+            display: inline-block; padding: 9px 14px; border-radius: 8px; font-size: 0.95rem; line-height: 1.5;
+            white-space: pre-wrap; word-break: break-word;
+        }
+        .ops-detail .message.user .msg-bubble { background: var(--bubble-in); color: var(--text); border: none; }
+        .ops-detail .message.staff .msg-bubble { background: var(--lav-soft); color: var(--text); }
+        .ops-detail .msg-time { font-size: 0.76rem; color: var(--text-muted); opacity: 1; margin: 6px 4px 0; }
+        .ops-detail .msg-receipt { margin-left: 8px; color: var(--text-faint); }
+        .ops-detail .msg-receipt.seen { color: var(--lav-ink); }
+        .ops-detail .message.system { max-width: 100%; justify-content: center; margin: 6px 0 16px; }
+        .ops-detail .message.system .msg-bubble {
+            background: transparent; border: 1px dashed var(--border-hi); color: var(--text-muted);
+            font-size: 0.8rem; font-style: normal; padding: 6px 12px; border-radius: 20px; text-align: center; max-width: 92%;
+        }
+        .ops-detail .message .form-card { border-radius: 10px; background: var(--surface-2); border-color: var(--border); color: var(--text-dim); }
+        .ops-detail .message .form-card-btn:hover { border-color: var(--text); color: var(--text); }
+        .form-card-approved { border-color: var(--green-line) !important; color: var(--green-ink) !important; }
+        .form-card-denied { border-color: var(--red-line) !important; color: var(--red) !important; }
+
+        .ops-composer { flex-shrink: 0; border: 1px solid var(--border-hi); border-radius: 10px; background: var(--surface); margin-top: 4px; }
+        .ops-composer:focus-within { border-color: var(--text-faint); }
+        .ops-composer textarea {
+            display: block; width: 100%; min-height: 66px; max-height: 180px; resize: vertical;
+            padding: 14px 16px 6px; border: none; outline: none; background: transparent;
+            font-size: 0.92rem; color: var(--text); line-height: 1.5;
+        }
+        .ops-composer textarea::placeholder { color: var(--text-faint); }
+        .composer-bar { display: flex; align-items: center; gap: 6px; padding: 6px 8px 8px 8px; border-top: 1px solid var(--border); }
+        .composer-tool { position: relative; }
+        .composer-tool > button {
+            display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border-radius: 8px;
+            background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1rem;
+        }
+        .composer-tool > button:hover { background: var(--surface-2); color: var(--text); }
+        .composer-tool > button .fa-chevron-down { font-size: 0.62rem; }
+        .composer-tool .ops-menu { top: auto; bottom: calc(100% + 8px); left: 0; right: auto; width: 320px; }
+        .composer-tool .ops-menu button { white-space: normal; line-height: 1.35; align-items: flex-start; }
+        .composer-tool .ops-menu button b { display: block; color: var(--text); font-weight: 600; font-size: 0.84rem; }
+        .composer-tool .ops-menu button span { color: var(--text-muted); font-size: 0.78rem; }
+        .composer-as { margin-left: auto; font-size: 0.84rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
+        .ops-detail .send-btn {
+            display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 18px; border-radius: 8px;
+            background: var(--lime); color: var(--on-accent); border: none; cursor: pointer;
+            font-family: var(--heading); font-size: 1rem; font-weight: 600; letter-spacing: 0; text-transform: none; flex-shrink: 0;
+        }
+        .ops-detail .send-btn:hover:not(:disabled) { background: #cfe95a; }
+        .ops-detail .send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* System pulse */
+        .ops-pulse { display: flex; align-items: center; gap: 30px; padding: 20px 46px 20px 24px; flex-shrink: 0; }
+        .ops-pulse h2 { font-family: var(--heading); font-weight: 700; font-size: 1.55rem; letter-spacing: -0.3px; white-space: nowrap; }
+        .pulse-label { font-size: 0.95rem; color: var(--text-dim); white-space: nowrap; }
+        .pulse-bars { flex: 1; display: flex; align-items: flex-end; gap: 5px; height: 40px; min-width: 120px; }
+        .pulse-bar { flex: 1; max-width: 13px; min-height: 4px; display: flex; flex-direction: column-reverse; border-radius: 2px; overflow: hidden; cursor: default; }
+        .pulse-bar .ok { background: var(--lav); }
+        .pulse-bar .fail { background: var(--lime-strong); }
+        .pulse-bar.now .ok { background: var(--lime); }
+        .pulse-bar:hover { filter: brightness(0.92); }
+        .pulse-legend { display: flex; flex-direction: column; gap: 6px; padding-left: 40px; border-left: 1px solid var(--border-hi); }
+        .pulse-legend div { display: flex; align-items: center; gap: 12px; font-size: 0.98rem; color: var(--text-dim); white-space: nowrap; }
+        .pulse-legend b { font-weight: 700; color: var(--text); min-width: 54px; }
+        .pulse-legend .dot { width: 11px; height: 11px; border-radius: 50%; }
+
+        /* ─── Logs + Accounts views ─── */
+        #logsContent { display: none; flex: 1; min-height: 0; padding: 22px 18px 22px 24px; }
+        #logsContent iframe { border-radius: var(--radius); border: 1px solid var(--border) !important; background: var(--surface) !important; box-shadow: var(--shadow); }
+        #adminsContent { display: none; flex: 1; min-height: 0; flex-direction: column; padding: 22px 18px 22px 24px; }
+        .admins-layout {
+            display: flex !important; flex-direction: column; flex: 1; min-height: 0;
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+        }
+        .admin-sidebar {
+            display: flex; align-items: center; gap: 4px; padding: 10px 14px; overflow-x: auto; overflow-y: hidden;
+            background: var(--surface); border-right: none; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .admin-sidebar .admin-sidebar-heading { display: none; }
+        .admin-sidebar-item {
+            flex-shrink: 0; padding: 8px 14px; border-radius: 8px; border-left: none; font-size: 0.88rem; color: var(--text-dim); white-space: nowrap;
+        }
+        .admin-sidebar-item:hover { background: var(--surface-2); color: var(--text); }
+        .admin-sidebar-item.active { background: var(--lime-soft); color: var(--text); font-weight: 600; border-left: none; }
+        .admin-sidebar-badge { border-radius: 20px; padding: 1px 8px; font-family: inherit; background: var(--surface-2); color: var(--text-muted); }
+        .admin-sidebar-item.active .admin-sidebar-badge { background: var(--lime); color: var(--lime-ink); }
+        .admin-sidebar-badge.online-badge { background: var(--green-soft); color: var(--green-ink); border: none; }
+        .admin-page-area { flex: 1; background: var(--surface); }
+        .admin-page { padding: 26px 30px; }
+        .admin-page-title { font-family: var(--heading); font-weight: 700; font-size: 1.45rem; letter-spacing: -0.2px; }
+        .admin-page-desc { font-size: 0.88rem; color: var(--text-muted); }
+        .admin-sidebar-heading { color: var(--text-muted); font-weight: 700; padding-left: 0; }
+        .admin-list-item, .client-item, .tag-mgmt-card { border-radius: 10px; margin-bottom: 8px; background: var(--surface); }
+        .admin-list-item:hover, .client-item:hover, .tag-mgmt-card:hover { background: var(--hover); }
+        .clients-list { gap: 0; }
+        .detail-section-title, .modal-title, .tag-mgmt-btn, .admin-create-btn, .client-ticket-count { font-family: var(--heading); letter-spacing: 0.4px; }
+        .detail-action-btn, .tag-mgmt-btn, .edit-btn, .option-btn { border-radius: 8px; }
+        .detail-action-btn.success { color: var(--green-ink); border-color: var(--green-line); }
+        .detail-action-btn.danger, .tag-mgmt-btn.danger { color: var(--red); border-color: var(--red-line); }
+        .detail-action-btn:hover, .tag-mgmt-btn:hover, .edit-btn:hover, .option-btn:hover, .form-card-btn:hover { color: var(--text); border-color: var(--text-faint); background: var(--surface-2); }
+        .tag-chip { border-radius: 20px; background: var(--surface); }
+        .tag-chip.selected { background: var(--lime-soft); border-color: var(--lime-strong); color: var(--text); }
+        .tag-add-row input, .admin-form-group input, .admin-form-group select, .admin-form-group textarea, .form-group input {
+            border-radius: 8px; background: var(--surface) !important; color: var(--text) !important; font-family: 'Inter', sans-serif;
+        }
+        .tag-add-row input::placeholder, .admin-form-group input::placeholder, .form-group input::placeholder { color: var(--text-ghost); }
+        .action-select { border-radius: 8px; background: var(--surface); font-family: 'Inter', sans-serif; }
+        .role-premium { color: var(--amber-ink); border-color: var(--amber-line); background: var(--amber-soft); }
+        .banned-badge, .create-msg.error, .error-message { color: var(--red); border-color: var(--red-line); background: var(--red-soft); }
+        .create-msg.success { color: var(--green-ink); border-color: var(--green-line); background: var(--green-soft); }
+        .create-msg { border-radius: 8px; }
+
+        .admin-create-btn { border-radius: 10px; background: var(--lime); border-color: var(--lime); color: var(--on-accent); }
+        .admin-create-btn:hover:not(:disabled) { background: #cfe95a; color: var(--on-accent); }
+        .deny-btn { background: var(--red) !important; border-color: var(--red) !important; }
+        .deny-btn:hover { background: #d4524d !important; }
+
+        .modal-overlay { background: rgba(0,0,0,0.55); backdrop-filter: blur(3px); }
+        .modal-box { border-radius: 16px; border-color: var(--border); box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7); background: var(--surface); }
+        .modal-title { font-size: 1.05rem; text-transform: none; letter-spacing: 0; }
+
+        .ops-field { margin-bottom: 14px; }
+        .ops-field label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); }
+        .ops-field input, .ops-field select, .ops-field textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-hi); border-radius: 8px;
+            background: var(--surface); color: var(--text); font-size: 0.9rem; outline: none;
+        }
+        .ops-field textarea { resize: vertical; min-height: 96px; }
+        .ops-field input:focus, .ops-field select:focus, .ops-field textarea:focus { border-color: var(--text-faint); }
+        .ops-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* ─── Overview: a little smaller, more air, and the page scrolls ─── */
+        #inboxView {
+            overflow-y: auto; overflow-x: hidden;
+            gap: 26px; padding: 32px 32px 40px 36px;
+            scrollbar-gutter: stable;
+        }
+        #inboxView > * { flex-shrink: 0; }
+        #inboxView::-webkit-scrollbar { width: 8px; }
+        #inboxView::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 8px; }
+
+        #inboxView .ops-pagehead { gap: 22px; }
+        #inboxView .ops-pagehead h1 { font-size: 1.85rem; letter-spacing: -0.4px; }
+        #inboxView .ops-vsep { height: 26px; }
+        #inboxView .ops-date { font-size: 0.76rem; letter-spacing: 2px; }
+        #inboxView .ops-primary { padding: 10px 18px; font-size: 0.92rem; gap: 8px; }
+
+        #inboxView .ops-stats { gap: 20px; }
+        #inboxView .ops-stat { padding: 18px 20px; gap: 16px; }
+        #inboxView .ops-stat-label { font-size: 0.84rem; margin-bottom: 6px; }
+        #inboxView .ops-stat-num { font-size: 1.65rem; }
+        #inboxView .ops-spark { height: 32px; }
+
+        /* Fixed-height panes; each scrolls inside itself while the page scrolls around them */
+        #inboxView .ops-split { flex: none; height: clamp(520px, calc(100vh - 230px), 760px); gap: 20px; }
+        body.queue-focus #inboxView .ops-split { height: max(520px, calc(100vh - 190px)); max-height: none; }
+
+        #inboxView .ops-queue { padding: 20px 18px 0; }
+        #inboxView .queue-head { gap: 8px; padding-bottom: 16px; }
+        #inboxView .queue-head h2 { font-size: 1.25rem; }
+        #inboxView .ops-search { height: 36px; width: 240px; }
+        #inboxView .ops-search input { font-size: 0.8rem; }
+        #inboxView .ops-select { height: 36px; font-size: 0.8rem; padding-left: 12px; }
+        #inboxView .ops-icon-btn { width: 36px; height: 36px; }
+        #inboxView .queue-table-wrap { margin: 0 -18px; padding: 0 18px; }
+        #inboxView .queue-table thead th { padding: 12px 10px; font-size: 0.68rem; letter-spacing: 1.5px; }
+        #inboxView .queue-table td { padding: 14px 10px; font-size: 0.86rem; }
+        #inboxView .q-ticket { gap: 12px; }
+        #inboxView .q-bar { height: 22px; }
+        #inboxView .ops-avatar.sm { width: 28px; height: 28px; font-size: 0.66rem; }
+
+        #inboxView .ops-detail { padding: 20px 22px 18px 24px; }
+        #inboxView .detail-head { gap: 12px; padding-bottom: 16px; }
+        #inboxView .detail-tid { font-size: 1.25rem; }
+        #inboxView .pill-select { font-size: 0.72rem; padding: 4px 10px; }
+        #inboxView .detail-pri-label { font-size: 0.8rem; }
+        #inboxView .detail-requester { padding: 14px 0; gap: 14px; }
+        #inboxView .ops-avatar.lg { width: 40px; height: 40px; font-size: 0.86rem; }
+        #inboxView .req-label { font-size: 0.74rem; }
+        #inboxView .req-name { font-size: 0.92rem; }
+        #inboxView .req-email { font-size: 0.84rem; }
+        #inboxView .detail-subject { padding: 16px 0 8px; }
+        #inboxView .detail-subject h3 { font-size: 1.15rem; }
+        #inboxView .detail-meta { font-size: 0.8rem; }
+        #inboxView .messages-container { padding: 18px 4px 14px; }
+        #inboxView .message { gap: 10px; margin-bottom: 18px; }
+        #inboxView .msg-bubble { font-size: 0.86rem; padding: 8px 13px; }
+        #inboxView .msg-time { font-size: 0.7rem; }
+        #inboxView .ops-composer textarea { font-size: 0.86rem; min-height: 60px; padding: 12px 14px 6px; }
+        #inboxView .composer-as { font-size: 0.78rem; }
+        #inboxView .ops-detail .send-btn { height: 36px; padding: 0 16px; font-size: 0.9rem; }
+
+        #inboxView .ops-pulse { padding: 20px 32px 20px 24px; gap: 24px; }
+        #inboxView .ops-pulse h2 { font-size: 1.25rem; }
+        #inboxView .pulse-label { font-size: 0.84rem; }
+        #inboxView .pulse-bars { height: 34px; gap: 4px; }
+        #inboxView .pulse-legend { padding-left: 28px; gap: 4px; }
+        #inboxView .pulse-legend div { font-size: 0.86rem; gap: 10px; }
+        #inboxView .pulse-legend b { min-width: 46px; }
+
+        @media (max-width: 1080px) {
+            #inboxView .ops-split { height: auto; grid-template-rows: 460px 620px; }
+        }
+
+        /* ─── Queue collapses away while a ticket is open ─── */
+        .ops-split { transition: grid-template-columns 0.32s cubic-bezier(0.4, 0, 0.2, 1), gap 0.32s ease; }
+        .ops-queue { transition: opacity 0.2s ease, border-color 0.2s ease; }
+        .ops-split.collapsed { grid-template-columns: minmax(0, 0fr) minmax(360px, 1fr); gap: 0 !important; }
+        .ops-split.collapsed .ops-queue { opacity: 0; pointer-events: none; border-color: transparent; box-shadow: none; padding-left: 0; padding-right: 0; }
+        .queue-toggle {
+            display: none; align-items: center; gap: 8px; height: 32px; padding: 0 12px 0 10px; margin-right: 2px;
+            border: 1px solid var(--border-hi); border-radius: 8px; background: var(--surface-2);
+            color: var(--text-dim); font-size: 0.8rem; font-weight: 600; cursor: pointer; flex-shrink: 0;
+        }
+        .queue-toggle:hover { color: var(--text); border-color: var(--text-faint); }
+        .queue-toggle i { font-size: 0.7rem; transform: rotate(180deg); }
+        .ops-split.collapsed .queue-toggle { display: inline-flex; animation: queueToggleIn 0.25s ease 0.15s both; }
+        @keyframes queueToggleIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+        @media (max-width: 1080px) {
+            .ops-split.collapsed { grid-template-columns: 1fr; grid-template-rows: 0 620px !important; }
+        }
+
+        /* Older rules that assumed the black theme */
+        .queue-table thead th { background: var(--surface); }
+        .ops-select, .ops-search, .ops-icon-btn, .bulk-btn, .ops-composer { background-color: var(--surface-2); }
+        .ops-composer textarea { color: var(--text); }
+        .pill-select option, .ops-select option, .action-select option { background: var(--surface); color: var(--text); }
+        .ops-sidebar { border-right: 1px solid var(--chrome-line); }
+        .ops-topbar { border-bottom: 1px solid var(--chrome-line); }
+        .user-detail-avatar { background: var(--surface-2); }
+        ::-webkit-scrollbar-thumb { background: var(--border-hi); }
+
+        /* Login, with a darker brand side */
+        #loginScreen { background: var(--bg); }
+        #loginScreen::before { display: none; }
+        .login-wrap { border-radius: 18px; overflow: hidden; border-color: var(--border); box-shadow: var(--shadow); }
+        .login-brand { background: var(--chrome); border-right: none; }
+        .login-logo { color: #fff; font-family: var(--heading); }
+        .login-logo span { background: var(--lime); color: var(--chrome); border-radius: 6px; }
+        .login-eyebrow, .login-tagline, .login-feature { color: var(--chrome-muted); }
+        .login-eyebrow::after, .login-brand-bottom { background: var(--chrome-line); border-color: var(--chrome-line); }
+        .login-btn { border-radius: 10px; background: var(--lime); border-color: var(--lime); color: var(--on-accent); font-family: var(--heading); letter-spacing: 0.5px; }
+        .login-btn:hover:not(:disabled) { background: #cfe95a; color: var(--on-accent); }
+
+        @media (max-width: 1280px) {
+            .ops-crumbs, .ops-product, .ops-product + .ops-divider { display: none; }
+            .ops-sidebar { width: 220px; }
+            .ops-split { grid-template-columns: minmax(0, 1fr) minmax(340px, 0.95fr); }
+            .ops-search { width: 190px; }
+            .ops-pulse { padding-right: 24px; gap: 20px; }
+            .pulse-legend { padding-left: 20px; }
+        }
+        @media (max-width: 1080px) {
+            .ops-sidebar { width: 72px; padding-left: 8px; padding-right: 8px; }
+            .ops-side-item { justify-content: center; padding: 13px 0; }
+            .ops-side-item span:not(.ops-side-badge), .ops-side-heading { display: none; }
+            .ops-side-badge { position: absolute; top: 2px; right: 2px; min-width: 0; padding: 1px 6px; font-size: 0.66rem; }
+            .ops-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .ops-split { grid-template-columns: 1fr; grid-template-rows: minmax(260px, 1fr) minmax(420px, 1.2fr); }
+            .ops-view { overflow-y: auto; }
+            .ops-pulse { flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
@@ -1623,142 +2225,246 @@
     <div id="dashboard">
 
         <!-- TOP BAR -->
-        <header class="top-bar">
-            <div class="top-bar-brand">X-<span>ORBIT</span></div>
-
-            <nav class="top-nav">
-                <button class="nav-tab active" onclick="switchTab('tickets', event)">
-                    <i class="fas fa-ticket-alt"></i> Tickets
-                    <span class="nav-count" id="navTicketCount">0</span>
-                </button>
-                <button class="nav-tab" onclick="switchTab('logs', event)">
-                    <i class="fas fa-clipboard-list"></i> Logs
-                </button>
-                <button class="nav-tab" onclick="switchTab('admins', event)">
-                    <i class="fas fa-user-shield"></i> Admins
-                </button>
+        <header class="ops-topbar">
+            <div class="ops-brand"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="16" ry="8" transform="rotate(-38 20 20)" fill="none" stroke="#d8f06c" stroke-width="3.2"/><circle cx="20" cy="20" r="4.2" fill="none" stroke="#d8f06c" stroke-width="3"/></svg><span class="ops-logo">X-ORBIT</span></div>
+            <span class="ops-divider"></span>
+            <span class="ops-product">ORBIT CONTROL</span>
+            <nav class="ops-crumbs"><span>Operations</span><span>/</span><b id="crumbPage">Support desk</b></nav>
+            <span class="ops-divider"></span>
+            <nav class="ops-tabs">
+                <button class="ops-tab active" data-view="tickets" onclick="switchTab('tickets')">Inbox</button>
+                <button class="ops-tab" data-view="admins" onclick="switchTab('admins')">Accounts</button>
+                <button class="ops-tab" data-view="logs" onclick="switchTab('logs')">Access logs</button>
             </nav>
-
-            <div class="top-stats">
-                <div class="top-stat">
-                    <span class="top-stat-num" id="statOpen">0</span>
-                    <span class="top-stat-lbl">Open</span>
-                </div>
-                <div class="top-stat">
-                    <span class="top-stat-num" id="statInProgress">0</span>
-                    <span class="top-stat-lbl">Prog</span>
-                </div>
-                <div class="top-stat">
-                    <span class="top-stat-num" id="statWaiting">0</span>
-                    <span class="top-stat-lbl">Wait</span>
-                </div>
-                <div class="top-stat">
-                    <span class="top-stat-num" id="statTotal">0</span>
-                    <span class="top-stat-lbl">Active</span>
-                </div>
-            </div>
-
-            <div class="top-bar-spacer"></div>
-
-            <div class="top-bar-right">
-                <span class="top-bar-admin" id="adminName"></span>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+            <div class="ops-spacer"></div>
+            <button class="ops-duty" id="dutyToggle" onclick="toggleDuty()" title="Your availability (shown on this device)">
+                <span class="dot"></span><span id="dutyLabel">On duty</span><i class="fas fa-chevron-down"></i>
+            </button>
+            <span class="ops-divider"></span>
+            <div style="position:relative;">
+                <button class="ops-user" onclick="toggleMenu('userMenu', event)">
+                    <span class="ops-avatar me" id="adminAvatar">?</span>
+                    <span class="ops-user-meta"><span class="ops-user-name" id="adminName"></span><span class="ops-user-role">Operator</span></span>
+                    <i class="fas fa-chevron-down"></i>
                 </button>
+                <div class="ops-menu" id="userMenu">
+                    <div class="menu-label" id="userMenuEmail"></div>
+                    <button onclick="navTo('people')"><i class="fas fa-users"></i> Accounts</button>
+                    <button onclick="navTo('activity')"><i class="fas fa-clipboard-list"></i> Access logs</button>
+                    <div class="menu-sep"></div>
+                    <button class="danger" onclick="logout()"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button>
+                </div>
             </div>
         </header>
 
-        <!-- WORKSPACE -->
-        <div class="workspace">
+        <div class="ops-body">
 
-            <!-- TICKET LIST -->
-            <aside class="ticket-panel" id="ticketPanel">
-                <div class="panel-search">
-                    <input type="text" placeholder="Search tickets…" id="searchInput" oninput="searchTickets()">
-                    <i class="fas fa-search"></i>
-                </div>
-                <div class="ticket-list" id="ticketList"></div>
+            <!-- WORKSPACE NAV -->
+            <aside class="ops-sidebar">
+                <div class="ops-side-heading">Workspace</div>
+                <button class="ops-side-item" data-nav="overview" onclick="navTo('overview')"><i class="fas fa-house"></i><span>Overview</span></button>
+                <button class="ops-side-item active" data-nav="queue" onclick="navTo('queue')"><i class="fas fa-ticket"></i><span>Ticket queue</span><span class="ops-side-badge" id="navTicketCount">0</span></button>
+                <button class="ops-side-item" data-nav="people" onclick="navTo('people')"><i class="far fa-user"></i><span>People</span></button>
+                <button class="ops-side-item" data-nav="live" onclick="navTo('live')"><i class="fas fa-tower-broadcast"></i><span>Live sessions</span></button>
+                <button class="ops-side-item" data-nav="activity" onclick="navTo('activity')"><i class="fas fa-chart-simple"></i><span>Login activity</span></button>
+                <button class="ops-side-item" data-nav="devices" onclick="navTo('devices')"><i class="fas fa-display"></i><span>Device controls</span></button>
             </aside>
 
-            <!-- CHAT / CONTENT -->
-            <main class="chat-panel">
+            <main class="ops-main">
 
-                <div class="empty-state" id="emptyState">
-                    <i class="fas fa-comments"></i>
-                    <p>Select a ticket to begin</p>
-                </div>
-
-                <div id="chatContent" style="display:none; flex-direction:column; height:100%; overflow:hidden;">
-
-                    <div class="chat-info-bar">
-                        <div class="chat-info-left">
-                            <span class="chat-tid" id="chatTicketNumber"></span>
-                            <span class="chat-sep">/</span>
-                            <span class="chat-uname" id="chatUserName"></span>
-                            <span class="chat-sep">·</span>
-                            <span class="chat-email" id="chatUserEmail"></span>
-                            <span class="chat-sep">·</span>
-                            <span class="chat-cat" id="chatCategory"></span>
-                        </div>
-                        <div class="chat-info-right">
-                            <select class="action-select" id="statusSelect" onchange="updateTicketStatus()">
-                                <option value="open">Open</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="waiting_response">Waiting Response</option>
-                                <option value="resolved">Resolved</option>
-                                <option value="closed">Closed</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                            <select class="action-select" id="prioritySelect" onchange="updateTicketPriority()">
-                                <option value="low">Low Priority</option>
-                                <option value="medium">Medium Priority</option>
-                                <option value="high">High Priority</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
-                        </div>
+                <!-- INBOX -->
+                <section class="ops-view" id="inboxView">
+                    <div class="ops-pagehead">
+                        <h1>Support operations</h1>
+                        <span class="ops-vsep"></span>
+                        <span class="ops-date" id="todayLabel"></span>
+                        <div class="ops-spacer"></div>
+                        <button class="ops-primary" onclick="openNewTicketModal()"><i class="fas fa-plus"></i> New ticket</button>
                     </div>
 
-                    <div class="messages-container" id="messagesContainer"></div>
-
-                    <div id="ticketOptions" class="ticket-options-bar" style="display:none;">
-                        <div class="ticket-options-toggle collapsed" id="optionsToggle" onclick="toggleTicketOptions()">
-                            <span><i class="fas fa-tools" style="margin-right:6px;"></i>Actions</span>
-                            <i class="fas fa-chevron-down toggle-chevron"></i>
-                        </div>
-                        <div class="ticket-options-buttons hidden" id="optionsButtons">
-                            <button class="option-btn" id="accountFormBtn" onclick="sendAccountFormRequest()">
-                                <i class="fas fa-user-plus"></i> Account Form
-                            </button>
-                            <button class="option-btn" onclick="openMarkInactiveModal()">
-                                <i class="fas fa-moon"></i> Mark Inactive
-                            </button>
-                            <button class="option-btn" id="resetPwBtn" onclick="resetUserPassword()">
-                                <i class="fas fa-key"></i> Reset Password
-                            </button>
-                        </div>
+                    <div class="ops-stats">
+                        <button class="ops-card ops-stat" onclick="filterQueue('open')" title="Show open tickets">
+                            <span class="ops-stat-bar"></span>
+                            <span><div class="ops-stat-label">Open</div><div class="ops-stat-num" id="statOpen">0</div></span>
+                            <svg class="ops-spark" id="sparkOpen" viewBox="0 0 150 38" preserveAspectRatio="none"></svg>
+                        </button>
+                        <button class="ops-card ops-stat lav" onclick="filterQueue('in_progress')" title="Show tickets in progress">
+                            <span class="ops-stat-bar"></span>
+                            <span><div class="ops-stat-label">In progress</div><div class="ops-stat-num" id="statInProgress">0</div></span>
+                            <svg class="ops-spark" id="sparkInProgress" viewBox="0 0 150 38" preserveAspectRatio="none"></svg>
+                        </button>
+                        <button class="ops-card ops-stat" onclick="filterQueue('waiting_response')" title="Show tickets waiting on the user">
+                            <span class="ops-stat-bar"></span>
+                            <span><div class="ops-stat-label">Waiting</div><div class="ops-stat-num" id="statWaiting">0</div></span>
+                            <svg class="ops-spark" id="sparkWaiting" viewBox="0 0 150 38" preserveAspectRatio="none"></svg>
+                        </button>
+                        <button class="ops-card ops-stat lav" onclick="navTo('live')" title="Users online now · trend is daily sign-ins">
+                            <span class="ops-stat-bar"></span>
+                            <span><div class="ops-stat-label">Online now</div><div class="ops-stat-num" id="statOnline">0</div></span>
+                            <svg class="ops-spark" id="sparkOnline" viewBox="0 0 150 38" preserveAspectRatio="none"></svg>
+                        </button>
                     </div>
 
-                    <div class="message-input-area">
-                        <div class="input-hint">Enter to send · Shift+Enter for new line</div>
-                        <div class="input-row">
-                            <textarea
-                                id="messageInput"
-                                class="message-input"
-                                placeholder="Type your response…"
-                                rows="3"
-                                onkeydown="handleMessageKeydown(event)"
-                            ></textarea>
-                            <button class="send-btn" onclick="sendMessage()" id="sendBtn">
-                                <i class="fas fa-paper-plane"></i> Send
-                            </button>
-                        </div>
+                    <div class="ops-split" id="opsSplit">
+                        <section class="ops-card ops-queue" id="ticketPanel">
+                            <div class="queue-head">
+                                <h2>Needs attention</h2>
+                                <label class="ops-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search tickets, people, or a subject…" id="searchInput" oninput="searchTickets()" autocomplete="off">
+                                </label>
+                                <select class="ops-select" id="queueStatus" onchange="renderQueue()" title="Status">
+                                    <option value="active">Status</option>
+                                    <option value="open">Open</option>
+                                    <option value="in_progress">In progress</option>
+                                    <option value="waiting_response">Waiting</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="all">All tickets</option>
+                                </select>
+                                <select class="ops-select" id="queuePriority" onchange="renderQueue()" title="Priority">
+                                    <option value="all">Priority</option>
+                                    <option value="urgent">Urgent</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                                <button class="ops-icon-btn" onclick="resetQueueFilters()" title="Reset filters"><i class="fas fa-sliders"></i></button>
+                            </div>
+                            <div class="queue-bulk" id="queueBulk">
+                                <b id="bulkCount">0 selected</b>
+                                <select class="ops-select" id="bulkStatus">
+                                    <option value="">Set status…</option>
+                                    <option value="open">Open</option>
+                                    <option value="in_progress">In progress</option>
+                                    <option value="waiting_response">Waiting</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                                <button class="bulk-btn primary" id="bulkApply" onclick="bulkSetStatus()">Apply</button>
+                                <button class="bulk-btn" onclick="clearSelection()">Clear</button>
+                            </div>
+                            <div class="queue-table-wrap">
+                                <table class="queue-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="chk"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" title="Select all"></th>
+                                            <th>Ticket</th>
+                                            <th>Customer</th>
+                                            <th>Subject</th>
+                                            <th class="num sortable" onclick="toggleQueueSort()" title="Sort by age">Elapsed <i class="fas fa-chevron-down" id="sortIcon" style="font-size:0.62rem;margin-left:4px;"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ticketList"></tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="ops-card ops-detail">
+                            <div class="empty-state" id="emptyState">
+                                <i class="far fa-comments"></i>
+                                <p>Select a ticket to see the conversation</p>
+                            </div>
+
+                            <div id="chatContent" style="display:none;">
+                                <div class="detail-head">
+                                    <button class="queue-toggle" onclick="setQueueCollapsed(false)" title="Show the ticket queue"><i class="fas fa-angles-right"></i><span>Queue</span></button>
+                                    <span class="detail-tid" id="chatTicketNumber"></span>
+                                    <select class="pill-select status" id="statusSelect" onchange="updateTicketStatus()" title="Status">
+                                        <option value="open">Open</option>
+                                        <option value="in_progress">In progress</option>
+                                        <option value="waiting_response">Waiting</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="closed">Closed</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                    <span class="detail-vsep"></span>
+                                    <span class="detail-pri-label">Priority:</span>
+                                    <select class="pill-select priority" id="prioritySelect" onchange="updateTicketPriority()" title="Priority">
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                    <div class="detail-more-wrap">
+                                        <button class="detail-more" onclick="toggleMenu('ticketMenu', event)" title="Ticket actions">⋯</button>
+                                        <div class="ops-menu" id="ticketMenu">
+                                            <div class="menu-label">Ticket actions</div>
+                                            <button id="accountFormBtn" onclick="closeMenus(); sendAccountFormRequest()"><i class="fas fa-user-plus"></i> Send account form</button>
+                                            <button id="resetPwBtn" onclick="closeMenus(); resetUserPassword()"><i class="fas fa-key"></i> Reset password</button>
+                                            <button onclick="closeMenus(); openMarkInactiveModal()"><i class="fas fa-moon"></i> Mark inactive…</button>
+                                            <div class="menu-sep"></div>
+                                            <button onclick="closeMenus(); copyTicketNumber()"><i class="far fa-copy"></i> Copy ticket number</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-requester">
+                                    <span class="ops-avatar lg" id="reqAvatar">?</span>
+                                    <div class="req-col">
+                                        <div class="req-label">Requester</div>
+                                        <div class="req-name" id="chatUserName"></div>
+                                    </div>
+                                    <div class="req-account">
+                                        <div class="req-col">
+                                            <div class="req-label">Account</div>
+                                            <div class="req-email" id="chatUserEmail"></div>
+                                        </div>
+                                        <button class="req-link" onclick="openRequesterAccount()" title="Open their X-ORBIT account"><i class="fas fa-arrow-up-right-from-square"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="detail-subject">
+                                    <h3 id="chatSubject"></h3>
+                                    <div class="detail-meta" id="chatCategory"></div>
+                                </div>
+
+                                <div class="ticket-lock-banner" id="ticketLockBanner">
+                                    <i class="fas fa-moon" id="ticketLockIcon"></i>
+                                    <div id="ticketLockText"></div>
+                                </div>
+
+                                <div class="messages-container" id="messagesContainer"></div>
+
+                                <div class="ops-composer">
+                                    <textarea
+                                        id="messageInput"
+                                        placeholder="Write a reply…"
+                                        rows="3"
+                                        onkeydown="handleMessageKeydown(event)"
+                                        title="Enter to send · Shift+Enter for a new line"
+                                    ></textarea>
+                                    <div class="composer-bar">
+                                        <div class="composer-tool">
+                                            <button type="button" onclick="toggleMenu('quickReplyMenu', event)" title="Quick replies"><i class="fas fa-bolt"></i><i class="fas fa-chevron-down"></i></button>
+                                            <div class="ops-menu" id="quickReplyMenu"></div>
+                                        </div>
+                                        <span class="composer-as" id="replyAs">Reply as Operator</span>
+                                        <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                                            <i class="far fa-paper-plane"></i> Reply
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
-                </div>
+                    <section class="ops-card ops-pulse">
+                        <h2>System pulse</h2>
+                        <span class="ops-vsep"></span>
+                        <span class="pulse-label">Login activity (last 24h)</span>
+                        <div class="pulse-bars" id="pulseBars"></div>
+                        <div class="pulse-legend">
+                            <div><span class="dot" style="background:var(--lime-strong)"></span><b id="pulseOk">0</b> successful logins</div>
+                            <div><span class="dot" style="background:var(--lav)"></span><b id="pulseFail">0</b> failed logins</div>
+                        </div>
+                    </section>
+                </section>
 
                 <!-- Logs iframe container -->
                 <div id="logsContent">
-                    <iframe id="logsFrame" src="logs.html" style="width:100%;height:100%;border:none;background:rgba(0,0,0,0.2);"></iframe>
+                    <iframe id="logsFrame" src="logs.html" style="width:100%;height:100%;border:none;"></iframe>
                 </div>
 
                 <!-- Admins panel -->
@@ -1767,27 +2473,27 @@
 
                         <nav class="admin-sidebar">
                             <div class="admin-sidebar-heading">Management</div>
-                            <div class="admin-sidebar-item active" onclick="switchAdminPage('users', this)">
+                            <div class="admin-sidebar-item active" data-page="users" onclick="switchAdminPage('users', this)">
                                 <i class="fas fa-users"></i> X-ORBIT Users
                                 <span class="admin-sidebar-badge" id="sidebarUserCount">0</span>
                             </div>
-                            <div class="admin-sidebar-item" onclick="switchAdminPage('online', this)">
+                            <div class="admin-sidebar-item" data-page="online" onclick="switchAdminPage('online', this)">
                                 <i class="fas fa-circle" style="color:#22c55e;font-size:0.5rem;"></i> Currently Online
                                 <span class="admin-sidebar-badge online-badge" id="onlineCountBadge">0</span>
                             </div>
-                            <div class="admin-sidebar-item" onclick="switchAdminPage('submitters', this)">
+                            <div class="admin-sidebar-item" data-page="submitters" onclick="switchAdminPage('submitters', this)">
                                 <i class="fas fa-ticket-alt"></i> Ticket Submitters
                                 <span class="admin-sidebar-badge" id="sidebarSubmitterCount">0</span>
                             </div>
-                            <div class="admin-sidebar-item" onclick="switchAdminPage('tags', this)">
+                            <div class="admin-sidebar-item" data-page="tags" onclick="switchAdminPage('tags', this)">
                                 <i class="fas fa-tags"></i> Tag Management
                             </div>
-                            <div class="admin-sidebar-item" onclick="switchAdminPage('devices', this)">
+                            <div class="admin-sidebar-item" data-page="devices" onclick="switchAdminPage('devices', this)">
                                 <i class="fas fa-ban"></i> Device Bans
                                 <span class="admin-sidebar-badge" id="sidebarDeviceBanCount">0</span>
                             </div>
-                            <div class="admin-sidebar-heading" style="margin-top:16px;">Actions</div>
-                            <div class="admin-sidebar-item" onclick="switchAdminPage('create', this)">
+                            
+                            <div class="admin-sidebar-item" data-page="create" onclick="switchAdminPage('create', this)">
                                 <i class="fas fa-user-plus"></i> Create User
                             </div>
                         </nav>
@@ -1986,6 +2692,45 @@
                 </div>
 
             </main>
+        </div>
+    </div>
+
+    <!-- New Ticket Modal -->
+    <div id="newTicketModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:520px;width:520px;">
+            <div class="modal-header">
+                <span class="modal-title">New ticket</span>
+                <button class="modal-close" onclick="closeNewTicketModal()">×</button>
+            </div>
+            <form class="modal-body" onsubmit="createStaffTicket(event)">
+                <div class="ops-field-row">
+                    <div class="ops-field"><label>Requester name</label><input id="ntName" required placeholder="Full name"></div>
+                    <div class="ops-field"><label>Requester email</label><input id="ntEmail" type="email" required placeholder="name@example.com"></div>
+                </div>
+                <div class="ops-field-row">
+                    <div class="ops-field"><label>Category</label>
+                        <select id="ntCategory">
+                            <option value="technical">Technical issue</option>
+                            <option value="account">Account problem</option>
+                            <option value="billing">Billing question</option>
+                            <option value="feature">Feature request</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="ops-field"><label>Priority</label>
+                        <select id="ntPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ops-field"><label>Subject</label><input id="ntSubject" required placeholder="What's going on?"></div>
+                <div class="ops-field"><label>First message to the requester</label><textarea id="ntMessage" required placeholder="This shows in their support portal as your first reply."></textarea></div>
+                <div class="create-msg" id="ntMsg"></div>
+                <button type="submit" class="ops-primary" id="ntSubmit" style="width:100%;justify-content:center;"><i class="fas fa-plus"></i> Create ticket</button>
+            </form>
         </div>
     </div>
 
@@ -2302,7 +3047,7 @@
 
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
-            document.getElementById('adminName').textContent = currentAdmin.full_name;
+            fillOperatorIdentity();
 
             await loadTickets();
             loadStats();
@@ -2337,27 +3082,145 @@
             }
         }
 
-        function displayTickets(tickets) {
+        // ── Ticket queue ("Needs attention") ──────────────────
+        const ACTIVE_STATUSES = ['open', 'in_progress', 'waiting_response'];
+        const selectedTickets = new Set();
+        let queueNewestFirst = true;
+        let queueVisibleIds = [];
+
+        function initials(name) {
+            const parts = String(name || '').replace(/@.*/, '').trim().split(/[\s._-]+/).filter(Boolean);
+            if (!parts.length) return '?';
+            return ((parts[0][0] || '') + (parts.length > 1 ? parts[parts.length - 1][0] : (parts[0][1] || ''))).toUpperCase();
+        }
+
+        function elapsedLabel(ts) {
+            const mins = Math.max(0, Math.floor((Date.now() - new Date(ts).getTime()) / 60000));
+            if (mins < 60) return `${mins}m`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h`;
+            const days = Math.floor(hrs / 24);
+            return days < 60 ? `${days}d` : `${Math.floor(days / 30)}mo`;
+        }
+
+        // Kept for the code that already calls it with a list
+        function displayTickets() { renderQueue(); }
+
+        function renderQueue() {
+            const q  = document.getElementById('searchInput').value.trim().toLowerCase();
+            const st = document.getElementById('queueStatus').value;
+            const pr = document.getElementById('queuePriority').value;
+
+            let list = allTickets.filter(t =>
+                st === 'active' ? ACTIVE_STATUSES.includes(t.status) : st === 'all' || t.status === st);
+            if (pr !== 'all') list = list.filter(t => (t.priority || 'medium') === pr);
+            if (q) list = list.filter(t =>
+                [t.ticket_number, t.name, t.email, t.subject, t.message, t.category]
+                    .some(v => String(v || '').toLowerCase().includes(q)));
+            list.sort((x, y) => (new Date(y.created_at) - new Date(x.created_at)) * (queueNewestFirst ? 1 : -1));
+
+            const activeCount = allTickets.filter(t => ACTIVE_STATUSES.includes(t.status)).length;
+            document.getElementById('navTicketCount').textContent = activeCount;
+            document.getElementById('sortIcon').className = `fas fa-chevron-${queueNewestFirst ? 'down' : 'up'}`;
+
+            for (const id of [...selectedTickets]) if (!allTickets.some(t => t.id === id)) selectedTickets.delete(id);
+            queueVisibleIds = list.map(t => t.id);
+
             const listEl = document.getElementById('ticketList');
-            const countEl = document.getElementById('navTicketCount');
-            if (countEl) countEl.textContent = tickets.length;
-
-            if (tickets.length === 0) {
-                listEl.innerHTML = '<div class="no-tickets">No tickets found</div>';
-                return;
+            if (!list.length) {
+                listEl.innerHTML = `<tr><td colspan="5" class="queue-empty" style="max-width:none;"><i class="far fa-face-smile"></i>${
+                    q || st !== 'active' || pr !== 'all' ? 'No tickets match these filters' : 'Nothing needs attention right now'}</td></tr>`;
+            } else {
+                listEl.innerHTML = list.map(t => {
+                    const pri = t.priority === 'high' || t.priority === 'urgent'
+                        ? `<span class="q-pri ${t.priority}" title="${t.priority} priority"></span>` : '';
+                    return `
+                    <tr class="${currentTicket?.id === t.id ? 'active' : ''}" onclick="selectTicket('${t.id}')">
+                        <td class="chk" onclick="event.stopPropagation()"><input type="checkbox" ${selectedTickets.has(t.id) ? 'checked' : ''} onchange="toggleTicketSelected('${t.id}', this.checked)"></td>
+                        <td><div class="q-ticket"><span class="q-bar st-${t.status}" title="${escapeHtmlAdmin(t.status.replace('_', ' '))}"></span><span class="ops-avatar sm">${escapeHtmlAdmin(initials(t.name))}</span><span class="q-num">${escapeHtmlAdmin(t.ticket_number)}</span>${pri}</div></td>
+                        <td title="${escapeHtmlAdmin(t.email)}">${escapeHtmlAdmin(t.name)}</td>
+                        <td class="q-sub" title="${escapeHtmlAdmin(t.subject || t.message)}">${escapeHtmlAdmin(t.subject || t.message.substring(0, 60))}</td>
+                        <td class="num q-elapsed" title="Opened ${new Date(t.created_at).toLocaleString()}">${elapsedLabel(t.created_at)}</td>
+                    </tr>`;
+                }).join('');
             }
+            syncBulkBar();
+        }
 
-            listEl.innerHTML = tickets.map(ticket => `
-                <div class="ticket-item ${currentTicket?.id === ticket.id ? 'active' : ''}" onclick="selectTicket('${ticket.id}')">
-                    <div class="ticket-row-top">
-                        <span class="ticket-id">${ticket.ticket_number}</span>
-                        <span class="status-dot dot-${ticket.status}" title="${ticket.status.replace('_', ' ')}"></span>
-                    </div>
-                    <div class="ticket-name">${ticket.name}</div>
-                    <div class="ticket-subject">${ticket.subject || ticket.message.substring(0, 48) + '…'}</div>
-                    <div class="ticket-time">${formatTime(ticket.created_at)}</div>
-                </div>
-            `).join('');
+        function setQueueCollapsed(collapsed) {
+            document.getElementById('opsSplit').classList.toggle('collapsed', collapsed && !!currentTicket);
+        }
+
+        function filterQueue(status) {
+            setQueueCollapsed(false);
+            document.getElementById('queueStatus').value = status;
+            document.body.classList.remove('queue-focus');
+            if (currentView !== 'tickets') switchTab('tickets');
+            renderQueue();
+        }
+
+        function resetQueueFilters() {
+            setQueueCollapsed(false);
+            document.getElementById('searchInput').value = '';
+            document.getElementById('queueStatus').value = 'active';
+            document.getElementById('queuePriority').value = 'all';
+            renderQueue();
+        }
+
+        function toggleQueueSort() {
+            queueNewestFirst = !queueNewestFirst;
+            renderQueue();
+        }
+
+        function toggleTicketSelected(id, on) {
+            on ? selectedTickets.add(id) : selectedTickets.delete(id);
+            syncBulkBar();
+        }
+
+        function toggleSelectAll(on) {
+            queueVisibleIds.forEach(id => on ? selectedTickets.add(id) : selectedTickets.delete(id));
+            renderQueue();
+        }
+
+        function clearSelection() {
+            selectedTickets.clear();
+            renderQueue();
+        }
+
+        function syncBulkBar() {
+            const n = selectedTickets.size;
+            document.getElementById('queueBulk').classList.toggle('show', n > 0);
+            document.getElementById('bulkCount').textContent = `${n} selected`;
+            const all = document.getElementById('selectAll');
+            const visibleSelected = queueVisibleIds.filter(id => selectedTickets.has(id)).length;
+            all.checked = queueVisibleIds.length > 0 && visibleSelected === queueVisibleIds.length;
+            all.indeterminate = visibleSelected > 0 && !all.checked;
+        }
+
+        async function bulkSetStatus() {
+            const status = document.getElementById('bulkStatus').value;
+            if (!status || !selectedTickets.size) return;
+            const btn = document.getElementById('bulkApply');
+            btn.disabled = true;
+            try {
+                const ids = [...selectedTickets];
+                const { error } = await supabaseClient.from('support_tickets').update({ status }).in('id', ids);
+                if (error) throw error;
+                if (currentTicket && ids.includes(currentTicket.id)) {
+                    currentTicket.status = status;
+                    document.getElementById('statusSelect').value = status;
+                }
+                selectedTickets.clear();
+                document.getElementById('bulkStatus').value = '';
+                await loadTickets();
+                loadStats();
+                if (currentTicket) loadMessages(currentTicket.id);
+            } catch (err) {
+                console.error('Bulk status error:', err);
+                alert('Failed to update the selected tickets.');
+            } finally {
+                btn.disabled = false;
+            }
         }
 
         function formatTime(timestamp) {
@@ -2380,23 +3243,27 @@
 
             currentTicket = ticket;
 
-            document.getElementById('logsContent').style.display = 'none';
             document.getElementById('emptyState').style.display = 'none';
             document.getElementById('chatContent').style.display = 'flex';
 
             document.getElementById('chatTicketNumber').textContent = ticket.ticket_number;
             document.getElementById('chatUserName').textContent = ticket.name;
             document.getElementById('chatUserEmail').textContent = ticket.email;
-            document.getElementById('chatCategory').textContent = ticket.category;
+            document.getElementById('reqAvatar').textContent = initials(ticket.name);
+            document.getElementById('chatSubject').textContent = ticket.subject || ticket.message.substring(0, 80);
+            document.getElementById('chatSubject').title = ticket.subject || ticket.message;
+            const categoryLabel = (ticket.category || 'general').replace(/_/g, ' ');
+            document.getElementById('chatCategory').innerHTML = [
+                categoryLabel.charAt(0).toUpperCase() + categoryLabel.slice(1),
+                ticket.is_guest ? 'Guest' : 'Registered',
+                `Opened ${formatTime(ticket.created_at)}`,
+            ].map(escapeHtmlAdmin).join('<span class="dot"></span>');
             document.getElementById('statusSelect').value = ticket.status;
-            document.getElementById('prioritySelect').value = ticket.priority;
+            document.getElementById('prioritySelect').value = ticket.priority || 'medium';
+            syncPills();
+            setQueueCollapsed(true);
 
-            // Show options bar, reset to collapsed state
-            document.getElementById('ticketOptions').style.display = 'block';
-            document.getElementById('optionsToggle').classList.add('collapsed');
-            document.getElementById('optionsButtons').classList.add('hidden');
-
-            displayTickets(allTickets);
+            renderQueue();
             await loadMessages(ticketId);
             subscribeToMessages(ticketId);
         }
@@ -2420,10 +3287,56 @@
                 if (msgError) throw msgError;
 
                 displayMessages(messages);
+                renderTicketLockBanner(messages);
+                markUserMessagesRead(conversation.id, messages);
             } catch (error) {
                 console.error('Error loading messages:', error);
             }
         }
+
+        const INACTIVE_REASON_PREFIX = 'This ticket has been marked as inactive. Reason: ';
+
+        // Resolved, closed and inactive tickets stay readable, but the user can't reply until they reopen
+        function renderTicketLockBanner(messages) {
+            syncPills();
+            const banner = document.getElementById('ticketLockBanner');
+            const status = currentTicket?.status;
+            const locked = status === 'resolved' || status === 'closed' || status === 'inactive';
+            banner.classList.toggle('show', locked);
+            if (!locked) return;
+
+            const labels = {
+                resolved: ['fa-check-circle', 'Resolved'],
+                closed:   ['fa-lock', 'Closed'],
+                inactive: ['fa-moon', 'Inactive'],
+            };
+            const [icon, label] = labels[status];
+            document.getElementById('ticketLockIcon').className = `fas ${icon}`;
+
+            let why = '';
+            if (status === 'inactive') {
+                const note = [...messages].reverse()
+                    .find(m => m.sender_email === 'system@xorbit.org' && (m.message || '').startsWith(INACTIVE_REASON_PREFIX));
+                if (note) why = ` Reason: <span class="ticket-lock-reason">${escapeHtmlAdmin(note.message.slice(INACTIVE_REASON_PREFIX.length))}</span>.`;
+            }
+            document.getElementById('ticketLockText').innerHTML =
+                `<strong>${label}</strong>The user can see this conversation but can't reply until they reopen the ticket.${why}`;
+        }
+
+        async function markUserMessagesRead(conversationId, messages) {
+            if (document.hidden || !messages.some(m => !m.is_staff && !m.read_at)) return;
+            const { error } = await supabaseClient.rpc('mark_support_messages_read', {
+                p_conversation_id: conversationId,
+                p_reader_is_staff: true
+            });
+            if (error) console.error('Error marking messages read:', error);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && currentTicket && document.getElementById('chatContent').style.display !== 'none') {
+                loadMessages(currentTicket.id);
+            }
+        });
 
         function escapeHtmlAdmin(text) {
             const d = document.createElement('div');
@@ -2478,15 +3391,21 @@
                 if (msg.sender_email === 'system@xorbit.org') {
                     return `
                         <div class="message system">
-                            <div class="msg-bubble">${msg.message}</div>
+                            <div class="msg-bubble">${escapeHtmlAdmin(msg.message)}</div>
                         </div>
                     `;
                 }
+                const receipt = !msg.is_staff ? '' : msg.read_at
+                    ? `<span class="msg-receipt seen" title="Seen ${new Date(msg.read_at).toLocaleString()}"><i class="fas fa-check-double"></i> Seen</span>`
+                    : `<span class="msg-receipt"><i class="fas fa-check"></i> Sent</span>`;
                 return `
                     <div class="message ${msg.is_staff ? 'staff' : 'user'}">
-                        <div class="msg-sender">${msg.sender_name}</div>
-                        <div class="msg-bubble">${msg.message}</div>
-                        <div class="msg-time">${formatTime(msg.created_at)}</div>
+                        <span class="ops-avatar sm${msg.is_staff ? ' me' : ''}" title="${escapeHtmlAdmin(msg.sender_name)}">${escapeHtmlAdmin(initials(msg.sender_name))}</span>
+                        <div class="msg-body">
+                            <div class="msg-sender">${escapeHtmlAdmin(msg.sender_name)}</div>
+                            <div class="msg-bubble">${escapeHtmlAdmin(msg.message)}</div>
+                            <div class="msg-time">${messageClock(msg.created_at)}${receipt}</div>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -2507,11 +3426,24 @@
                         messagesSubscription = supabaseClient
                             .channel('messages')
                             .on('postgres_changes', {
-                                event: 'INSERT',
+                                event: '*',
                                 schema: 'public',
                                 table: 'messages',
                                 filter: `conversation_id=eq.${conversation.id}`
                             }, () => { loadMessages(ticketId); })
+                            // The user reopening a ticket clears the banner here too
+                            .on('postgres_changes', {
+                                event: 'UPDATE',
+                                schema: 'public',
+                                table: 'support_tickets',
+                                filter: `id=eq.${ticketId}`
+                            }, ({ new: row }) => {
+                                if (!currentTicket || currentTicket.id !== ticketId || !row?.status) return;
+                                currentTicket.status = row.status;
+                                document.getElementById('statusSelect').value = row.status;
+                                loadMessages(ticketId);
+                                loadTickets();
+                            })
                             .subscribe();
                     }
                 });
@@ -2590,6 +3522,7 @@
                 if (error) throw error;
 
                 currentTicket.status = newStatus;
+                syncPills();
                 await loadTickets();
                 await loadStats();
                 setTimeout(() => { loadMessages(currentTicket.id); }, 500);
@@ -2621,66 +3554,135 @@
 
         async function loadStats() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('support_tickets')
-                    .select('status');
+                if (!allTickets.length) {
+                    const { data, error } = await supabaseClient.from('support_tickets').select('status, created_at');
+                    if (error) throw error;
+                    allTickets = allTickets.length ? allTickets : (data || []);
+                }
+                const count = st => allTickets.filter(t => t.status === st).length;
+                document.getElementById('statOpen').textContent       = count('open');
+                document.getElementById('statInProgress').textContent = count('in_progress');
+                document.getElementById('statWaiting').textContent    = count('waiting_response');
+                document.getElementById('navTicketCount').textContent = allTickets.filter(t => ACTIVE_STATUSES.includes(t.status)).length;
 
-                if (error) throw error;
-
-                const open       = data.filter(t => t.status === 'open').length;
-                const inProgress = data.filter(t => t.status === 'in_progress').length;
-                const waiting    = data.filter(t => t.status === 'waiting_response').length;
-                const total      = data.filter(t => t.status !== 'resolved' && t.status !== 'closed').length;
-
-                document.getElementById('statOpen').textContent       = open;
-                document.getElementById('statInProgress').textContent = inProgress;
-                document.getElementById('statWaiting').textContent    = waiting;
-                document.getElementById('statTotal').textContent      = total;
+                // Trend lines: tickets opened per day over the last 14 days, per current status
+                drawSpark('sparkOpen',       dailyCounts(allTickets.filter(t => t.status === 'open')), 'var(--lime-strong)');
+                drawSpark('sparkInProgress', dailyCounts(allTickets.filter(t => t.status === 'in_progress')), 'var(--lav-strong)');
+                drawSpark('sparkWaiting',    dailyCounts(allTickets.filter(t => t.status === 'waiting_response')), 'var(--lime-strong)');
             } catch (error) {
                 console.error('Error loading stats:', error);
+            }
+            loadOnlineStat();
+            loadPulse();
+        }
+
+        function dailyCounts(rows, days = 14) {
+            const out = new Array(days).fill(0);
+            const start = new Date(); start.setHours(0, 0, 0, 0);
+            const first = start.getTime() - (days - 1) * 86400000;
+            for (const r of rows) {
+                const i = Math.floor((new Date(r.created_at).getTime() - first) / 86400000);
+                if (i >= 0 && i < days) out[i]++;
+            }
+            return out;
+        }
+
+        function drawSpark(id, values, color) {
+            const svg = document.getElementById(id);
+            if (!svg) return;
+            const w = 150, h = 38, pad = 3;
+            const max = Math.max(1, ...values);
+            const step = values.length > 1 ? w / (values.length - 1) : w;
+            const pts = values.map((v, i) => [i * step, h - pad - (v / max) * (h - pad * 2)]);
+            const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+            svg.style.color = color;
+            svg.innerHTML = `
+                <path d="${line} L${w} ${h} L0 ${h} Z" fill="currentColor" opacity="0.18"></path>
+                <path d="${line}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>`;
+        }
+
+        async function loadOnlineStat() {
+            try {
+                const { data, error } = await supabaseClient.from('clients').select('is_online, last_seen');
+                if (error) throw error;
+                document.getElementById('statOnline').textContent =
+                    (data || []).filter(u => u.is_online && isRecentlySeen(u.last_seen)).length;
+            } catch (err) {
+                console.error('Error loading online count:', err);
+            }
+            try {
+                // Trend: successful sign-ins per day (one count query per day keeps it accurate at any volume)
+                const start = new Date(); start.setHours(0, 0, 0, 0);
+                const days = await Promise.all(Array.from({ length: 14 }, (_, i) => {
+                    const from = new Date(start.getTime() - (13 - i) * 86400000);
+                    const to = new Date(from.getTime() + 86400000);
+                    return supabaseClient.from('login_attempts').select('id', { count: 'exact', head: true })
+                        .eq('success', true).gte('attempt_timestamp', from.toISOString()).lt('attempt_timestamp', to.toISOString());
+                }));
+                drawSpark('sparkOnline', days.map(r => r.count || 0), 'var(--lav-strong)');
+            } catch (err) {
+                console.error('Error loading sign-in trend:', err);
+            }
+        }
+
+        // System pulse: sign-ins per hour over the last 24 hours
+        async function loadPulse() {
+            const since = new Date(Date.now() - 24 * 3600000);
+            since.setMinutes(0, 0, 0);
+            try {
+                const [ok, fail] = await Promise.all([
+                    supabaseClient.from('login_attempts').select('id', { count: 'exact', head: true }).eq('success', true).gte('attempt_timestamp', since.toISOString()),
+                    supabaseClient.from('login_attempts').select('id', { count: 'exact', head: true }).eq('success', false).gte('attempt_timestamp', since.toISOString()),
+                ]);
+                document.getElementById('pulseOk').textContent = (ok.count || 0).toLocaleString();
+                document.getElementById('pulseFail').textContent = (fail.count || 0).toLocaleString();
+
+                const buckets = Array.from({ length: 25 }, () => ({ ok: 0, fail: 0 }));
+                for (let from = 0; from < 30000; from += 1000) {
+                    const { data, error } = await supabaseClient.from('login_attempts')
+                        .select('attempt_timestamp, success')
+                        .gte('attempt_timestamp', since.toISOString())
+                        .order('attempt_timestamp', { ascending: true })
+                        .range(from, from + 999);
+                    if (error) throw error;
+                    for (const r of data) {
+                        const i = Math.floor((new Date(r.attempt_timestamp) - since) / 3600000);
+                        if (i >= 0 && i < buckets.length) buckets[i][r.success ? 'ok' : 'fail']++;
+                    }
+                    if (data.length < 1000) break;
+                }
+                const max = Math.max(1, ...buckets.map(b => b.ok + b.fail));
+                document.getElementById('pulseBars').innerHTML = buckets.map((b, i) => {
+                    const hour = new Date(since.getTime() + i * 3600000);
+                    const label = hour.toLocaleTimeString([], { hour: 'numeric' });
+                    const total = b.ok + b.fail;
+                    const hPct = Math.max(10, (total / max) * 100);
+                    return `<div class="pulse-bar${i === buckets.length - 1 ? ' now' : ''}" style="height:${hPct}%" title="${label}: ${b.ok} successful, ${b.fail} failed">
+                        <div class="ok" style="flex:${b.ok || (total ? 0 : 1)}"></div><div class="fail" style="flex:${b.fail}"></div></div>`;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading login pulse:', err);
             }
         }
 
         function searchTickets() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            if (!query) { displayTickets(allTickets); return; }
-
-            const filtered = allTickets.filter(t =>
-                t.ticket_number.toLowerCase().includes(query) ||
-                t.name.toLowerCase().includes(query) ||
-                t.email.toLowerCase().includes(query) ||
-                t.subject?.toLowerCase().includes(query) ||
-                t.message.toLowerCase().includes(query)
-            );
-            displayTickets(filtered);
+            setQueueCollapsed(false);
+            renderQueue();
         }
 
-        function switchTab(tab, ev) {
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            ev.target.closest('.nav-tab').classList.add('active');
+        const VIEW_TITLES = { tickets: 'Support desk', admins: 'Accounts', logs: 'Access logs' };
+
+        function switchTab(tab, _ignored, adminPage) {
             currentView = tab;
+            document.querySelectorAll('.ops-tab').forEach(b => b.classList.toggle('active', b.dataset.view === tab));
+            document.getElementById('crumbPage').textContent = VIEW_TITLES[tab];
+            document.getElementById('inboxView').style.display   = tab === 'tickets' ? 'flex' : 'none';
+            document.getElementById('logsContent').style.display  = tab === 'logs' ? 'flex' : 'none';
+            document.getElementById('adminsContent').style.display = tab === 'admins' ? 'flex' : 'none';
 
             if (tab === 'tickets') {
-                document.getElementById('ticketPanel').classList.remove('hidden');
-                document.getElementById('logsContent').style.display = 'none';
-                document.getElementById('adminsContent').style.display = 'none';
-
-                if (currentTicket) {
-                    document.getElementById('chatContent').style.display = 'flex';
-                    document.getElementById('emptyState').style.display = 'none';
-                } else {
-                    document.getElementById('chatContent').style.display = 'none';
-                    document.getElementById('emptyState').style.display = 'flex';
-                }
                 loadTickets();
-
             } else if (tab === 'logs') {
-                document.getElementById('ticketPanel').classList.add('hidden');
-                document.getElementById('chatContent').style.display = 'none';
-                document.getElementById('emptyState').style.display = 'none';
-                document.getElementById('logsContent').style.display = 'flex';
-                document.getElementById('adminsContent').style.display = 'none';
-
                 logsAuthToken = generateLogsAuthToken();
                 setTimeout(() => {
                     const logsFrame = document.getElementById('logsFrame');
@@ -2691,15 +3693,198 @@
                         }, '*');
                     }
                 }, 100);
-
             } else if (tab === 'admins') {
-                document.getElementById('ticketPanel').classList.add('hidden');
-                document.getElementById('chatContent').style.display = 'none';
-                document.getElementById('emptyState').style.display = 'none';
-                document.getElementById('logsContent').style.display = 'none';
-                document.getElementById('adminsContent').style.display = 'flex';
                 loadClients();
-                switchAdminPage(currentAdminPage, document.querySelector('.admin-sidebar-item.active'));
+                const page = adminPage || currentAdminPage;
+                switchAdminPage(page, document.querySelector(`.admin-sidebar-item[data-page="${page}"]`));
+            }
+            syncSidebar();
+        }
+
+        // Left "Workspace" nav: shortcuts into the three views
+        function navTo(key) {
+            closeMenus();
+            if (key === 'overview' || key === 'queue') {
+                document.body.classList.toggle('queue-focus', key === 'queue');
+                switchTab('tickets');
+            } else if (key === 'people') switchTab('admins', null, 'users');
+            else if (key === 'live') switchTab('admins', null, 'online');
+            else if (key === 'devices') switchTab('admins', null, 'devices');
+            else if (key === 'activity') switchTab('logs');
+        }
+
+        function syncSidebar() {
+            let key = null;
+            if (currentView === 'tickets') key = document.body.classList.contains('queue-focus') ? 'queue' : 'overview';
+            else if (currentView === 'logs') key = 'activity';
+            else if (currentView === 'admins') key = { users: 'people', userDetail: 'people', online: 'live', devices: 'devices' }[currentAdminPage] || null;
+            document.querySelectorAll('.ops-side-item').forEach(el => el.classList.toggle('active', el.dataset.nav === key));
+        }
+
+        // ── Menus, operator identity, small helpers ──────────
+        function toggleMenu(id, e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById(id);
+            const open = !menu.classList.contains('open');
+            closeMenus();
+            if (open) {
+                if (id === 'quickReplyMenu') renderQuickReplies();
+                menu.classList.add('open');
+            }
+        }
+
+        function closeMenus() {
+            document.querySelectorAll('.ops-menu.open').forEach(m => m.classList.remove('open'));
+        }
+
+        document.addEventListener('click', e => { if (!e.target.closest('.ops-menu')) closeMenus(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenus(); });
+
+        function fillOperatorIdentity() {
+            const name = currentAdmin.full_name || currentAdmin.email;
+            const first = String(name).split(/[\s@]/)[0];
+            document.getElementById('adminName').textContent = name;
+            document.getElementById('adminAvatar').textContent = initials(name);
+            document.getElementById('userMenuEmail').textContent = currentAdmin.email;
+            document.getElementById('replyAs').textContent = `Reply as ${first}`;
+            document.getElementById('todayLabel').textContent = new Date()
+                .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
+            syncDuty();
+        }
+
+        // On duty / away is a personal marker kept on this device
+        function toggleDuty() {
+            let away = false;
+            try { away = localStorage.getItem('xorbit_admin_away') === '1'; } catch (_) {}
+            try { localStorage.setItem('xorbit_admin_away', away ? '0' : '1'); } catch (_) {}
+            syncDuty();
+        }
+
+        function syncDuty() {
+            let away = false;
+            try { away = localStorage.getItem('xorbit_admin_away') === '1'; } catch (_) {}
+            document.getElementById('dutyToggle').classList.toggle('away', away);
+            document.getElementById('dutyLabel').textContent = away ? 'Away' : 'On duty';
+        }
+
+        function syncPills() {
+            const st = document.getElementById('statusSelect');
+            const pr = document.getElementById('prioritySelect');
+            st.className = `pill-select status st-${st.value}`;
+            pr.className = `pill-select priority pr-${pr.value}`;
+        }
+
+        function messageClock(ts) {
+            const d = new Date(ts);
+            const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            if (d.toDateString() === today) return `Today, ${time}`;
+            if (d.toDateString() === yesterday) return `Yesterday, ${time}`;
+            return `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${time}`;
+        }
+
+        function copyTicketNumber() {
+            if (!currentTicket) return;
+            navigator.clipboard?.writeText(currentTicket.ticket_number);
+        }
+
+        async function openRequesterAccount() {
+            if (!currentTicket) return;
+            try {
+                const { data, error } = await supabaseClient.from('clients').select('id').eq('email', currentTicket.email).limit(1);
+                if (error) throw error;
+                if (!data || !data.length) { alert(`No X-ORBIT account uses ${currentTicket.email}.`); return; }
+                switchTab('admins', null, 'users');
+                openUserDetail(data[0].id);
+            } catch (err) {
+                console.error('Error opening account:', err);
+                alert('Could not look up that account.');
+            }
+        }
+
+        const QUICK_REPLIES = [
+            ['Looking into it', "Thanks for reaching out — I'm looking into this now and will update you here shortly."],
+            ['Need more detail', 'Could you share the exact error message you see, plus what you were doing right before it happened? A screenshot helps a lot.'],
+            ['Try signing in again', "I've checked your account on our side. Please sign out, close the tab, and sign back in, then let me know if it still happens."],
+            ['Fixed — please confirm', 'This should be fixed now. Can you confirm everything is working on your end? If so, I will mark this ticket resolved.'],
+            ['Closing for inactivity', "We haven't heard back in a while, so I'm going to mark this ticket inactive. You can reopen it any time from the support portal."],
+        ];
+
+        function renderQuickReplies() {
+            document.getElementById('quickReplyMenu').innerHTML = '<div class="menu-label">Quick replies</div>' +
+                QUICK_REPLIES.map((r, i) => `<button onclick="useQuickReply(${i})"><i class="fas fa-bolt"></i><span><b>${escapeHtmlAdmin(r[0])}</b><span>${escapeHtmlAdmin(r[1])}</span></span></button>`).join('');
+        }
+
+        function useQuickReply(i) {
+            const input = document.getElementById('messageInput');
+            input.value = input.value ? `${input.value.trimEnd()}\n\n${QUICK_REPLIES[i][1]}` : QUICK_REPLIES[i][1];
+            closeMenus();
+            input.focus();
+        }
+
+        // ── New ticket (opened by staff on someone's behalf) ──
+        function openNewTicketModal() {
+            ['ntName', 'ntEmail', 'ntSubject', 'ntMessage'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('ntPriority').value = 'medium';
+            document.getElementById('ntMsg').style.display = 'none';
+            document.getElementById('newTicketModal').style.display = 'flex';
+            document.getElementById('ntName').focus();
+        }
+
+        function closeNewTicketModal() {
+            document.getElementById('newTicketModal').style.display = 'none';
+        }
+
+        async function createStaffTicket(e) {
+            e.preventDefault();
+            const btn = document.getElementById('ntSubmit');
+            const msgEl = document.getElementById('ntMsg');
+            const name = document.getElementById('ntName').value.trim();
+            const email = document.getElementById('ntEmail').value.trim().toLowerCase();
+            const subject = document.getElementById('ntSubject').value.trim();
+            const message = document.getElementById('ntMessage').value.trim();
+            btn.disabled = true;
+            msgEl.style.display = 'none';
+            try {
+                const { data: ticket, error } = await supabaseClient.from('support_tickets').insert([{
+                    name, email, subject, message,
+                    category: document.getElementById('ntCategory').value,
+                    priority: document.getElementById('ntPriority').value,
+                    is_guest: false,
+                }]).select().single();
+                if (error) throw error;
+
+                // The conversation row is created by the database right after the ticket
+                let conversation = null;
+                for (let i = 0; i < 6 && !conversation; i++) {
+                    await new Promise(r => setTimeout(r, 400));
+                    const res = await supabaseClient.from('conversations').select('id').eq('ticket_id', ticket.id).maybeSingle();
+                    conversation = res.data;
+                }
+                if (!conversation) throw new Error('The ticket was created, but its conversation did not appear yet. Refresh and reply from the queue.');
+
+                const { error: msgErr } = await supabaseClient.from('messages').insert([{
+                    conversation_id: conversation.id,
+                    sender_name: currentAdmin.full_name,
+                    sender_email: currentAdmin.email,
+                    sender_admin_id: currentAdmin.id,
+                    is_staff: true,
+                    message,
+                }]);
+                if (msgErr) throw msgErr;
+
+                closeNewTicketModal();
+                await loadTickets();
+                loadStats();
+                selectTicket(ticket.id);
+            } catch (err) {
+                console.error('Error creating ticket:', err);
+                msgEl.className = 'create-msg error';
+                msgEl.textContent = err.message || 'Failed to create the ticket.';
+                msgEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
             }
         }
 
@@ -2817,8 +4002,10 @@
 
         function switchAdminPage(page, el) {
             currentAdminPage = page;
+            el = el || document.querySelector(`.admin-sidebar-item[data-page="${page}"]`);
             document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
             if (el) el.classList.add('active');
+            if (typeof syncSidebar === 'function') syncSidebar();
             document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
             document.getElementById('adminPage-' + page).classList.add('active');
 
@@ -3839,20 +5026,6 @@
             }
         }
 
-        function toggleTicketOptions() {
-            const toggle  = document.getElementById('optionsToggle');
-            const buttons = document.getElementById('optionsButtons');
-            const collapsed = toggle.classList.toggle('collapsed');
-            buttons.classList.toggle('hidden', collapsed);
-        }
-
-        function generateTempPassword() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
-            let pw = '';
-            for (let i = 0; i < 16; i++) pw += chars[Math.floor(Math.random() * chars.length)];
-            return pw;
-        }
-
         function resetUserPassword() {
             if (!currentTicket) return;
             document.getElementById('resetPwChoiceModal').style.display = 'flex';
@@ -3964,6 +5137,7 @@
 
                 currentTicket.status = 'inactive';
                 document.getElementById('statusSelect').value = 'inactive';
+                syncPills();
                 closeMarkInactiveModal();
                 await loadTickets();
                 await loadStats();
