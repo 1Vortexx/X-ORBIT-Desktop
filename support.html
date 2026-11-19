@@ -644,36 +644,30 @@
         .ticket-closed-state {
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex: 1;
-            padding: 40px 20px;
-        }
-
-        .ticket-closed-modal {
+            gap: 14px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
             background: var(--surface);
-            border: 1px solid var(--border-hi);
-            padding: 40px;
-            width: 420px;
-            max-width: 100%;
-            text-align: center;
+            flex-shrink: 0;
         }
 
         .ticket-closed-modal i.status-icon {
-            font-size: 36px;
-            margin-bottom: 20px;
+            font-size: 18px;
             color: var(--warning);
-            display: block;
+            flex-shrink: 0;
         }
 
         .ticket-closed-modal.closed-status i.status-icon {
             color: var(--text-ghost);
         }
 
+        .ticket-closed-text { flex: 1; min-width: 0; }
+
         .ticket-closed-modal h2 {
             font-family: 'Orbitron', monospace;
             color: var(--text);
-            margin-bottom: 10px;
-            font-size: 0.88rem;
+            margin-bottom: 2px;
+            font-size: 0.66rem;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -681,72 +675,65 @@
 
         .ticket-closed-modal p {
             color: var(--text-faint);
-            margin-bottom: 24px;
-            line-height: 1.6;
-            font-size: 0.75rem;
+            line-height: 1.5;
+            font-size: 0.72rem;
         }
+
+        .ticket-closed-reason { color: var(--text-dim); }
 
         .ticket-closed-actions {
             display: flex;
-            flex-direction: column;
             gap: 8px;
+            flex-shrink: 0;
         }
 
-        .reopen-btn {
-            width: 100%;
-            padding: 12px 20px;
-            background: var(--text);
-            border: 1px solid var(--text);
-            color: var(--bg);
+        .reopen-btn,
+        .delete-btn {
+            padding: 9px 14px;
             font-family: 'Orbitron', monospace;
-            font-size: 0.62rem;
+            font-size: 0.56rem;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
             cursor: pointer;
-            transition: background 0.15s, color 0.15s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            white-space: nowrap;
+        }
+
+        .reopen-btn {
+            background: var(--text);
+            border: 1px solid var(--text);
+            color: var(--bg);
+            transition: background 0.15s, color 0.15s;
         }
 
         .reopen-btn:hover { background: var(--bg); color: var(--text); }
 
         .delete-btn {
-            width: 100%;
-            padding: 12px 20px;
             background: transparent;
             border: 1px solid rgba(248,113,113,0.3);
             color: #f87171;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
             transition: background 0.15s, border-color 0.15s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
         .delete-btn:hover { background: rgba(248,113,113,0.08); border-color: #f87171; }
 
-        .ticket-info-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            padding: 4px 10px;
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            border: 1px solid var(--border-hi);
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        @media (max-width: 640px) {
+            .ticket-closed-state { flex-wrap: wrap; }
+            .ticket-closed-actions { width: 100%; }
+            .reopen-btn, .delete-btn { flex: 1; }
         }
+
+        /* Locked ticket: history stays visible, replying waits for a reopen */
+        .message-input-area.locked .message-input { cursor: not-allowed; }
+        .message-input-area.locked .input-hint { color: var(--warning); }
+
+        /* Read receipts on your own messages */
+        .message-receipt { margin-left: 6px; }
+        .message-receipt.seen { color: var(--text-muted); opacity: 1; }
 
         /* ════════════════════════════════════════════════
            CHAT VIEW
@@ -1295,35 +1282,29 @@
                         </button>
                     </div>
 
-                    <div id="ticketClosedMessage" style="display: none;" class="ticket-closed-state">
-                        <div class="ticket-closed-modal" id="closedModalContent">
-                            <div class="ticket-info-badge" id="ticketBadge">
-                                <i class="fas fa-ticket-alt"></i>
-                                <span id="modalTicketNumber"></span>
-                            </div>
+                    <div id="chatMessagesArea" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+                        <div id="ticketClosedMessage" style="display: none;" class="ticket-closed-state ticket-closed-modal">
                             <i class="fas fa-check-circle status-icon" id="closedIcon"></i>
-                            <h2 id="closedTitle">Ticket Resolved</h2>
-                            <p id="closedMessage">
-                                This ticket has been marked as resolved. If you're still experiencing issues, you can reopen it below.
-                            </p>
+                            <div class="ticket-closed-text">
+                                <h2 id="closedTitle">Ticket Resolved</h2>
+                                <p id="closedMessage"></p>
+                            </div>
                             <div class="ticket-closed-actions">
                                 <button class="reopen-btn" onclick="reopenTicket()">
                                     <i class="fas fa-arrow-rotate-left"></i>
-                                    Reopen Ticket
+                                    Reopen
                                 </button>
                                 <button class="delete-btn" onclick="confirmDeleteTicket()">
                                     <i class="fas fa-trash-can"></i>
-                                    Delete Ticket
+                                    Delete
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="chatMessagesArea" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
                         <div class="messages-container" id="messagesContainer"></div>
 
-                        <div class="message-input-area">
-                            <div class="input-hint">Ctrl+Enter to send</div>
+                        <div class="message-input-area" id="messageInputArea">
+                            <div class="input-hint" id="inputHint">Ctrl+Enter to send</div>
                             <div class="message-input-container">
                                 <textarea
                                     id="messageInput"
@@ -1830,39 +1811,51 @@
             document.getElementById('chatTicketStatus').textContent = ticket.status.replace('_', ' ').toUpperCase();
             document.getElementById('chatTicketStatus').className = `ticket-status status-${ticket.status}`;
 
-            if (ticket.status === 'resolved' || ticket.status === 'closed' || ticket.status === 'inactive') {
-                document.getElementById('ticketClosedMessage').style.display = 'flex';
-                document.getElementById('chatMessagesArea').style.display = 'none';
+            await loadMessages(ticketId);
+            subscribeToMessages(ticketId);
+        }
 
-                document.getElementById('modalTicketNumber').textContent = ticket.ticket_number;
-                const modalContent = document.getElementById('closedModalContent');
-                const icon = document.getElementById('closedIcon');
+        const INACTIVE_REASON_PREFIX = 'This ticket has been marked as inactive. Reason: ';
 
-                if (ticket.status === 'resolved') {
-                    modalContent.classList.remove('closed-status');
-                    icon.className = 'fas fa-check-circle status-icon';
-                    document.getElementById('closedTitle').textContent = 'Ticket Resolved';
-                    document.getElementById('closedMessage').textContent =
-                        'This ticket has been marked as resolved. If you\'re still experiencing issues, you can reopen it below.';
-                } else if (ticket.status === 'inactive') {
-                    modalContent.classList.add('closed-status');
-                    icon.className = 'fas fa-moon status-icon';
-                    document.getElementById('closedTitle').textContent = 'Ticket Inactive';
-                    document.getElementById('closedMessage').textContent =
-                        'This ticket has been marked as inactive due to inactivity. You can reopen it to continue the conversation.';
-                } else {
-                    modalContent.classList.add('closed-status');
-                    icon.className = 'fas fa-lock status-icon';
-                    document.getElementById('closedTitle').textContent = 'Ticket Closed';
-                    document.getElementById('closedMessage').textContent =
-                        'This ticket has been closed. You can reopen it to continue the conversation or delete it.';
-                }
+        // Resolved, closed and inactive tickets keep their history visible; the banner says why
+        // and the composer stays disabled until the user reopens the ticket.
+        function applyTicketLock(status, messages) {
+            const locked = status === 'resolved' || status === 'closed' || status === 'inactive';
+            const banner = document.getElementById('ticketClosedMessage');
+            const inputArea = document.getElementById('messageInputArea');
+            const input = document.getElementById('messageInput');
+            banner.style.display = locked ? 'flex' : 'none';
+            inputArea.classList.toggle('locked', locked);
+            input.disabled = locked;
+            document.getElementById('sendBtn').disabled = locked;
+            document.getElementById('inputHint').textContent = locked
+                ? 'Reopen this ticket to send a message'
+                : 'Ctrl+Enter to send';
+            input.placeholder = locked ? `This ticket is ${status.replace('_', ' ')}.` : 'Type your message…';
+            if (!locked) return;
+
+            const icon = document.getElementById('closedIcon');
+            const title = document.getElementById('closedTitle');
+            const text = document.getElementById('closedMessage');
+            banner.classList.toggle('closed-status', status !== 'resolved');
+
+            if (status === 'resolved') {
+                icon.className = 'fas fa-check-circle status-icon';
+                title.textContent = 'Ticket Resolved';
+                text.textContent = 'This ticket has been marked as resolved. If you\'re still experiencing issues, reopen it to send a message.';
+            } else if (status === 'inactive') {
+                icon.className = 'fas fa-moon status-icon';
+                title.textContent = 'Ticket Inactive';
+                const note = [...(messages || [])].reverse()
+                    .find(m => m.sender_email === 'system@xorbit.org' && (m.message || '').startsWith(INACTIVE_REASON_PREFIX));
+                const reason = note ? note.message.slice(INACTIVE_REASON_PREFIX.length) : '';
+                text.innerHTML = 'This ticket was marked inactive'
+                    + (reason ? `: <span class="ticket-closed-reason">${escapeHtml(reason)}</span>` : ' due to inactivity.')
+                    + ' Reopen it to send a message.';
             } else {
-                // FIXED: Ensure the chat interface is properly displayed for open tickets
-                document.getElementById('ticketClosedMessage').style.display = 'none';
-                document.getElementById('chatMessagesArea').style.display = 'flex';
-                await loadMessages(ticketId);
-                subscribeToMessages(ticketId);
+                icon.className = 'fas fa-lock status-icon';
+                title.textContent = 'Ticket Closed';
+                text.textContent = 'This ticket has been closed. Reopen it to send a message, or delete it.';
             }
         }
 
@@ -1912,8 +1905,6 @@
                     throw convError;
                 }
 
-                console.log('Found conversation:', conversation);
-
                 const { data: messages, error: msgError } = await supabaseClient
                     .from('messages')
                     .select('*')
@@ -1925,45 +1916,9 @@
                     throw msgError;
                 }
 
-                console.log('Messages loaded:', messages);
                 displayMessages(messages || []);
-
-                // CRITICAL FIX: Always ensure chat area is visible for open tickets
-                // Check the fresh ticket status, not stale data
-                const isLocked = currentTicket && ticketData &&
-                    (ticketData.status === 'resolved' || ticketData.status === 'closed' || ticketData.status === 'inactive');
-
-                if (currentTicket && ticketData && !isLocked) {
-                    document.getElementById('ticketClosedMessage').style.display = 'none';
-                    document.getElementById('chatMessagesArea').style.display = 'flex';
-                } else if (isLocked) {
-                    document.getElementById('ticketClosedMessage').style.display = 'flex';
-                    document.getElementById('chatMessagesArea').style.display = 'none';
-
-                    document.getElementById('modalTicketNumber').textContent = currentTicket.ticket_number;
-                    const modalContent = document.getElementById('closedModalContent');
-                    const icon = document.getElementById('closedIcon');
-
-                    if (ticketData.status === 'resolved') {
-                        modalContent.classList.remove('closed-status');
-                        icon.className = 'fas fa-check-circle status-icon';
-                        document.getElementById('closedTitle').textContent = 'Ticket Resolved';
-                        document.getElementById('closedMessage').textContent =
-                            'This ticket has been marked as resolved. If you\'re still experiencing issues, you can reopen it below.';
-                    } else if (ticketData.status === 'inactive') {
-                        modalContent.classList.add('closed-status');
-                        icon.className = 'fas fa-moon status-icon';
-                        document.getElementById('closedTitle').textContent = 'Ticket Inactive';
-                        document.getElementById('closedMessage').textContent =
-                            'This ticket has been marked as inactive due to inactivity. You can reopen it to continue the conversation.';
-                    } else {
-                        modalContent.classList.add('closed-status');
-                        icon.className = 'fas fa-lock status-icon';
-                        document.getElementById('closedTitle').textContent = 'Ticket Closed';
-                        document.getElementById('closedMessage').textContent =
-                            'This ticket has been closed. You can reopen it to continue the conversation or delete it.';
-                    }
-                }
+                if (currentTicket) applyTicketLock(currentTicket.status, messages);
+                markStaffMessagesRead(conversation.id, messages || []);
             } catch (error) {
                 console.error('Error loading messages:', error);
                 const container = document.getElementById('messagesContainer');
@@ -2050,17 +2005,34 @@
                     `;
                 }
 
+                const receipt = msg.is_staff ? '' : msg.read_at
+                    ? `<span class="message-receipt seen" title="Seen ${new Date(msg.read_at).toLocaleString()}"><i class="fas fa-check-double"></i> Seen</span>`
+                    : `<span class="message-receipt"><i class="fas fa-check"></i> Sent</span>`;
                 return `
                     <div class="message ${msg.is_staff ? 'staff' : 'user'}">
                         <div class="message-header">${escapeHtml(msg.sender_name)}</div>
                         <div class="message-bubble">${escapeHtml(msg.message)}</div>
-                        <div class="message-time">${formatTime(msg.created_at)}</div>
+                        <div class="message-time">${formatTime(msg.created_at)}${receipt}</div>
                     </div>
                 `;
             }).join('');
 
             container.scrollTop = container.scrollHeight;
         }
+
+        // Tell staff we've seen their replies (only while this tab is actually being looked at)
+        async function markStaffMessagesRead(conversationId, messages) {
+            if (document.hidden || !messages.some(m => m.is_staff && !m.read_at)) return;
+            const { error } = await supabaseClient.rpc('mark_support_messages_read', {
+                p_conversation_id: conversationId,
+                p_reader_is_staff: false
+            });
+            if (error) console.error('Error marking messages read:', error);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && currentTicket) loadMessages(currentTicket.id);
+        });
 
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -2078,10 +2050,16 @@
                     if (conversation) {
                         messagesSubscription = supabaseClient.channel('messages')
                             .on('postgres_changes', {
-                                event: 'INSERT',
+                                event: '*',
                                 schema: 'public',
                                 table: 'messages',
                                 filter: `conversation_id=eq.${conversation.id}`
+                            }, () => loadMessages(ticketId))
+                            .on('postgres_changes', {
+                                event: 'UPDATE',
+                                schema: 'public',
+                                table: 'support_tickets',
+                                filter: `id=eq.${ticketId}`
                             }, () => loadMessages(ticketId))
                             .subscribe();
                     }
@@ -2093,6 +2071,7 @@
             const message = messageInput.value.trim();
 
             if (!message || !currentTicket) return;
+            if (['resolved', 'closed', 'inactive'].includes(currentTicket.status)) return;
 
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
@@ -2249,13 +2228,10 @@
                 await loadUserTickets();
                 currentTicket.status = 'open';
 
-                document.getElementById('ticketClosedMessage').style.display = 'none';
-                document.getElementById('chatMessagesArea').style.display = 'flex';
                 document.getElementById('chatTicketStatus').textContent = 'OPEN';
                 document.getElementById('chatTicketStatus').className = 'ticket-status status-open';
 
                 await loadMessages(currentTicket.id);
-                subscribeToMessages(currentTicket.id);
 
                 alert('Ticket has been reopened!');
             } catch (error) {
