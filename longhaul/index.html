@@ -8,10 +8,21 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Long Haul</title>
   <link rel="icon" type="image/png" href="assets/branding/long-haul-icon.png"/>
-  <link rel="stylesheet" href="css/base.css"/>
-  <link rel="stylesheet" href="css/hud.css"/>
-  <link rel="stylesheet" href="css/menus.css"/>
-  <link rel="stylesheet" href="css/touch.css"/>
+  <script>
+    // Some school and work networks (and edge security checks) refuse a stylesheet now and then with a 403, and
+    // without it the menus or HUD come up unstyled. A sheet that fails retries once, then loads the same file of the
+    // same release from a mirror of the GitHub repo (jsDelivr), which sits outside that path.
+    window.lhStyleFallback = function (link) {
+      var tries = +(link.dataset.tries || 0), path = link.getAttribute("href").split("?")[0].replace(/^(\.\/)?/, "").replace(/^.*\/longhaul\//, "");
+      link.dataset.tries = tries + 1;
+      if (tries === 0) link.href = path + "?retry=" + Date.now();
+      else if (tries === 1) link.href = "https://cdn.jsdelivr.net/gh/1Vortexx/" + (/^beta\./.test(location.hostname) ? "xorbit-beta" : "X-ORBIT-Desktop") + "@main/longhaul/" + path;
+    };
+  </script>
+  <link rel="stylesheet" href="css/base.css" onerror="lhStyleFallback(this)"/>
+  <link rel="stylesheet" href="css/hud.css" onerror="lhStyleFallback(this)"/>
+  <link rel="stylesheet" href="css/menus.css" onerror="lhStyleFallback(this)"/>
+  <link rel="stylesheet" href="css/touch.css" onerror="lhStyleFallback(this)"/>
   <script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
   <link rel="manifest" href="./manifest.webmanifest" id="lh-manifest">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
