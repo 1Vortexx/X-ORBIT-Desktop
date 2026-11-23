@@ -25,6 +25,19 @@ const STAT_LABELS = {
 };
 
 const logoUrl = new URL("../../assets/branding/long-haul-logo.png", import.meta.url).href;
+// The people behind the game, from CREDITS.md (the roles on The Long Haul Discord, 2026-11-22): [name, username]
+const MUD = ["#1 My Name Is Mud", "dvflw1"], VORTEXX = ["1Vortexx", "vortexx.js"], LESTER = ["Michael Lester", "villagernose27"], GLITZ = ["GlitzerX", "glitzerx"],
+  KUNNII = ["Kunnii", "dotkunnii"], METAL = ["Metal", "m3tals"], POTATO = ["Sad_potato_950", "sad_potato_950"], FOX = ["Star Fox", "star_fox01."], COLZIC = ["Colzic", "cmoney0268"];
+const CREDIT_SECTIONS = [
+  ["Studio lead", [VORTEXX]],
+  ["Development", [VORTEXX, LESTER]],
+  ["Voice cast", [MUD, GLITZ, KUNNII, METAL, POTATO, FOX]],
+  ["Contributors", [MUD, COLZIC, GLITZ, KUNNII, METAL, LESTER, POTATO, FOX, ["ZeeAnimate", ""]]],
+  ["Quality assurance", [MUD, COLZIC, ["GATO", "agent_maverick2"], GLITZ, ["ironbull", "ironbull307"], METAL, LESTER, ["Reddy", "sm64fan"], ["Ulyrn", "im_pancak3"], ["vector visuals", "luna20220349"]]],
+  ["Content creators", [MUD, VORTEXX, LESTER]],
+  ["Community moderation", [POTATO]],
+  ["Special thanks", [["DieselMan999", "dieselman999"], ["feminineindividual", "trainman45"], ["JJ", "jj_bedbug22"], ["SpoonerMan", "liamspoonman"]]],
+];
 const LOGO = `<img class="lh-logo" src="${logoUrl}" alt="Long Haul" width="2172" height="724">`;
 const brand = (sub) => `<div class="lh-brand"><div class="lh-kicker">Desert road-trip survival</div>${LOGO}${sub ? `<p class="lh-tag">${esc(sub)}</p>` : ""}</div>`;
 
@@ -32,7 +45,8 @@ let root = null, prefs = null, handlers = {};
 let rootName = null, data = {}, stack = [];
 let nowPlaying = null, message = "", gestureDone = false;
 let dlgPicked = false, dlgReadyAt = 0;   // a dialogue answers once; a short guard after (re)opening absorbs double clicks
-const ui = { tabs: { settings: "graphics", inventory: "pockets", controls: "driving", career: "stats", board: "trip" }, nj: { difficulty: null, seed: "", hostile: true, confirm: false }, code: "", login: { id: "", pass: "" } };
+const ui = { tabs: { settings: "graphics", inventory: "pockets", controls: "driving", career: "stats", board: "trip" }, nj: { difficulty: null, seed: "", hostile: true, confirm: false },
+  camp: { difficulty: null, hostile: true, confirm: false, fresh: false }, code: "", login: { id: "", pass: "" } };
 
 const call = (name, ...args) => { const f = handlers[name]; if (typeof f === "function") return f(...args); };
 const screen = () => (stack.length ? stack[stack.length - 1] : rootName);
@@ -48,6 +62,7 @@ function setPref(path, v) {
 }
 function applyOwnPrefs() {
   document.documentElement.classList.toggle("lh-reduce-motion", !!(prefs.a11y && prefs.a11y.reduceMotion));
+  root?.classList.toggle("hc", !!prefs.a11y?.highContrast);
 }
 let initDiffs = null;
 const diffs = () => (Array.isArray(data.difficulties) && data.difficulties.length ? data.difficulties : initDiffs || DEFAULT_DIFFS);
@@ -235,7 +250,10 @@ const SCREENS = {
     if (s && cs && cs.same) h += cont("continue", "Continue", cparts, "synced from your X-ORBIT account", true);
     else if (s) h += cont("continue", "Continue", parts, "", true);
     if (cs && !cs.same) h += cont("continuecloud", s ? "Continue from X-ORBIT" : "Continue", cparts, s ? "replaces the journey on this device" : "from your X-ORBIT account", !s);
-    h += item("newjourney", "Singleplayer", { focus: !s && !cs, sub: "a new journey on your own" })
+    const cp = data.campaign;
+    if (data.prologueReady) h += item("prologue", "The Way Back", {sub:"New campaign · playable prologue · separate save"});
+    h += item("campaign", "Campaign", { sub: cp ? `The Return Trip · continue ${cp.mission ? "mission " + cp.mission : ""} · day ${cp.day}` : "The Return Trip · story mode" })
+      + item("newjourney", "Singleplayer", { focus: !s && !cs, sub: "a new journey on your own" })
       + item("convoy", "Convoy", { sub: "drive the same road with friends" })
       + item("controls", "Controls / How to Play");
     if (data.dev) h += item("devmap", "Dev Map", { sub: "test range · not saved", cls: "lh-quiet" });
@@ -280,6 +298,57 @@ const SCREENS = {
       ${saved ? `<p class="lh-help lh-warnline">${icon("warn")}<span>You already have a journey${parts.length ? ` (${parts.slice(0, 2).map(esc).join(" · ")})` : ""}. Starting a new one replaces it – you will be asked to confirm.</span></p>` : ""}
       <div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="start" data-autofocus>Start journey</button></div>`,
     { foot: navHint("Back") });
+  },
+
+  prologue() {
+    const saved=data.prologue;
+    if(ui.prologueConfirm) return panel("Restart the prologue?", `<p>This replaces only The Way Back prologue save. The older campaign and free roam are kept.</p><div class="lh-btns"><button class="lh-btn lh-primary" data-act="restartprologue">Restart prologue</button><button class="lh-btn" data-act="cancelprologue">Cancel</button></div>`);
+    return panel("The Way Back", `<p class="lh-lead">Prologue · Before the Dust</p><p>Meet Cal and Grevyn, enter government service, uncover the evidence, and attempt the evacuation. Explore Westhaven and Drywell via Highway 9 and the original highway.</p><div class="lh-btns">${saved?`<button class="lh-btn lh-primary" data-act="continueprologue">Continue · ${esc(saved.mission)}</button>`:""}<button class="lh-btn" data-act="newprologue">${saved?"Restart":"Start"} prologue</button></div><p class="lh-help">Four missions. Later chapters are in development. J opens objectives and object hints; Enter advances dialogue, hold Enter to skip a cutscene.</p>`);
+  },
+  // The Return Trip: continue, or start over on the authored road. Its own save slot: free roam is never touched.
+  campaign() {
+    const c = ui.camp, list = diffs(), saved = data.campaign;
+    if (!list.some((d) => d.id === c.difficulty)) c.difficulty = (list[Math.min(1, list.length - 1)] || {}).id;
+    if (c.confirm) {
+      return panel("Start the campaign again?", `
+        <div class="lh-confirm">${icon("warn")}<div><p class="lh-lead">This replaces your campaign progress${saved ? `: <b>mission ${esc(saved.mission || "")} · day ${esc(saved.day)}</b>` : ""}.</p>
+        <p>Your free-roam journey is not affected. This cannot be undone.</p></div></div>
+        <div class="lh-btns"><button type="button" class="lh-btn" data-act="cancelconfirm" data-autofocus>Keep my progress</button>
+        <button type="button" class="lh-btn lh-danger" data-act="confirmcampaign">Start again</button></div>`, { cls: "lh-narrow" });
+    }
+    const chapters = (data.chapters || []).map((ch) => `<li class="lh-campch${ch.playable ? "" : " lh-locked"}"><b>${ch.n}. ${esc(ch.title)}</b><small>${ch.playable ? `${ch.missions.length} missions` : "In development"}</small></li>`).join("");
+    const cards = list.map((d) => `<button type="button" class="lh-card" data-act="campdiff" data-arg="${esc(d.id)}" aria-pressed="${d.id === c.difficulty}">
+      <b>${esc(d.label)}</b><span>${esc(d.desc || "")}</span><em>${d.id === c.difficulty ? "Selected" : "Select"}</em></button>`).join("");
+    return panel("The Return Trip", `
+      <p class="lh-lead">Kit Vale comes home to settle her mother's garage, fix what she has to, sell up and leave. A yellow front door on the workbench changes the plan.</p>
+      ${saved ? `<div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="continuecampaign" data-autofocus>Continue · mission ${esc(saved.mission || "")} · day ${esc(saved.day)}</button></div>` : ""}
+      <h3>${saved ? "Start again" : "Difficulty"}</h3><div class="lh-cards" role="group" aria-label="Difficulty">${cards}</div>
+      ${rowWrap("Hostile encounters", "Off: strangers on the road are peaceful. Story scenes are the same either way.",
+        `<button type="button" class="lh-switch" role="switch" aria-checked="${c.hostile}" aria-label="Hostile encounters" data-act="camphostile"><i></i></button>`, c.hostile ? "On" : "Off", "camp-hostile")}
+      <div class="lh-btns"><button type="button" class="lh-btn${saved ? "" : " lh-primary"}" data-act="newcampaign"${saved ? "" : " data-autofocus"}>${saved ? "New campaign" : "Start the campaign"}</button></div>
+      <h3>Chapters</h3><ol class="lh-campchs">${chapters}</ol>
+      <p class="lh-help">The campaign is played on one fixed road, so its places are always where the story needs them. It saves separately from your free-roam journey.</p>`,
+    { foot: navHint("Back") });
+  },
+
+  // In-game campaign journal: the mission and its objectives, hints on request, tapes to replay, notes and chapters
+  journal() {
+    const m = data.mission || {}, ch = m.chapter;
+    const objs = (m.objectives || []).map((o) => `<li class="lh-obj${o.done ? " lh-done" : ""}">${icon(o.done ? "good" : "next")}<span>${esc(o.text)}${o.optional ? " <small>(optional)</small>" : ""}${o.hint ? `<small class="lh-hint">${esc(o.hint)}</small>` : ""}</span></li>`).join("");
+    const tapes = (data.tapes || []).map((t) => `<li><button type="button" class="lh-btn lh-btn-s" data-act="tape" data-arg="${esc(t.key)}">${icon("note")}<span>${esc(t.title)}</span></button></li>`).join("");
+    const notes = (data.journal || []).map((j) => `<li>“${esc(j.text)}”<small>Day ${esc(j.day)} · ${esc(j.mission)}</small></li>`).join("");
+    const chapters = (data.chapters || []).map((c) => `<li class="lh-campch"><b>${c.n}. ${esc(c.title)}</b><small>${c.missions.map((x) => `${x.done ? "✓" : x.current ? "▸" : "·"} ${esc(x.title)}${x.playable ? "" : " (in development)"}`).join(" · ")}</small></li>`).join("");
+    return panel("Journal", `
+      <p class="lh-tag">${esc(data.weekday || "")} · day ${esc(data.day)}</p>
+      ${m.playable ? `<h3>${ch ? `Chapter ${ch.n} · ${esc(ch.title)}: ` : ""}${esc(m.title || "")}</h3><ul class="lh-objs">${objs}</ul>
+        ${data.help ? "" : `<div class="lh-btns"><button type="button" class="lh-btn lh-btn-s" data-act="camphelp">${icon("info")}<span>I'm stuck: show hints</span></button></div>`}`
+      : `<p class="lh-lead">${data.ended ? "That's everything playable in the campaign for now. The next chapter is still being built; the road is yours until then." : ""}</p>`}
+      ${tapes ? `<h3>Tapes</h3><ul class="lh-tapes">${tapes}</ul>` : ""}
+      ${notes ? `<h3>Notes</h3><ul class="lh-notes">${notes}</ul>` : ""}
+      <h3>${esc(data.title || "The Return Trip")}</h3><ol class="lh-campchs">${chapters}</ol>`, {
+      cls: "lh-over", backLabel: "Close",
+      foot: `<div class="lh-keys" aria-hidden="true"><span>${k("journal")} / <kbd>Esc</kbd> Close</span></div>`,
+    });
   },
 
   // A roadside conversation: who speaks, what they say, and the replies as a list. Never dismissable without a reply.
@@ -337,6 +406,7 @@ const SCREENS = {
         + slider("vol.music", "Music", 0, 1, 0.05, "pct")
         + slider("vol.sfx", "Engine & effects", 0, 1, 0.05, "pct")
         + slider("vol.ambience", "Ambience", 0, 1, 0.05, "pct")
+        + slider("vol.speech", "Character voices", 0, 1, 0.05, "pct")
         + slider("vol.voice", "Convoy voice chat", 0, 1, 0.05, "pct")
         + seg("voiceMode", "Your microphone", [["open", "Open mic"], ["ptt", "Push to talk"]], `Push to talk: hold ${k("talk")} while you speak.`)
         + toggle("muted", "Mute all sound", "Silences music, engine, effects and ambience.")
@@ -482,18 +552,22 @@ const SCREENS = {
   map() {
     const legend = (data.legend || []).filter((l) => l.kind !== "wreck").map((l) =>
       `<li><i class="lh-mapdot" style="background:${esc(l.color)}">${esc(l.letter)}</i>${esc(l.label)}</li>`).join("");
-    let side = `<h3>Key</h3><ul class="lh-mapkey"><li><i class="lh-mapme"></i>You</li>${data.convoy ? `<li><i class="lh-mapdot lh-mapmember"></i>Convoy driver</li>` : ""}${legend}
+    const story = data.campaign ? `<li><i class="lh-mapdot lh-mapstory">★</i>Story place</li><li><i class="lh-mapdot lh-mapdest">⬤</i>Your destination</li>` : "";
+    let side = `<h3>Key</h3><ul class="lh-mapkey"><li><i class="lh-mapme"></i>You</li>${data.convoy ? `<li><i class="lh-mapdot lh-mapmember"></i>Convoy driver</li>` : ""}${story}${legend}
       <li><i class="lh-mapdot lh-mapruin">F</i>Closed down</li></ul>`;
     if (data.digimap) {
       side += `<h3>Digimap: next ahead</h3><ul class="lh-mapkey">${data.next.map((n) =>
         `<li><i class="lh-mapdot lh-mapintel" style="color:${esc(n.color)}">${esc(n.letter)}</i><span>${esc(n.label)}<small>${n.name ? `${esc(n.name)} · ${esc(n.dist)}` : "none open in range"}</small></span></li>`).join("")}</ul>
         <p class="lh-help">${icon("warn")} While you carry the Digimap, far fewer places ahead are still open.</p>`;
+    } else if (data.paper) {
+      side += `<p class="lh-help">June's paper map: the whole highway and everything along it.</p>`;
     } else {
-      side += `<p class="lh-help">Only the road you've driven and places you've found are on the map. A Digimap shows what's ahead.</p>`;
+      side += `<p class="lh-help">Only the road you've driven and places you've found are on the map. ${data.campaign ? "June's paper map in the garage office shows the whole basin." : "A Digimap shows what's ahead."}</p>`;
     }
+    if (data.campaign) side += `<p class="lh-help">Click the map to set a destination; click a ★ to head there. Right-click clears it.</p>`;
     return panel("Map", `<div class="lh-mapwrap"><canvas class="lh-mapcv" aria-label="Map of the road you've travelled"></canvas><aside class="lh-mapside">${side}</aside></div>`, {
       cls: "lh-over lh-mapscreen", backLabel: "Close",
-      foot: `<div class="lh-keys" aria-hidden="true"><span>Drag Move</span><span>Wheel <kbd>+</kbd><kbd>−</kbd> Zoom</span><span><kbd>C</kbd> Centre</span><span><kbd>M</kbd> Close</span></div>`,
+      foot: `<div class="lh-keys" aria-hidden="true"><span>Drag Move</span><span>Wheel <kbd>+</kbd><kbd>−</kbd> Zoom</span><span><kbd>C</kbd> Centre</span>${data.campaign ? "<span>Click Set destination</span>" : ""}<span><kbd>M</kbd> Close</span></div>`,
     });
   },
 
@@ -512,14 +586,10 @@ const SCREENS = {
     return panel("Credits", `
       <div class="lh-credits">
         <h3>Long Haul</h3>
+        <p>An X-ORBIT Studios game. Created by Demitri Burns.</p>
         <p>A desert road-trip survival sandbox, made for X-ORBIT.</p>
         <p>All models, textures and sound effects are generated procedurally by the game.</p>
-        <h3>People</h3>
-        <ul class="lh-tracks">
-          <li><b>1Vortexx</b><span>Creator and developer</span><em></em></li>
-          <li><b>Michael Lester</b><span>Contributor and Music Composer</span><em></em></li>
-          ${["ZeeAnimate", "$GlitzerX$"].map((n) => `<li><b>${esc(n)}</b><span>Contributor</span><em></em></li>`).join("")}
-        </ul>
+        ${CREDIT_SECTIONS.map(([title, people]) => `<h3>${esc(title)}</h3><ul class="lh-tracks">${people.map(([n, user]) => `<li><b>${esc(n)}</b><span>${user ? "@" + esc(user) : ""}</span><em></em></li>`).join("")}</ul>`).join("")}
         <h3>Technology</h3>
         <p><b>Three.js</b> r170 – 3D rendering library. MIT License, © 2010–2024 three.js authors.</p>
         <h3>Music</h3>${music}
@@ -531,19 +601,23 @@ const SCREENS = {
     let body = "";
     if (t === "pockets") {
       const slots = Array.isArray(data.slots) ? data.slots : [];
+      const selected = Math.max(0, Math.min(5, data.selected | 0)), item = slots[selected];
       let rows = "";
       for (let i = 0; i < 6; i++) {
         const it = slots[i];
-        rows += it
-          ? `<div class="lh-slotrow"><kbd>${i + 1}</kbd><span class="lh-glyph">${glyph(it.icon)}</span><span class="lh-sn"><b>${esc(it.name)}</b>${meta(it)}</span>
-             <button type="button" class="lh-btn lh-btn-s" data-act="use" data-arg="${i}">Use</button><button type="button" class="lh-btn lh-btn-s" data-act="drop" data-arg="${i}">Drop</button></div>`
-          : `<div class="lh-slotrow lh-slotempty"><kbd>${i + 1}</kbd><span class="lh-glyph"></span><span class="lh-sn">Empty</span></div>`;
+        rows += `<button type="button" class="lh-pocket${i === selected ? " selected" : ""}${it ? "" : " empty"}" data-act="selectslot" data-arg="${i}" aria-pressed="${i === selected}" aria-label="Pocket ${i + 1}: ${esc(it?.name || "Empty")}">
+          <kbd>${i + 1}</kbd><span class="lh-glyph">${it ? glyph(it.icon) : ""}</span><span class="lh-pocket-name">${esc(it?.name || "Empty")}</span>${it ? meta(it) : ""}</button>`;
       }
       const h = data.held;
-      body = `<div class="lh-two"><div><h3>Pockets</h3>${rows}</div><div>
-        <h3>In hands</h3>${h ? `<div class="lh-slotrow"><span class="lh-glyph">${glyph(h.icon || "box")}</span><span class="lh-sn"><b>${esc(h.name)}</b>${meta(h)}</span></div>
-          <p class="lh-help">${k("stow")} pockets it if it fits. ${k("grab")} puts it down.</p>` : `<p class="lh-empty">Nothing in your hands.</p>`}
-        ${data.needs ? `<h3>Condition</h3>${needBars(data.needs)}` : ""}</div></div><p class="lh-msg" role="status" aria-live="polite">${esc(message)}</p>`;
+      body = `<div class="lh-pocket-layout"><div class="lh-pocket-grid" role="group" aria-label="Six inventory pockets">${rows}</div>
+        <aside class="lh-pocket-actions"><span class="lh-inv-label">Pocket ${selected + 1}</span><b>${esc(item?.name || "Empty pocket")}</b>
+          <button type="button" class="lh-btn lh-btn-s" data-act="use" data-arg="${selected}"${item ? "" : " disabled"}>${k("consume")} Use</button>
+          <button type="button" class="lh-btn lh-btn-s" data-act="hands" data-arg="${selected}"${item ? "" : " disabled"}>${icon("person")} To hands</button>
+          <button type="button" class="lh-btn lh-btn-s" data-act="drop" data-arg="${selected}"${item ? "" : " disabled"}>${icon("box")} Drop one</button>
+        </aside></div>
+        <div class="lh-inv-held">${icon("bag")}<span><small>In hands</small><b>${esc(h?.name || "Nothing held")}</b></span>${h ? `<button type="button" class="lh-btn lh-btn-s" data-act="stow">${k("stow")} Stow</button>` : ""}</div>
+        ${data.needs ? `<details class="lh-inv-condition"><summary>Condition</summary>${needBars(data.needs)}</details>` : ""}
+        <p class="lh-msg" role="status" aria-live="polite">${esc(message)}</p>`;
     } else if (t === "vehicle") {
       const vo = data.vehicle, v = Array.isArray(vo) ? vo : vo && Array.isArray(vo.parts) ? vo.parts : null;
       if (!v) body = `<p class="lh-empty">No vehicle nearby. Stand next to a vehicle or sit in it to inspect its parts.</p>`;
@@ -602,7 +676,8 @@ const SCREENS = {
     return `<section class="lh-panel lh-over lh-narrow lh-end" role="dialog" aria-label="Journey over">
       <header class="lh-endhead"><div class="lh-kicker">Journey over</div><h1 class="lh-h1">End of the road</h1><div class="lh-lines" aria-hidden="true"><i></i><i></i></div></header>
       <div class="lh-scroll"><p class="lh-lead">${esc(data.cause || "Your journey has ended.")}</p>${rows.length ? kv(rows) : ""}
-      <div class="lh-btns"><button type="button" class="lh-btn lh-primary" data-act="newjourney" data-autofocus>New Journey</button>
+      <div class="lh-btns">${data.campaign ? `<button type="button" class="lh-btn lh-primary" data-act="continuecampaign" data-autofocus>Back to the last checkpoint</button>`
+        : `<button type="button" class="lh-btn lh-primary" data-act="newjourney" data-autofocus>New Journey</button>`}
       <button type="button" class="lh-btn" data-act="mainmenu">Main Menu</button></div></div></section>`;
   },
 
@@ -620,9 +695,9 @@ function choose(id) {
   call("onDialogueChoice", c.id);
 }
 const invOpts = () => ({
-  cls: "lh-over", backLabel: "Close",
+  cls: "lh-over lh-inventory-drawer", backLabel: "Close", headExtra: icon("bag"),
   tabs: tabsBar("inventory", [["pockets", "Pockets"], ["vehicle", "Vehicle"], ["journey", "Journey"]]),
-  foot: `<div class="lh-keys" aria-hidden="true"><span><kbd>←</kbd><kbd>→</kbd> Tab</span><span>${k("inventory")} / <kbd>Esc</kbd> Close</span></div>`,
+  foot: `<div class="lh-keys"><span>${k("inventory")} Tap to toggle · hold to peek</span><span><kbd>Esc</kbd> Close</span></div>`,
 });
 const glyph = (g) => (hasIcon(g) ? icon(g) : esc(g || "•"));
 function meta(it) {
@@ -674,17 +749,18 @@ function updateLoading() {
   root.querySelector(".lh-loadpct").textContent = data.error ? "" : `${Math.round(p * 100)}%`;
   root.querySelector(".lh-load").classList.toggle("lh-loaderr", !!data.error);
 }
-function push(name) { stack.push(name); if (name === "newjourney") ui.nj.confirm = false; sfx("ui_click"); render(); }
+function push(name) { stack.push(name); if (name === "newjourney") ui.nj.confirm = false; if (name === "campaign") ui.camp.confirm = false; sfx("ui_click"); render(); }
 function back() {
   if (stack.length) {
     if (screen() === "gate") return;
-    if (screen() === "newjourney" && ui.nj.confirm) ui.nj.confirm = false; else stack.pop();
+    if (screen() === "newjourney" && ui.nj.confirm) ui.nj.confirm = false;
+    else if (screen() === "campaign" && ui.camp.confirm) ui.camp.confirm = false; else stack.pop();
     sfx("ui_back"); render();
     return;
   }
   if (rootName === "dialogue") { if (dlgChoices().some((c) => c.id === "back" && !c.disabled)) choose("back"); return; }
   if (rootName === "pause") { sfx("ui_back"); call("onResume"); }
-  else if (rootName === "inventory" || rootName === "shop" || rootName === "map") { sfx("ui_back"); call("onCloseOverlay"); }
+  else if (rootName === "inventory" || rootName === "shop" || rootName === "map" || rootName === "journal") { sfx("ui_back"); call("onCloseOverlay"); }
 }
 function move(dir) {
   const list = focusables();
@@ -702,6 +778,10 @@ function seedFrom(textv) {
   for (let i = 0; i < t.length; i++) { h ^= t.toLowerCase().charCodeAt(i); h = Math.imul(h, 16777619); }
   return h >>> 0;
 }
+function startCampaign() {
+  sfx("ui_click");
+  call("onNewCampaign", { difficulty: ui.camp.difficulty, hostile: ui.camp.hostile });
+}
 function startJourney() {
   const nj = ui.nj;
   sfx("ui_click");
@@ -715,7 +795,18 @@ function act(e, a) {
     case "continue": sfx("ui_click"); call("onContinue"); break;
     case "continuecloud": sfx("ui_click"); call("onContinueCloud"); break;
     case "newjourney": case "settings": case "controls": case "credits": case "whatsnew": push(a); break;
-    case "play": push(a); break;
+    case "play": case "campaign": case "prologue": push(a); break;
+    case "continueprologue": call("onContinuePrologue"); break;
+    case "newprologue": if(data.prologue){ui.prologueConfirm=true;render();}else call("onNewPrologue"); break;
+    case "restartprologue": ui.prologueConfirm=false;call("onNewPrologue");break;
+    case "cancelprologue": ui.prologueConfirm=false;render();break;
+    case "continuecampaign": sfx("ui_click"); call("onContinueCampaign"); break;
+    case "newcampaign": if (data.campaign) { ui.camp.confirm = true; sfx("ui_click"); render(); } else startCampaign(); break;
+    case "confirmcampaign": startCampaign(); break;
+    case "campdiff": ui.camp.difficulty = arg; sfx("ui_click"); render(true); break;
+    case "camphostile": ui.camp.hostile = !ui.camp.hostile; sfx("ui_click"); render(true); break;
+    case "camphelp": sfx("ui_click"); call("onJournalHelp"); break;
+    case "tape": sfx("ui_click"); call("onReplayTape", arg); break;
     case "career": case "leaderboard": data.cloud = undefined; push("leaderboard"); call("onOpenCareer"); call("onOpenBoard", ui.tabs.board); break;
     case "convoy": push(a); call("onOpenConvoy"); break;
     case "account": push(a); call("onOpenAccount"); break;
@@ -760,6 +851,9 @@ function act(e, a) {
     case "confirmstart": startJourney(); break;
     case "cancelconfirm": back(); break;
     case "use": call("onUseSlot", Number(arg)); break;
+    case "selectslot": call("onSelectSlot", Number(arg)); break;
+    case "hands": call("onPocketHands", Number(arg)); break;
+    case "stow": call("onStowItem"); break;
     case "drop": call("onDropSlot", Number(arg)); break;
     case "buy": if (e.getAttribute("aria-disabled") === "true") { sfx("error"); menus.setMessage(e.textContent === "Sold out" ? "Sold out." : "You cannot afford that."); } else call("onBuy", arg); break;
   }
@@ -788,6 +882,12 @@ function onKey(ev) {
   if (name === "gate" || name === "loading" || name === "sleep") return;   // the gate is handled by the first-gesture listener
   const t = ev.target, isText = t.tagName === "INPUT" && (t.type === "text" || t.type === "password"), isRange = t.tagName === "INPUT" && t.type === "range";
   const stop = () => { ev.preventDefault(); ev.stopPropagation(); };
+  if (rootName === "inventory" && !stack.length && !isText && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !ev.repeat) {
+    if (/^[1-6]$/.test(ev.key)) { stop(); call("onSelectSlot", Number(ev.key) - 1); return; }
+    const hasKey = a => BINDINGS.find(b => b.action === a)?.keys.includes(ev.code);
+    if (hasKey("consume")) { stop(); call("onUseSlot", data.selected | 0); return; }
+    if (hasKey("stow")) { stop(); call("onStowItem"); return; }
+  }
   if (name === "dialogue") {
     if (/^[1-9]$/.test(ev.key) && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
       stop();
@@ -805,7 +905,7 @@ function onKey(ev) {
     case "Escape": stop(); if (!ev.repeat) back(); return;
     case "Tab":
       stop();
-      if (rootName === "inventory" && !stack.length) { if (!ev.repeat) back(); } else move(ev.shiftKey ? -1 : 1);
+      if (rootName === "inventory" && !stack.length && BINDINGS.find(b => b.action === "inventory")?.keys.includes("Tab")) { if (!ev.repeat) back(); } else move(ev.shiftKey ? -1 : 1);
       return;
     case "ArrowDown": stop(); move(1); return;
     case "ArrowUp": stop(); move(-1); return;
@@ -832,8 +932,8 @@ function onKey(ev) {
       if (isText && t.id === "lh-user") { stop(); const pw = root.querySelector("#lh-pass"); if (pw) pw.focus(); return; }
       if (isText && t.id === "lh-pass") { stop(); act(t, "signin"); return; }
       if (isText) { stop(); const b = root.querySelector('[data-act="start"]'); if (b) b.focus(); } else ev.stopPropagation(); return;
-    case "i": case "I": if (rootName === "inventory" && !stack.length && !isText) { stop(); if (!ev.repeat) back(); } return;
     case "m": case "M": if (rootName === "map" && !stack.length && !isText) { stop(); if (!ev.repeat) back(); } return;
+    case "j": case "J": if (rootName === "journal" && !stack.length && !isText) { stop(); if (!ev.repeat) back(); } return;
     case "c": case "C": if (rootName === "map" && !isText) { stop(); call("onMapCentre"); } return;
     case "+": case "=": if (rootName === "map") { stop(); call("onMapZoom", 1.25); } return;
     case "-": case "_": if (rootName === "map") { stop(); call("onMapZoom", 0.8); } return;

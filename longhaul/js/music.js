@@ -8,15 +8,18 @@ const MANIFEST = "audio/music/manifest.json";
 const TYPES = { mp3: "audio/mpeg", ogg: "audio/ogg", oga: "audio/ogg", opus: 'audio/ogg; codecs="opus"', m4a: "audio/mp4", aac: "audio/aac", wav: "audio/wav", flac: "audio/flac" };
 const FADE = 1.4; // seconds
 
-const lists = { menu: [], radio: [] };
+const lists = { menu: [], radio: [], cue: [] };
+const cues = {};               // named one-shot tracks for scenes, e.g. cues.opening
+let base = "none";             // the playlist main asks for; a cue sounds over it until it ends or is stopped
+let cueOpts = null;            // { name, at, quiet } while a cue is playing
 const options = { menuOrder: "sequence", radioOrder: "shuffle", loop: true };
 const problems = [];           // human-readable notes about tracks that were skipped
 let loaded = false, unlocked = false, paused = false;
-let context = "none";          // which playlist should be sounding: "menu" | "radio" | "none"
+let context = "none";          // which playlist should be sounding: "menu" | "radio" | "cue" | "none"
 let volume = 0.5;              // master × music, 0..1 (0 when muted)
 let current = null;            // { el, track, list, level, target }
 const fading = new Set();      // elements on their way out
-const index = { menu: -1, radio: -1 };
+const index = { menu: -1, radio: -1, cue: -1 };
 let timer = null, serial = 0;
 
 function playable(file) {
@@ -97,6 +100,10 @@ function startTrack(name, dir = 1) {
   el.src = track.url;
   el.volume = 0;
   const cur = { el, track, list: name, level: 0, target: 1 };
+  if (name === "cue" && cueOpts && cueOpts.at > 0) {
+    const at = cueOpts.at;
+    el.addEventListener("loadedmetadata", () => { if (at < el.duration) el.currentTime = at; }, { once: true });
+  }
   el.onplaying = () => {
     if (current === cur && context === "menu" && track.achievement) {
       emit("music:discovery", track.achievement);
@@ -104,6 +111,7 @@ function startTrack(name, dir = 1) {
   };
   el.onended = () => {
     if (my !== serial || context !== name) return;
+    if (name === "cue") { endCue(); return; }
     if (!options.loop && lists[name].filter((t) => !t.bad).length <= 1) { fadeOutCurrent(); return; }
     startTrack(name);
   };
@@ -111,13 +119,21 @@ function startTrack(name, dir = 1) {
     track.bad = true;
     problems.push(`${track.file}: could not be loaded`);
     emit("music:problem", { file: track.file });
-    if (my === serial && context === name) { current = null; startTrack(name); }
+    if (my === serial && context === name) { current = null; if (name === "cue") endCue(); else startTrack(name); }
   };
   current = cur;
   ensureTimer();
   const p = el.play();
   if (p && p.catch) p.catch(() => { /* blocked until a user gesture; resume() retries */ });
-  emit("music:track", { title: track.title, artist: track.artist, cover: track.cover, list: name });
+  if (!(name === "cue" && cueOpts && cueOpts.quiet)) emit("music:track", { title: track.title, artist: track.artist, cover: track.cover, list: name });
+}
+function endCue() {
+  if (!cueOpts) return;
+  cueOpts = null;
+  lists.cue = [];
+  if (current && current.list === "cue") fadeOutCurrent();
+  context = base;
+  sync();
 }
 
 function sync() {
@@ -147,6 +163,7 @@ export const music = {
         const m = await res.json();
         lists.menu = readList(m.menu, "menu");
         lists.radio = readList(m.radio, "radio");
+        if (m.cues && typeof m.cues === "object") for (const [k, t] of Object.entries(m.cues)) { const [c] = readList([t], "cues." + k); if (c) cues[k] = c; }
         if (m.options) {
           if (["sequence", "shuffle"].includes(m.options.menuOrder)) options.menuOrder = m.options.menuOrder;
           if (["sequence", "shuffle"].includes(m.options.radioOrder)) options.radioOrder = m.options.radioOrder;
@@ -160,13 +177,33 @@ export const music = {
   },
   // Call from the first user gesture
   unlock() { unlocked = true; sync(); },
-  setContext(name) { if (name === context) return; context = name; sync(); },
+  setContext(name) { base = name; if (cueOpts || name === context) return; context = name; sync(); },
+  // Plays a named cue from the manifest once, over whatever playlist is asked for, then hands back to it.
+  // at: start this many seconds in (a resumed scene); quiet: no now-playing announcement.
+  cue(name, { at = 0, quiet = false } = {}) {
+    const t = cues[name];
+    if (!t || t.bad) return false;
+    if (cueOpts && cueOpts.name === name) return true;
+    cueOpts = { name, at, quiet };
+    lists.cue = [t];
+    index.cue = -1;
+    context = "cue";
+    if (current && current.list === "cue") fadeOutCurrent();
+    sync();
+    return true;
+  },
+  // Seconds into the cue that is actually sounding (null when it is not playing), so a scene can follow the music
+  cueTime(name) {
+    if (!cueOpts || (name && cueOpts.name !== name) || !current || current.list !== "cue" || current.el.paused) return null;
+    return current.el.currentTime;
+  },
+  stopCue(name) { if (cueOpts && (!name || cueOpts.name === name)) endCue(); },
   setVolume(v) { volume = Math.max(0, Math.min(1, v)); if (current) current.el.volume = current.level * volume; },
   pause() { paused = true; sync(); },
   resume() { paused = false; sync(); },
   next() { if (unlocked && context !== "none" && !paused) startTrack(context, 1); },
   info() {
-    const all = [...lists.menu, ...lists.radio];
+    const all = [...lists.menu, ...lists.radio, ...Object.values(cues)];
     return {
       loaded, menu: lists.menu.length, radio: lists.radio.length, tracks: all.length,
       current: current ? { title: current.track.title, artist: current.track.artist, cover: current.track.cover, list: current.list } : null,

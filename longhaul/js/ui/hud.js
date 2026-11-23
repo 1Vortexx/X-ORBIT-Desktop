@@ -2,7 +2,7 @@
 // module diffs it against what is already on screen, touching the DOM only when a value changed.
 import { on, sfx } from "../core/bus.js";
 import { bindingLabel } from "../input.js";
-import { icon, critIcon, esc, clamp01, fmtDist, weatherIcon, hasIcon } from "./icons.js";
+import { icon, critIcon, esc, clamp01, fmtDist, weatherIcon } from "./icons.js";
 
 const NEEDS = [["health", "heart", "Health"], ["hunger", "food", "Food"], ["thirst", "thirst", "Water"], ["energy", "energy", "Energy"]];
 const WARN_ICON = { fuel: "fuel", temp: "temp", oil: "oil", coolant: "coolant", battery: "battery", tyre: "tyre", engine: "engine", body: "body" };
@@ -18,7 +18,7 @@ let prefs = null;
 let visible = false, dimmed = false, lockedNow = false;
 let showMode = "full", critOnly = true;
 let lastMusic = "", musicTimer = 0, pushedMusic = null;
-let sig = { actions: "", slots: "", warns: "", held: "", pips: "" };
+let sig = { actions: "", warns: "", held: "", pips: "" };
 let saySub = null, sayTimer = 0, argSub = null;   // subtitle from bus "npc:say" / from the last update()
 let actionRows = [];
 
@@ -35,30 +35,35 @@ const q2 = (v) => Math.round(clamp01(v) * 200) / 200;   // quantise bar fraction
 function build() {
   root = document.getElementById("hud");
   if (!root) { root = document.createElement("div"); root.id = "hud"; document.body.appendChild(root); }
-  root.className = "hud";
+  root.className = "hud hud-roadglass";
   root.setAttribute("data-mode", "foot");
   const need = NEEDS.map(([k, ic, label]) =>
     `<div class="need" data-need="${k}" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100">${icon(ic)}<span class="bar"><i></i></span><b class="mark" aria-hidden="true"></b></div>`).join("");
   root.innerHTML = `
   <div class="hud-tl">
-    <div class="plate status" data-tier="full">
-      <span class="st-day"><b data-k="day">Day 1</b><i data-k="clock">--:--</i></span>
-      <span class="st-wx"><span data-k="wxIcon"></span><b data-k="weather"></b><i data-k="tempC"></i></span>
-      <span class="st-money" data-k="money"></span>
-      <span class="st-lite" data-k="lite" hidden title="Lite rendering is active">LITE</span>
-    </div>
-    <div class="plate nowplaying" data-k="np" data-tier="full" hidden>${icon("note")}<span data-k="npText"></span></div>
-  </div>
-  <div class="hud-tr">
     <div class="plate needs" data-k="needs">${need}</div>
-    <div class="plate enc" data-k="enc" data-level="info" role="status" aria-live="polite" hidden>
+  </div>
+  <div class="hud-obj">
+    <div class="enc" data-k="enc" data-level="info" role="status" aria-live="polite" hidden>
       <div class="enc-h"><span data-k="encIcon"></span><b data-k="encTitle"></b></div>
-      <div class="enc-t" data-k="encText"></div>
+      <div class="enc-objective">${icon("pin")}<div class="enc-t" data-k="encText"></div></div>
       <div class="enc-p" data-k="encPur" hidden><span class="pips" data-k="encPips" aria-hidden="true"></span><span data-k="encPurTxt"></span></div>
     </div>
+  </div>
+  <div class="hud-tr">
+    <div class="plate status" data-tier="full">
+      <div class="st-primary"><div class="st-time"><span data-k="timeIcon">${icon("sun")}</span><i data-k="clock">--:--</i></div><b class="st-day" data-k="day">Day 1</b></div>
+      <div class="st-meta">
+        <span class="st-wx"><span data-k="wxIcon"></span><b data-k="weather"></b><i data-k="tempC"></i></span>
+        <span class="st-money">${icon("coins")}<b data-k="money"></b></span>
+        <span class="st-lite" data-k="lite" hidden title="Lite rendering is active">LITE</span>
+      </div>
+    </div>
+    <div class="plate nowplaying" data-k="np" data-tier="full" hidden>${icon("note")}<span data-k="npText"></span></div>
     <div class="notes" data-k="notes" role="status" aria-live="polite"></div>
   </div>
   <div class="hud-bl">
+    <div class="plate objective-card" data-k="objectiveCard" data-tier="full" hidden>${icon("pin")}<div><b data-k="objectiveTitle"></b><span data-k="objectiveText"></span></div>${icon("next")}</div>
     <div class="plate prog" data-k="prog" hidden><span data-k="progLabel"></span><span class="bar"><i data-k="progBar"></i></span><b data-k="progPct"></b></div>
     <div class="plate cargo only-foot" data-k="cargo" hidden>${icon("box")}<span data-k="cargoTxt"></span></div>
     <div class="plate cluster only-drive" data-k="cluster">
@@ -84,6 +89,10 @@ function build() {
         </div>
       </div>
     </div>
+    <div class="plate trip only-drive" data-tier="full">
+      <span class="trip-v" data-k="vehicle"></span>
+      <span class="trip-d">${icon("road")}<b data-k="trip">0.0 km</b></span>
+    </div>
     <div class="plate heldp only-foot" data-k="held" data-tier="full" hidden>
       <div class="held-h">${icon("box")}<span>IN HANDS</span></div>
       <div class="held-n"><b data-k="heldName"></b><i data-k="heldQty"></i></div>
@@ -92,16 +101,13 @@ function build() {
   </div>
   <div class="hud-br">
     <div class="warns" data-k="warns" role="status" aria-live="polite"></div>
-    <div class="plate trip only-drive" data-tier="full">
-      <span class="trip-v" data-k="vehicle"></span>
-      <span class="trip-d">${icon("road")}<b data-k="trip">0.0 km</b></span>
-    </div>
+  </div>
+  <div class="hud-map"></div>
+  <div class="hud-help">
     <div class="plate hints only-foot" data-k="footHints" data-tier="help"></div>
   </div>
   <div class="hud-bc">
     <div class="stam only-foot" data-k="stam" hidden><span>STAMINA</span><span class="bar"><i data-k="stamBar"></i></span></div>
-    <div class="slotname only-foot" data-k="slotName" data-tier="full"></div>
-    <div class="slots only-foot" data-k="slots" data-tier="full"></div>
     <div class="plate hints only-drive" data-k="driveHints" data-tier="help"></div>
   </div>
   <div class="hud-say">
@@ -214,6 +220,8 @@ function updStatus(s) {
   text(el.clock, s.clock ?? "");
   const wi = weatherIcon(s.weather, s.clock);
   html(el.wxIcon, icon(wi));
+  const hour = Number(String(s.clock || "12:00").split(":")[0]);
+  html(el.timeIcon, icon(hour >= 6 && hour < 19 ? "sun" : "moon"));
   text(el.weather, s.weather ?? "");
   text(el.tempC, s.tempC == null ? "" : `${Math.round(s.tempC)}°C`);
   text(el.money, `$${Math.floor(s.money ?? 0)}`);
@@ -338,29 +346,14 @@ function updFoot(s) {
   vis(el.stam, showS);
   if (showS) { css(el.stamBar, "--v", String(q2(st))); cls(el.stam, "low", st < 0.2); }
 
-  // quick slots
-  const slots = Array.isArray(s.slots) ? s.slots : [];
-  let k = `${s.selected}#`;
-  for (let i = 0; i < 6; i++) { const it = slots[i]; k += it ? `${it.icon}|${it.name}|${it.count}|${it.qty};` : "-;"; }
-  if (k !== sig.slots) {
-    sig.slots = k;
-    let out = "";
-    for (let i = 0; i < 6; i++) {
-      const it = slots[i], sel = i === s.selected;
-      const glyph = it ? (hasIcon(it.icon) ? icon(it.icon) : `<span class="s-g">${esc(it.icon || "•")}</span>`) : "";
-      out += `<div class="slot plate${sel ? " sel" : ""}${it ? "" : " empty"}"><kbd>${i + 1}</kbd>${glyph}${it && it.count > 1 ? `<b class="s-c">×${it.count}</b>` : ""}</div>`;
-    }
-    el.slots.innerHTML = out;
-    const it = slots[s.selected];
-    text(el.slotName, it ? `${it.name}${it.count > 1 ? ` ×${it.count}` : ""}${it.qty != null && it.qty !== "" ? ` · ${fmtQty(it.qty)}` : ""}` : "");
-    vis(el.slotName, !!it);
-  }
+  // Pockets live exclusively in the inventory drawer; number keys still work.
 }
 
 // Threat / pursuit / surrender / escape plate. Level is carried by the icon shape and the wording, never colour alone.
 function updEncounter(s) {
   const e = s.encounter && (s.encounter.title || s.encounter.text) ? s.encounter : null;
   vis(el.enc, !!e);
+  vis(el.objectiveCard, !!e);
   cls(root, "has-enc", !!e);
   if (e) {
     const lv = e.level === "crit" || e.level === "warn" ? e.level : "info";
@@ -368,7 +361,14 @@ function updEncounter(s) {
     html(el.encIcon, lv === "crit" ? critIcon() : icon(lv === "warn" ? "warn" : "info"));
     text(el.encTitle, String(e.title ?? ""));
     text(el.encText, String(e.text ?? ""));
+    const [task, ...detail] = String(e.text || e.title || "").split(" · ");
+    text(el.objectiveTitle, task);
+    text(el.objectiveText, detail.join(" · "));
+    vis(el.objectiveText, detail.length > 0);
+    const said = `${e.title ?? ""}|${e.text ?? ""}`;
+    if (said !== sig.enc) { sig.enc = said; el.enc.classList.remove("fresh"); void el.enc.offsetWidth; el.enc.classList.add("fresh"); }
     vis(el.encText, !!e.text);
+    vis(el.encText.parentNode, !!e.text);
     const p = e.pursuers && e.pursuers.total > 0 ? e.pursuers : null;
     vis(el.encPur, !!p);
     if (p) {

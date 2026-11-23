@@ -27,7 +27,7 @@
   <script type="module">
     // ?view=gate|loading|main|main-nosave|main-error|newjourney|confirm|settings|controls|credits|pause|inventory|shop|gameover|sleep
     //       |dialogue-toll|dialogue-robbery|dialogue-ransom|dialogue-hitch|gameover-enc
-    //       |hud-drive|hud-foot|hud-fade   &enc=info|warn|crit|done  &sub=1  &prompt=1  &say=1 (bus npc:say)  &tab=<tab id>  &bg=night  &show=minimal|off  &scale=1.5  &hc=1  &units=mi  &still=1
+    //       |hud-drive|hud-foot|hud-fade   &enc=info|warn|crit|done|story  &map=1  &sub=1  &prompt=1  &say=1 (bus npc:say)  &tab=<tab id>  &bg=night  &show=minimal|off  &scale=1.5  &hc=1  &units=mi  &still=1
     import { hud } from "../js/ui/hud.js";
     import { menus } from "../js/ui/menus.js";
     import * as input from "../js/input.js";
@@ -94,6 +94,7 @@
       warn: { title: "Roadblock ahead", text: "The leader is waving you down. Stop, or turn back now.", level: "warn", pursuers: null, prompt: "Talk to the roadblock leader" },
       crit: { title: "Pursuit", text: "They are coming after you. Make them crash, or lose them.", level: "crit", pursuers: { able: 2, total: 3 }, prompt: null },
       done: { title: "You got away", text: "Nobody is left to follow you.", level: "info", pursuers: { able: 0, total: 3 }, prompt: null },
+      story: { title: "The Way Back · P01 · The Window Seat", text: "Find Room 9 · Open the history classroom door, west corridor", level: "info", pursuers: null, prompt: null },
     };
     const hudState = (t) => {
       const drive = view === "hud-drive", w = q.has("still") ? 0.4 : (Math.sin(t / 900) + 1) / 2;
@@ -122,6 +123,8 @@
       if (view === "hud-fade") hud.fade(0.85, "Sleeping… 03:10");
       const loop = (t) => { hud.update(hudState(t)); input.endFrame(); requestAnimationFrame(loop); };
       requestAnimationFrame(loop);
+      // &map=1: a stand-in for the minimap (js/map.js draws the real one from the game's map data)
+      if (q.has("map")) { const m = document.createElement("div"); m.className = "plate lh-minimap"; m.style.background = "repeating-linear-gradient(90deg, #2c3a33 0 30px, #34453c 30px 60px)"; m.innerHTML = '<span class="lh-minimap-key"><kbd>M</kbd> map</span>'; document.querySelector("#hud .hud-map").append(m); }
       if (q.has("say")) emit("npc:say", { name: "Rosa", text: "You can let me out anywhere past the water tower.", ms: 60000 });
       if (!q.has("calm")) {
         notify("Engine overheating – stop and let it cool", { level: "crit", key: "heat" });

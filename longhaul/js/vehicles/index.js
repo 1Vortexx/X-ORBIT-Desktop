@@ -191,7 +191,7 @@ export class Vehicles {
     return Math.abs(v.pos.x - s[0]) + Math.abs(v.pos.z - s[2]) > 0.75;
   }
   _remove(v, save = true) {
-    if (save && this.differs(v)) ws.vehicles.set(v.id, v.serialize());
+    if (save && !v.transient && this.differs(v)) ws.vehicles.set(v.id, v.serialize());
     if (this._litOn === v) this._park();
     emit("vehicle:unload", v);
     unregisterTargets(v);
@@ -268,7 +268,7 @@ export class Vehicles {
   }
 
   // Write every loaded, modified vehicle to ws.vehicles (call before saving)
-  flush() { for (const v of this.list) if (this.differs(v)) ws.vehicles.set(v.id, v.serialize()); }
+  flush() { for (const v of this.list) if (!v.transient && this.differs(v)) ws.vehicles.set(v.id, v.serialize()); }
 
   // Drop every loaded vehicle without saving (new game / load game: call, then ws.restore(), then sync again)
   clear() { for (const v of [...this.list]) this._remove(v, false); this._scan = true; }

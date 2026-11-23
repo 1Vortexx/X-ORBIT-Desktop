@@ -104,3 +104,13 @@ kbd {
 #studio-start:focus-visible { outline:2px solid var(--lh-amber); }
 #splash.studio-finish .studio-first { opacity:0; transform:scale(.04); }
 @media(prefers-reduced-motion:reduce){#splash .studio-first{transition:none;}}
+
+/* iPhone / iPad in the browser: install to the Home Screen first (index.html) */
+#ios-gate { position: fixed; inset: 0; z-index: 200; overflow-y: auto; display: grid; align-content: center; justify-items: center; gap: 1em;
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  background: #0b0906; color: var(--lh-bone); font: 16px/1.45 var(--lh-ui); text-align: center; }
+#ios-gate img { width: min(70vw, 340px); height: auto; }
+#ios-gate h1 { margin: 0; font: 700 1.35em/1.2 var(--lh-display); letter-spacing: 0.04em; text-transform: uppercase; color: var(--lh-amber); }
+#ios-gate ol { margin: 0; padding: 0 0 0 1.4em; max-width: 26em; display: grid; gap: 0.6em; text-align: left; }
+#ios-gate p { margin: 0; max-width: 26em; color: var(--lh-sand); font-size: 0.92em; }
+#ios-gate svg { width: 1.2em; height: 1.2em; vertical-align: -0.2em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

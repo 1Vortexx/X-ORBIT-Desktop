@@ -98,6 +98,7 @@ export class Weather {
   // Force a type immediately (dev tools, scripted moments)
   set(type) { if (TYPES[type]) { this.current = this.target = type; this.blend = 1; this.hoursLeft = 4; this.advance(0); this.wetness = this.p.rain > 0.05 ? 1 : 0; } }
 
+  // shelter(x, y, z): true where a particle would be indoors (set by main from the world and the campaign)
   update(dt, hours, camera, sky) {
     this.advance(hours);
     this.t += dt;
@@ -129,6 +130,7 @@ export class Weather {
       for (let i = 0; i < n; i++) {
         const x = mod(sd[i * 3] - cp.x, BOX) - BOX / 2, z = mod(sd[i * 3 + 2] - cp.z, BOX) - BOX / 2, y = mod(sd[i * 3 + 1] - fall - cp.y, BOX_H) - 10;
         const o = i * 6;
+        if (this.shelter && this.shelter(cp.x + x, cp.y + y, cp.z + z)) { a[o] = a[o + 3] = 0; a[o + 1] = a[o + 4] = -1e4; a[o + 2] = a[o + 5] = 0; continue; }
         a[o] = x; a[o + 1] = y; a[o + 2] = z; a[o + 3] = x + slant; a[o + 4] = y + 1.1; a[o + 5] = z + slant * 0.4;
       }
       this.rain.geometry.attributes.position.needsUpdate = true;
@@ -142,6 +144,7 @@ export class Weather {
         a[i * 3] = mod(sd[i * 3] + blow - cp.x, BOX) - BOX / 2;
         a[i * 3 + 1] = sd[i * 3 + 1] - 5 + Math.sin(this.t * 2.2 + i) * 0.4;
         a[i * 3 + 2] = mod(sd[i * 3 + 2] + blow * 0.35 - cp.z, BOX) - BOX / 2;
+        if (this.shelter && this.shelter(cp.x + a[i * 3], cp.y + a[i * 3 + 1], cp.z + a[i * 3 + 2])) a[i * 3 + 1] = -1e4;
       }
       this.sand.geometry.attributes.position.needsUpdate = true;
     }

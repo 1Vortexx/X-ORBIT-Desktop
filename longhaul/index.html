@@ -2,14 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Long Haul</title>
   <link rel="icon" type="image/png" href="assets/branding/long-haul-icon.png"/>
   <link rel="stylesheet" href="css/base.css"/>
   <link rel="stylesheet" href="css/hud.css"/>
   <link rel="stylesheet" href="css/menus.css"/>
+  <link rel="stylesheet" href="css/touch.css"/>
   <script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
-  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="manifest" href="./manifest.webmanifest" id="lh-manifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Long Haul">
+  <script>
+    // iPhone / iPad: Long Haul only runs as a Home Screen app (full screen, no Safari bars, sound that keeps playing).
+    // In Safari it shows how to add it instead and never loads the game. iPadOS reports itself as a Mac with touch.
+    window.longHaulIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    window.longHaulInstalled = navigator.standalone === true || matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches;
+    window.longHaulGate = window.longHaulIOS && !window.longHaulInstalled;
+    if (window.longHaulIOS) document.getElementById("lh-manifest").href = "./manifest-ios.webmanifest";
+  </script>
   <meta name="theme-color" content="#0f0c09">
 </head>
 <body>
@@ -29,7 +43,22 @@
       <button id="studio-start" type="button">Click or press any key to start</button>
     </div>
   </div>
+  <div id="ios-gate" hidden>
+    <img src="assets/branding/long-haul-logo.png" alt="Long Haul">
+    <h1>Add Long Haul to your Home Screen to play</h1>
+    <ol>
+      <li>Tap <b>Share</b> <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M7 11H5v10h14V11h-2"/></svg> in the browser toolbar (on iPhone it's at the bottom of Safari).</li>
+      <li>Scroll down and choose <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      <li>Open <b>Long Haul</b> from your Home Screen.</li>
+    </ol>
+    <p>It runs full screen there, keeps your saves, and plays best sideways.</p>
+  </div>
   <script>
+    if (window.longHaulGate) {
+      document.getElementById("splash").remove();
+      document.getElementById("ios-gate").hidden = false;
+    }
+    if (matchMedia("(pointer: coarse)").matches && document.getElementById("studio-start")) document.getElementById("studio-start").textContent = "Tap to start";
     window.longHaulStart = new Promise(function (resolve) {
       var started = false;
       function start(event) {
@@ -48,6 +77,7 @@
           resolve();
         }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 450);
       }
+      if (window.longHaulGate) return;
       window.addEventListener("pointerdown", start, true);
       window.addEventListener("keydown", start, true);
     });
@@ -56,7 +86,14 @@
   <div id="boot">Long Haul</div>
   <noscript><div id="boot">Long Haul needs JavaScript.</div></noscript>
 
-  <script type="module" src="js/main.js?startup=slow-loading-2"></script>
+  <script>
+    // The game itself loads only when it is allowed to run (see the iOS check in <head>)
+    if (!window.longHaulGate) {
+      var game = document.createElement("script");
+      game.type = "module"; game.src = "js/main.js?startup=slow-loading-2";
+      document.body.appendChild(game);
+    } else document.getElementById("boot").remove();
+  </script>
   <script src="./install.js"></script>
 </body>
 </html>

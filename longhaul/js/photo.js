@@ -2,7 +2,7 @@
 // mouse look, wheel zoom). M releases the mouse (click the game to take it back), LMB / Enter saves a PNG of the
 // clean frame. main.js owns the state switch; this module owns the camera, the hint overlay and the screenshots.
 import * as THREE from "three";
-import { took, isDown, look, exitLock, requestLock, locked, keyLabel } from "./input.js";
+import { took, isDown, look, stick, exitLock, requestLock, locked, keyLabel } from "./input.js";
 import { heightAt } from "./world/terrain.js";
 import { sfx } from "./core/bus.js";
 
@@ -27,7 +27,9 @@ function say(text, secs = 5) {
   hint.style.opacity = "1";
   hintT = secs;
 }
-const help = () => `Photo mode · WASD fly · Space/Q up/down · Shift fast · wheel zoom · Click/Enter screenshot · `
+const help = () => document.documentElement.classList.contains("lh-touch")
+  ? "Photo mode · stick to fly · drag to look · Up / Down / Fast · Shot saves a PNG · Done to leave"
+  : `Photo mode · WASD fly · Space/Q up/down · Shift fast · wheel zoom · Click/Enter screenshot · `
   + `${keyLabel("KeyM")} ${locked() ? "release" : "recapture"} mouse · ${keyLabel("KeyP")}/Esc exit`;
 
 export const photo = {
@@ -62,7 +64,7 @@ export const photo = {
     }
     // Look + fly (the camera is a child of worldRoot, so its position is absolute)
     camera.quaternion.setFromEuler(_e.set(-look.pitch, look.yaw, 0, "YXZ"));
-    const f = (isDown("fwd") ? 1 : 0) - (isDown("back") ? 1 : 0), s = (isDown("right") ? 1 : 0) - (isDown("left") ? 1 : 0);
+    const f = (isDown("fwd") ? 1 : 0) - (isDown("back") ? 1 : 0) - stick.y, s = (isDown("right") ? 1 : 0) - (isDown("left") ? 1 : 0) + stick.x;
     const u = (isDown("up") ? 1 : 0) - (isDown("down") ? 1 : 0);
     _v.set(s, 0, -f).applyQuaternion(camera.quaternion);
     _v.y += u;

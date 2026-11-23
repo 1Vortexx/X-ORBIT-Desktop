@@ -2,7 +2,8 @@
 // or on foot. Used for the local player (seen in chase view, photos and as a headless driver from the cab) and for
 // convoy members (js/convoy.js), so nobody drives an empty truck.
 import * as THREE from "three";
-import { buildPerson, pose } from "./npc/model.js";
+import { buildPerson, pose, animate, animateFace } from "./npc/model.js";
+import { cycleLength } from "./npc/pose.js";
 import { hashStr } from "./world/terrain.js";
 
 // Seated with both hands on the wheel, turning it with the steering
@@ -19,15 +20,18 @@ export class Body {
   // root: the world root; name: picks the look, so a player looks the same on every screen
   constructor(root, name) {
     this.root = root;
-    this.rig = buildPerson(hashStr(String(name || "driver")) || 1, "walker");
+    this.rig = buildPerson(hashStr(String(name || "driver")) || 1, "walker", { age: 30 });
     this.mesh = this.rig.mesh;
     this.mesh.name = "body:" + name;
     this.phase = 0;
     root.add(this.mesh);
   }
-  // s: { vehicle?, seat?, pos?, yaw?, speed?, steer?, crawl?, thrown? } – in a vehicle seat, standing/walking (or
+  // s: { vehicle?, seat?, chair?, pos?, yaw?, speed?, steer?, crawl?, thrown? } – in a vehicle seat, on a chair
+  // (chair = { x, y, z, yaw, act, turn }: the hip point, as for people, see Npc.sitOn), standing/walking (or
   // crawling) at pos, or thrown from a crash: thrown = { spin, settled } with pos the body's middle
   update(dt, s) {
+    this.faceT = (this.faceT || 0) + dt;
+    animateFace(this.rig, this.faceT, false);
     const v = s.vehicle;
     if (s.thrown) {
       if (this.mesh.parent !== this.root) this.root.add(this.mesh);
@@ -58,13 +62,21 @@ export class Body {
       this.mesh.rotation.set(0, 0, 0);
       if (seat === "driver") drivePose(this.rig, s.steer ?? v.steer ?? 0);
       else pose(this.rig, "sit", 0, false, "walker");
+    } else if (s.chair) {
+      const c = s.chair;
+      if (this.mesh.parent !== this.root) this.root.add(this.mesh);
+      this.mesh.position.set(c.x, c.y, c.z);
+      this.mesh.rotation.set(0, c.yaw || 0, 0);
+      animate(this.rig, { dt, mode: "sit", chair: true, recline: 0.05, act: c.act, turn: c.turn, talk: !!c.talk });
     } else {
       if (this.mesh.parent !== this.root) this.root.add(this.mesh);
       const speed = s.speed || 0, moving = speed > (s.crawl ? 0.15 : 0.3);
-      if (moving) this.phase += dt * (s.crawl ? 4 : speed > 4 ? 10 : 6.5);
+      // the gait is tied to the ground covered (crawling keeps its own beat)
+      if (moving) this.phase += s.crawl ? dt * 4 : 2 * Math.PI * speed * dt / cycleLength(speed);
       this.mesh.position.copy(s.pos);
       this.mesh.rotation.set(0, s.yaw || 0, 0);
-      pose(this.rig, s.crawl ? "down" : moving ? "walk" : "idle", this.phase, moving, "walker");
+      if (s.crawl) pose(this.rig, "down", this.phase, moving, "walker");
+      else animate(this.rig, { dt, mode: "stand", speed: moving ? speed : 0, phase: this.phase, health: s.health ?? 100 });
       if (s.crawl) for (let i = 0; i < 2; i++) {             // dragging along on the forearms
         const a = moving ? Math.sin(this.phase + i * Math.PI) : 0;
         this.rig.arms[i].rotation.x = -2.6 + a * 0.45;

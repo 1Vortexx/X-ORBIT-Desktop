@@ -1,5 +1,6 @@
-// Long Haul – maps: the minimap in the HUD and the full map (M). They only show what this player has found: the
-// stretches of road they have driven, their own off-road tracks and the places they have discovered. A Digimap in the
+// Long Haul – maps: the minimap in the HUD and the full map (M). The desert itself is always drawn; roads and places
+// only where this player has found them: the stretches of road they have driven, their own off-road tracks and the places
+// they have discovered. Routes to where the player is headed are drawn over the top. A Digimap in the
 // pockets or hands adds the road ahead and the next open fuel and services (main.js decides what it reveals).
 // Convoy members are drawn too. Forward along the road (+z) is up; the road's left (+x) is screen-left.
 import { roadX, getSeed } from "./world/terrain.js";
@@ -46,34 +47,28 @@ export class MapMemory {
 }
 
 // ── Ground colour tiles ──
-// 256 m squares sampled every 8 m with the terrain's own colours, built a few at a time and kept (per seed).
-const TILE = 256, TPX = 32, CORRIDOR = 300, TRAIL_SEE = 150;
+// Squares of the whole desert in the terrain's own colours, built a few at a time and kept (per seed). Level 0 is 256 m
+// sampled every 8 m; each level up doubles the square (same 32 samples a side), so a zoomed-out map stays cheap.
+const TILE = 256, TPX = 32, TILE_CAP = 1600;
 const tiles = new Map();
 let tileSeed = null;
 const _rgb = [0, 0, 0];
 const toS = (c) => Math.round(255 * Math.min(1, Math.pow(Math.max(0, c), 1 / 2.2)));
-function buildTile(tx, tz) {
+// The tile level for a zoom: tiles at least ~28 px across on screen
+const tileLevel = (scale) => Math.max(0, Math.min(8, Math.ceil(Math.log2(28 / (TILE * scale)))));
+function buildTile(tx, tz, size) {
   const c = document.createElement("canvas");
   c.width = c.height = TPX;
-  const g = c.getContext("2d"), img = g.createImageData(TPX, TPX), step = TILE / TPX;
+  const g = c.getContext("2d"), img = g.createImageData(TPX, TPX), step = size / TPX;
   for (let j = 0; j < TPX; j++) for (let i = 0; i < TPX; i++) {
     // canvas x grows to the road's right (−x), canvas y grows backwards (−z)
-    groundColorAt((tx + 1) * TILE - (i + 0.5) * step, (tz + 1) * TILE - (j + 0.5) * step, _rgb);
+    groundColorAt((tx + 1) * size - (i + 0.5) * step, (tz + 1) * size - (j + 0.5) * step, _rgb);
     const o = (j * TPX + i) * 4;
     img.data[o] = toS(_rgb[0]); img.data[o + 1] = toS(_rgb[1]); img.data[o + 2] = toS(_rgb[2]); img.data[o + 3] = 255;
   }
   g.putImageData(img, 0, 0);
   return c;
 }
-// Is this tile anywhere near what the player can see on the map?
-function tileWanted(tx, tz, d) {
-  const z0 = tz * TILE - CORRIDOR, z1 = (tz + 1) * TILE + CORRIDOR, zc = (tz + 0.5) * TILE, xc = (tx + 0.5) * TILE;
-  const nearRoad = Math.abs(xc - roadX(zc)) < CORRIDOR + TILE;
-  if (nearRoad && (d.memory.road.some(([a, b]) => a < z1 && b > z0) || (d.reveal && d.reveal[0] < z1 && d.reveal[1] > z0))) return true;
-  const x0 = tx * TILE - TRAIL_SEE, x1 = (tx + 1) * TILE + TRAIL_SEE;
-  return d.memory.trail.some((p) => p[0] > x0 && p[0] < x1 && p[1] > z0 && p[1] < z1);
-}
-
 // ── Drawing ──
 export const KIND_STYLE = {
   start:    { letter: "⌂", color: "#f1e9d8", label: "Home" },
@@ -85,12 +80,13 @@ export const KIND_STYLE = {
   junkyard: { letter: "J", color: "#a9a18f", label: "Junkyard" },
   wreck:    { letter: "×", color: "#a9a18f", label: "Wreck" },
 };
+const STORY = "#ffc23d", DEST = "#4fa8ff";
 const MEMBER = "#5fc4d6", ME = "#f2aa2e", ROAD = "#3a3631", ROAD_EDGE = "rgba(241,233,216,0.75)", INTEL = "#f2aa2e";
-const FOG = "rgb(17,14,11)";
 
 // view: { cx, cz (world point at the centre), scale (px per metre) }
 // d: { memory, sites: [{ x, z, kind, name, start?, state: "found" | "ruin" | "intel", route? }], reveal: [z0, z1] | null,
 //      me: { x, z, yaw }, members: [{ name, x, z, paused }], labels, edge (clamp members to the border), dpr,
+//      pins: [{ x, z, name, current }] (story places; the current objective's is ringed), waypoint: { x, z, name } | null,
 //      tileMs: time allowed for building ground tiles this draw }
 // → true when ground tiles are still waiting to be built (draw again soon)
 export function drawMap(ctx, w, h, view, d) {
@@ -99,53 +95,31 @@ export function drawMap(ctx, w, h, view, d) {
   const zLo = cz - h / 2 / scale - 50, zHi = cz + h / 2 / scale + 50;
   ctx.save();
   ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = "rgb(17,14,11)"; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = d.dark ? "#17231e" : "rgb(17,14,11)"; ctx.fillRect(0, 0, w, h);
 
   // The ground, in its own colours…
   if (getSeed() !== tileSeed) { tiles.clear(); tileSeed = getSeed(); }
-  if (tiles.size > 900) tiles.clear();
-  const xHalfV = w / 2 / scale, tpx = TILE * scale;
+  if (tiles.size > TILE_CAP) tiles.clear();
+  const L = tileLevel(scale), size = TILE * (1 << L), xHalfV = w / 2 / scale, tpx = size * scale;
   const until = performance.now() + (d.tileMs || 4);
   let pending = false;
   ctx.imageSmoothingEnabled = true;
-  for (let tz = Math.floor(zLo / TILE); tz <= Math.floor(zHi / TILE); tz++) {
-    for (let tx = Math.floor((cx - xHalfV) / TILE); tx <= Math.floor((cx + xHalfV) / TILE); tx++) {
-      const key = tx + "," + tz;
-      let t = tiles.get(key);
-      if (t === undefined) {
-        if (!tileWanted(tx, tz, d)) continue;
-        if (performance.now() > until) { pending = true; continue; }
-        tiles.set(key, t = buildTile(tx, tz));
-      }
-      if (t) ctx.drawImage(t, sx((tx + 1) * TILE), sy((tz + 1) * TILE), tpx + 0.5, tpx + 0.5);
+  // The whole desert, nearest the middle of the view first so the part you're looking at fills in first
+  const want = [];
+  for (let tz = Math.floor(zLo / size); tz <= Math.floor(zHi / size); tz++)
+    for (let tx = Math.floor((cx - xHalfV) / size); tx <= Math.floor((cx + xHalfV) / size); tx++) want.push([tx, tz]);
+  want.sort((a, b) => Math.hypot((a[0] + 0.5) * size - cx, (a[1] + 0.5) * size - cz) - Math.hypot((b[0] + 0.5) * size - cx, (b[1] + 0.5) * size - cz));
+  if (d.dark) ctx.globalAlpha = .13;
+  for (const [tx, tz] of want) {
+    const key = L + ":" + tx + "," + tz;
+    let t = tiles.get(key);
+    if (t === undefined) {
+      if (performance.now() > until) { pending = true; continue; }
+      tiles.set(key, t = buildTile(tx, tz, size));
     }
+    ctx.drawImage(t, sx((tx + 1) * size), sy((tz + 1) * size), tpx + 0.5, tpx + 0.5);
   }
-  // …under darkness everywhere this player hasn't been (the Digimap thins it along the road ahead)
-  const fog = fogFor(ctx.canvas);
-  const f = fog.getContext("2d");
-  f.globalCompositeOperation = "source-over"; f.clearRect(0, 0, w, h); f.fillStyle = FOG; f.fillRect(0, 0, w, h);
-  f.globalCompositeOperation = "destination-out"; f.lineCap = "round"; f.lineJoin = "round";
-  const corridor = (a, b, width, alpha) => {
-    a = Math.max(a, zLo - CORRIDOR); b = Math.min(b, zHi + CORRIDOR);
-    if (a >= b) return;
-    f.globalAlpha = alpha; f.strokeStyle = "#000"; f.lineWidth = width;
-    f.beginPath();
-    const st = Math.max(8, 5 * k / scale);
-    for (let z = a; ; z += st) { const zz = Math.min(z, b); const X = sx(roadX(zz)), Y = sy(zz); z === a ? f.moveTo(X, Y) : f.lineTo(X, Y); if (zz >= b) break; }
-    f.stroke();
-  };
-  if (d.reveal) corridor(d.reveal[0], d.reveal[1], 2 * CORRIDOR * scale, 0.5);
-  for (const [a, b] of d.memory.road) corridor(a, b, 2 * CORRIDOR * scale, 1);
-  f.globalAlpha = 1; f.lineWidth = 2 * TRAIL_SEE * scale; f.beginPath();
-  let pt = null;
-  for (const p of d.memory.trail) {
-    if (p[1] < zLo - 500 || p[1] > zHi + 500) { pt = null; continue; }
-    if (pt && Math.hypot(p[0] - pt[0], p[1] - pt[1]) < 120) f.lineTo(sx(p[0]), sy(p[1])); else { f.moveTo(sx(p[0]), sy(p[1])); f.lineTo(sx(p[0]) + 0.01, sy(p[1])); }
-    pt = p;
-  }
-  f.stroke();
-  f.globalCompositeOperation = "source-over"; f.globalAlpha = 1;
-  ctx.drawImage(fog, 0, 0);
+  ctx.globalAlpha = 1;
 
   // 1 km grid
   const grid = scale > 0.004 ? 1000 : 10000;
@@ -192,6 +166,17 @@ export function drawMap(ctx, w, h, view, d) {
   }
   ctx.stroke(); ctx.setLineDash([]);
 
+  // The way to go: along the highway from you to the objective (gold) and to your own destination (blue)
+  for (const rt of d.routes || []) {
+    if (!rt.pts || rt.pts.length < 2) continue;
+    const path = () => { ctx.beginPath(); rt.pts.forEach((p, i) => (i ? ctx.lineTo(sx(p.x), sy(p.z)) : ctx.moveTo(sx(p.x), sy(p.z)))); };
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    path(); ctx.strokeStyle = "rgba(13,10,7,0.85)"; ctx.lineWidth = Math.max(6 * k, 13 * scale); ctx.stroke();
+    path(); ctx.strokeStyle = rt.color; ctx.lineWidth = Math.max(3.5 * k, 8 * scale);
+    ctx.setLineDash([9 * k, 6 * k]); ctx.lineDashOffset = -performance.now() / 40 * k; ctx.stroke();
+    ctx.setLineDash([]); ctx.lineDashOffset = 0;
+  }
+
   // Places
   const r = (d.labels ? 8 : 6) * k;
   ctx.font = `700 ${Math.round(r * 1.25)}px system-ui, sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
@@ -209,6 +194,36 @@ export function drawMap(ctx, w, h, view, d) {
     ctx.fillText(st.letter, X, Y + 0.5 * k);
     if (ruin) { ctx.strokeStyle = "#c9bfae"; ctx.lineWidth = 1.5 * k; ctx.beginPath(); ctx.moveTo(X - r * 0.8, Y + r * 0.8); ctx.lineTo(X + r * 0.8, Y - r * 0.8); ctx.stroke(); }
     if (d.labels && scale > 0.012 && s.name) label(ctx, s.name + (ruin ? " (closed down)" : ""), X + r + 4 * k, Y, k, intel ? INTEL : "#e7dcc6", "left");
+  }
+
+  // Story places: gold stars, the one the current objective sends you to ringed (and held at the minimap's edge)
+  const clampEdge = (X, Y) => {
+    if (!d.edge) return [X, Y, false];
+    const pad = 9 * k, cX = Math.min(w - pad, Math.max(pad, X)), cY = Math.min(h - pad, Math.max(pad, Y));
+    return [cX, cY, cX !== X || cY !== Y];
+  };
+  const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 260);
+  for (const pin of d.pins || []) {
+    let X = sx(pin.x), Y = sy(pin.z), off = false;
+    if (pin.current) [X, Y, off] = clampEdge(X, Y);
+    else if (X < -r || X > w + r || Y < -r || Y > h + r) continue;
+    const pr = (off ? 0.75 : 1) * r * (pin.current ? 1.15 : 0.95);
+    if (pin.current && !off) {
+      ctx.beginPath(); ctx.arc(X, Y, pr + (4 + 4 * pulse) * k, 0, Math.PI * 2);
+      ctx.lineWidth = 2 * k; ctx.strokeStyle = `rgba(255,194,61,${0.35 + 0.5 * pulse})`; ctx.stroke();
+    }
+    star(ctx, X, Y, pr, pin.current ? STORY : "#c99a35");
+    if (d.labels && pin.name && (pin.current || scale > 0.006)) label(ctx, pin.name, X + pr + 4 * k, Y, k, STORY, "left");
+  }
+  // Your destination: a blue pin (held at the minimap's edge when it's off it)
+  if (d.waypoint) {
+    let [X, Y, off] = clampEdge(sx(d.waypoint.x), sy(d.waypoint.z));
+    const s = (off ? 6 : 8) * k;
+    ctx.beginPath();
+    ctx.moveTo(X, Y); ctx.lineTo(X - s * 0.7, Y - s * 1.3); ctx.arc(X, Y - s * 1.6, s * 0.75, Math.PI * 0.8, Math.PI * 0.2); ctx.closePath();
+    ctx.fillStyle = DEST; ctx.fill(); ctx.lineWidth = 1.5 * k; ctx.strokeStyle = "#0d0a07"; ctx.stroke();
+    ctx.beginPath(); ctx.arc(X, Y - s * 1.6, s * 0.3, 0, Math.PI * 2); ctx.fillStyle = "#0d0a07"; ctx.fill();
+    if (d.labels) label(ctx, d.waypoint.name || "Destination", X + s + 4 * k, Y - s * 1.4, k, DEST, "left");
   }
 
   // Convoy members (clamped to the edge on the minimap when out of view)
@@ -239,13 +254,14 @@ export function drawMap(ctx, w, h, view, d) {
   ctx.restore();
   return pending;
 }
-// One darkness canvas per target canvas, matched to its size
-const fogs = new WeakMap();
-function fogFor(target) {
-  let c = fogs.get(target);
-  if (!c) { c = document.createElement("canvas"); fogs.set(target, c); }
-  if (c.width !== target.width || c.height !== target.height) { c.width = target.width; c.height = target.height; }
-  return c;
+function star(ctx, X, Y, r, color) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.48 : r * 1.05;
+    i ? ctx.lineTo(X + Math.cos(a) * rr, Y + Math.sin(a) * rr) : ctx.moveTo(X + Math.cos(a) * rr, Y + Math.sin(a) * rr);
+  }
+  ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+  ctx.lineWidth = 1.2; ctx.strokeStyle = "#0d0a07"; ctx.stroke();
 }
 function label(ctx, text, x, y, k, color, align) {
   ctx.save();
@@ -267,7 +283,7 @@ export class Minimap {
   constructor() { this.el = null; this.cv = null; this.t = 0; }
   mount() {
     if (this.el && this.el.isConnected) return true;
-    const host = document.querySelector("#hud .hud-tl");
+    const host = document.querySelector("#hud .hud-map");
     if (!host) return false;
     this.el = document.createElement("div");
     this.el.className = "plate lh-minimap"; this.el.setAttribute("aria-hidden", "true");
@@ -280,32 +296,69 @@ export class Minimap {
   update(dt, visible, data) {
     if (!this.mount()) return;
     this.el.hidden = !visible;
+    this.el.closest("#hud")?.classList.toggle("no-map", !visible);   // the warnings above it drop down when it hides
     if (!visible || (this.t -= dt) > 0) return;
     this.t = 0.12;
     const dpr = fit(this.cv), d = data();
     if (!d.me) return;
     const w = this.cv.width, h = this.cv.height;
-    drawMap(this.cv.getContext("2d"), w, h, { cx: d.me.x, cz: d.me.z + 0.18 * h / (w / 1900), scale: w / 1900 }, { ...d, dpr, edge: true, labels: false });
+    drawMap(this.cv.getContext("2d"), w, h, { cx: d.me.x, cz: d.me.z + 0.18 * h / (w / 1900), scale: w / 1900 }, { ...d, dpr, edge: true, labels: false, dark: true });
   }
 }
 
 // ── Full map: drag to move, wheel / +/- to zoom, C to centre ──
+// opts.onPick(x, z, pin | null): a click (not a drag) on the map; opts.onClear(): a right-click
 export class MapView {
-  constructor() { this.cv = null; this.view = null; this.data = null; this.timer = null; this.drag = null; }
-  attach(canvas, data) {
+  constructor() { this.cv = null; this.view = null; this.data = null; this.timer = null; this.drag = null; this.opts = {}; }
+  attach(canvas, data, opts = {}) {
     this.detach();
-    this.cv = canvas; this.data = data;
+    this.cv = canvas; this.data = data; this.opts = opts;
     const d = data();
     // Opens centred on you, at the zoom you left it at
     this.view = { cx: d.me ? d.me.x : 0, cz: d.me ? d.me.z : 0, scale: this.view ? this.view.scale : 0.1 };
-    canvas.addEventListener("pointerdown", this._down = (e) => { this.drag = { x: e.clientX, y: e.clientY, cx: this.view.cx, cz: this.view.cz }; canvas.setPointerCapture(e.pointerId); });
+    // One finger (or the mouse) drags; two fingers pinch to zoom
+    const fingers = this.fingers = new Map();
+    const spread = () => { const [a, b] = [...fingers.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
+    canvas.addEventListener("pointerdown", this._down = (e) => {
+      fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      canvas.setPointerCapture(e.pointerId);
+      if (fingers.size === 2) { this.drag = null; this.pinch = spread(); return; }
+      if (fingers.size === 1) this.drag = { x: e.clientX, y: e.clientY, cx: this.view.cx, cz: this.view.cz };
+    });
+    canvas.addEventListener("pointercancel", this._cancel = (e) => { fingers.delete(e.pointerId); this.drag = null; if (fingers.size < 2) this.pinch = 0; });
     canvas.addEventListener("pointermove", this._move = (e) => {
+      if (fingers.has(e.pointerId)) fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (this.pinch && fingers.size === 2) {
+        const d = spread();
+        if (d > 0 && this.pinch > 0) this.zoom(d / this.pinch);
+        this.pinch = d;
+        return;
+      }
       if (!this.drag) return;
       const s = this.view.scale;       // CSS px per metre, like the pointer
       this.view.cx = this.drag.cx + (e.clientX - this.drag.x) / s; this.view.cz = this.drag.cz + (e.clientY - this.drag.y) / s;
       this.draw();
     });
-    canvas.addEventListener("pointerup", this._up = () => { this.drag = null; });
+    canvas.addEventListener("pointerup", this._up = (e) => {
+      fingers.delete(e.pointerId);
+      if (this.pinch) { if (fingers.size < 2) this.pinch = 0; this.drag = null; return; }
+      const dr = this.drag;
+      this.drag = null;
+      if (!dr || e.button !== 0 || Math.hypot(e.clientX - dr.x, e.clientY - dr.y) > 5 || !this.opts.onPick) return;
+      const r = canvas.getBoundingClientRect(), s = this.view.scale;
+      const X = e.clientX - r.left, Y = e.clientY - r.top;
+      const x = this.view.cx - (X - r.width / 2) / s, z = this.view.cz - (Y - r.height / 2) / s;
+      // a click near a story place snaps to it
+      const d = this.data();
+      let pin = null, best = 16;
+      for (const p of d.pins || []) {
+        const px = r.width / 2 - (p.x - this.view.cx) * s, py = r.height / 2 - (p.z - this.view.cz) * s, dd = Math.hypot(px - X, py - Y);
+        if (dd < best) { best = dd; pin = p; }
+      }
+      this.opts.onPick(pin ? pin.x : x, pin ? pin.z : z, pin);
+      this.draw();
+    });
+    canvas.addEventListener("contextmenu", this._ctx = (e) => { e.preventDefault(); if (this.opts.onClear) { this.opts.onClear(); this.draw(); } });
     canvas.addEventListener("wheel", this._wheel = (e) => { e.preventDefault(); this.zoom(e.deltaY < 0 ? 1.25 : 0.8); }, { passive: false });
     this.timer = setInterval(() => { if (!this.cv || !this.cv.isConnected) this.detach(); else this.draw(); }, 250);
     this.draw();
@@ -315,6 +368,7 @@ export class MapView {
     if (this.cv) {
       this.cv.removeEventListener("pointerdown", this._down); this.cv.removeEventListener("pointermove", this._move);
       this.cv.removeEventListener("pointerup", this._up); this.cv.removeEventListener("wheel", this._wheel);
+      this.cv.removeEventListener("contextmenu", this._ctx); this.cv.removeEventListener("pointercancel", this._cancel);
     }
     this.cv = null;
   }

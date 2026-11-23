@@ -471,6 +471,8 @@ export class Interaction {
     sfx("pickup", { vol: 0.6 });
   }
   // Q: held → pocket, or selected pocket item → hands
+  stowItem() { return this._stow(); }
+  pocketToHands(i) { return this._quickSlot(i); }
   _stow() {
     const p = this.heldProp;
     if (p) {

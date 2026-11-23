@@ -1,4 +1,4 @@
-// Long Haul – keyboard and mouse input.
+// Long Haul – keyboard, mouse and touch input.
 // Action names are the contract (ARCHITECTURE §6). Modes: "drive" | "foot" | "photo" | "overlay" | "none".
 //   drive / foot : the bound keys of that mode (+ the "always" group) reach the game and are preventDefault-ed
 //   photo        : only the "photo" group (the free camera owns every key, M frees the mouse instead of opening the map)
@@ -12,10 +12,12 @@ import { emit } from "./core/bus.js";
 export const BINDINGS = [
   { action: "pause", group: "always", keys: ["Escape"], desc: "Pause menu" },
   { action: "photo", group: "always", keys: ["KeyP"], desc: "Photo mode" },
-  { action: "inventory", group: "always", keys: ["Tab", "KeyI"], desc: "Inventory, vehicle and journey" },
+  { action: "inventory", group: "always", keys: ["KeyI", "Tab"], desc: "Inventory: tap to toggle, hold to peek" },
   { action: "map", group: "always", keys: ["KeyM"], desc: "Map" },
   { action: "radioNext", group: "always", keys: ["KeyN"], desc: "Radio: next track" },
   { action: "talk", group: "always", keys: ["KeyV"], desc: "Push to talk (convoy voice)" },
+  { action: "journal", group: "always", keys: ["KeyJ"], desc: "Campaign journal" },
+  { action: "skipLine", group: "always", keys: ["Enter"], desc: "Skip a line of dialogue (campaign)" },
 
   { action: "throttle", group: "drive", keys: ["KeyW", "ArrowUp"], desc: "Accelerate" },
   { action: "brake", group: "drive", keys: ["KeyS", "ArrowDown"], desc: "Brake / reverse" },
@@ -86,7 +88,11 @@ export function keyLabel(code) {
   return code;
 }
 // Primary key of an action as the player reads it: "E", "LMB", "Shift". Unknown actions return the name itself.
+// While touch controls are showing, js/touch.js swaps in its button names ("Key", "Recover").
+let labels = null;
+export function setLabels(map) { labels = map; }
 export function bindingLabel(action) {
+  if (labels && labels[action]) return labels[action];
   const b = BINDINGS.find((x) => x.action === action);
   return b ? keyLabel(b.keys[0]) : String(action);
 }
@@ -194,7 +200,9 @@ function onMouseMove(e) {
   const lockedNow = document.pointerLockElement === canvas;
   if (!lockedNow && !(dragLook && !lockOk)) return;
   if (!playing(lastMode)) return;
-  const mx = e.movementX || 0, my = e.movementY || 0;
+  lookBy(e.movementX || 0, e.movementY || 0);
+}
+function lookBy(mx, my) {
   look.dx += mx; look.dy += my;
   if (held.has("rotate")) return;                    // the interaction system rotates the held item with dx/dy
   const k = 0.0025 * (look.sens || 1);
@@ -256,14 +264,29 @@ export function initInput(canvasEl, getModeFn) {
   document.addEventListener("pointerlockerror", onLockError);
 }
 
+// ── Touch (js/touch.js) ─────────────────────────────────
+// On-screen buttons hold actions under their own ids, so they release exactly like keys. The stick is analog:
+// x +1 = right, y +1 = down (screen axes); it adds to the keys in drive() / foot(). touchLook moves the view in CSS px.
+export const stick = { x: 0, y: 0 };
+export function touchDown(id, action) {
+  const m = mode();
+  if (!playing(m) || downCodes.has(id)) return;
+  downCodes.set(id, [action]);
+  pressed.add(action); held.add(action);
+}
+export function touchUp(id) { release(id); }
+export function touchLook(dx, dy) { if (playing(mode())) lookBy(dx, dy); }
+export function currentMode() { return mode(); }
+
 const h = (a) => (held.has(a) ? 1 : 0);
+const axis = (v) => Math.max(-1, Math.min(1, v));
 
 // Driving controls for Vehicles.step. steer: +1 = left (vehicle-local +x). shiftUp/shiftDown are edges (consumed here).
 export function drive() {
   if (mode() !== "drive") return { throttle: 0, steer: 0, handbrake: false, shiftUp: false, shiftDown: false, horn: false };
   return {
-    throttle: h("throttle") - h("brake"),
-    steer: h("left") - h("right"),
+    throttle: axis(h("throttle") - h("brake") - stick.y),
+    steer: axis(h("left") - h("right") - stick.x),
     handbrake: held.has("handbrake"),
     shiftUp: took("shiftUp"),
     shiftDown: took("shiftDown"),
@@ -276,9 +299,9 @@ const NONE = new Set();
 export function foot() {
   if (mode() !== "foot") return { fwd: 0, side: 0, sprint: false, crouch: false, jump: false, look, pressed: NONE, held: NONE };
   return {
-    fwd: h("fwd") - h("back"),
-    side: h("left") - h("right"),
-    sprint: held.has("sprint"),
+    fwd: axis(h("fwd") - h("back") - stick.y),
+    side: axis(h("left") - h("right") - stick.x),
+    sprint: held.has("sprint") || Math.hypot(stick.x, stick.y) > 0.97,
     crouch: held.has("crouch"),
     jump: held.has("jump"),
     look, pressed, held,
@@ -301,7 +324,7 @@ export function endFrame() {
   mode();
 }
 export function releaseAll() {
-  held.clear(); pressed.clear(); downCodes.clear();
+  held.clear(); pressed.clear(); downCodes.clear(); stick.x = 0; stick.y = 0;
   look.dx = 0; look.dy = 0; look.wheel = 0; dragLook = false; wheelAcc = 0;
 }
 

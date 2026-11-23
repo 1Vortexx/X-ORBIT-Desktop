@@ -6,5 +6,8 @@
     { "file": "get me out of here (demo).mp3", "title": "Get Me Out Of Here (Demo Ver.)", "artist": "Michael Lester", "achievement": "get_me_out", "chance": 0.02 }
   ],
   "radio": [],
+  "cues": {
+    "opening": { "file": "Prologue swell.mp3", "title": "Prologue swell" }
+  },
   "options": { "menuOrder": "sequence", "radioOrder": "shuffle", "loop": true }
 }

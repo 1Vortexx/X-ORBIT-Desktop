@@ -321,6 +321,18 @@ discover`. Engine, tyres, wind, rain and interior filtering are driven every fra
 `setOptions({ lite })` / `setQuality` may change pixel ratio, shadow resolution/distance, draw distance of *decorative*
 instances, texture size and particle counts. It must not change terrain height, collider lists, spawns or sites.
 
+Auto picks Lite for weak devices (`perf.js`: Chromebooks, ≤4 GB, ≤2 cores, phones and tablets), when X-ORBIT asks,
+and for the rest of the session once a journey has run below 28 fps for 6 s in a row (`watchFrameRate` in main).
+
+### Touch (`js/touch.js`)
+
+On-screen controls for phones and tablets. They only ever call `input.js` (`touchDown(id, action)` / `touchUp(id)`,
+the analog `stick` {x, y} that `drive()` / `foot()` add to the keys, `touchLook(dx, dy)`), so nothing else knows a
+thumb pressed it. Shown while the input mode is drive / foot / photo and the last input was a touch (a key or mouse
+click hides them). Main feeds `touch.update(touchView())` every frame; foot context buttons come from the HUD action
+list (one per key, labelled with the action). While they show, `bindingLabel()` returns button names ("Key",
+"Recover") so prompts name what to tap. `css/touch.css` hides keyboard help and moves the HUD corners the thumbs cover.
+
 ## 13. Dev pages and tests
 
 Each agent keeps a small harness page in `dev/` that exercises its modules in isolation (mock what you do not own) and
@@ -536,3 +548,163 @@ stock.give({ money?, items?: [{ type, n }] }) // rewards: pockets first, else dr
   `threat`, `pursuit_alert`, `pursuit_end`, `barricade_hit`, `barrel_hit`, `punch`, `pay`, `npc_horn`, `tyre_skid`;
   existing `door_open/door_close/crank/engine_catch/engine_stop/crash` accept `pos`. `audio.update` additionally takes
   `others: [{ tel, dist }]` (≤ 2) for the engines of nearby NPC-driven vehicles.
+
+## 15. Existing campaign runtime: The Return Trip (legacy story)
+
+**Edition status, 22 November 2026:** the code described in this section still runs the previous story.
+The intended replacement is **The Way Back**, specified in section 16 and `CAMPAIGN_IMPLEMENTATION.md`.
+Its prologue P01-P04 now has a separate playable v2 runtime; later chapters remain design-only.
+Keep old scripts, recorded takes and campaign-v1 saves separate until an explicit versioned migration exists.
+
+Story mode, played on one authored road (`CAMPAIGN_SEED` in `js/campaign/state.js`, chosen so Mercy Motel is 12 road km
+from the garage, as scripted). Saved in its own slot (`longhaul-campaign-v1`, plus `longhaul-campaign-checkpoint` written
+at safe moments) so it never replaces a free-roam journey. A campaign death goes back to the checkpoint.
+
+| File | What it does |
+|---|---|
+| `story/campaign/Long_Haul_Full_Campaign.md` | Legacy runtime master (40 missions, 104 scenes, 827 line ids); not the replacement campaign canon |
+| `tools/build-campaign.mjs` | Master → `js/campaign/script.js` (generated: edit the master, run `node tools/build-campaign.mjs`) |
+| `js/campaign/state.js` | Pure progress: `CampaignState`, `stepMissions`, `completeMission`, `sceneLines`, calendar (day 1 = Monday) |
+| `js/campaign/chapter1.js` | Pure mission rules for chapter 1: objectives read a world view `w` and the state's facts |
+| `js/campaign/chapter2.js` | Pure mission rules for chapter 2 (world view additions under `w.ch2`) |
+| `js/campaign/index.js` | The world side: authored places, chapter 1's objects and people, scene playback, branch choices, HUD plate, journal data |
+| `js/campaign/world2.js` | Chapter 2's world: the generator load test (game clock), bakery, hire shed, camp, supper, Ellis's ride; hooks into index.js for phone, shutter, choices, map and travel hints |
+| `js/campaign/chapter3.js`, `world3.js` | Chapter 3: the weigh station (isolate, clear, fit, calibrate with test weights, weigh the pickup, pick the stub), Basin Scrap, Wes's counter (pay or free his vice), the office copier and archive case, Inez at Vega Tyre |
+| `js/campaign/chapter4.js`, `world4.js` | Chapter 4: Fern's ride to the sale barn and back, Alma's photo tin on Wes's shelf, Edie's machine (lend it back or a signed note), June's key board and the storage annex with Ellis |
+| `js/campaign/kit.js` | `ChapterWorld`, the base every chapter world extends: people at places (`presence`), passengers (`offerRide`/`ride`), handing things over (`hand`, `takeFromPockets`), "parked here / in the bed / in my hands" checks, `thing` and `shed`. Lists the hooks index.js calls |
+| `js/campaign/marker.js` | The objective marker: a beam of light over the place to drive to and a chevron over the person or thing to use |
+| `js/campaign/mesh.js` | Shared box/material helpers for story objects |
+
+Rules: objectives latch; a mission's flags and the move to the next mission are written before its closing scene, reward
+or item transfer; scenes still to play stay in `st.queue` so a reload replays them. A new chapter is a new
+`chapterN.js` merged into `DEFS` in `index.js`, plus a `worldN.js` extending `ChapterWorld` (kit.js), added to
+`Campaign.worlds` (chapters 3 and 4 are the pattern: `bind` names places, `update` runs every quarter second, `view` feeds
+the rules as `w.chN`, `choose(sceneKey)` asks a scene's branch question, `travel`/`marker` say where the objective marker
+points). Story happens in person: the player drives to a place, walks up to someone and talks; scenes play with the people
+present facing whoever speaks. An objective with `when(st)` belongs to one branch of a choice and is hidden otherwise.
+Targets made with `Campaign.target()` can be pointed at by id. People who stand at places get a fresh spot each visit;
+when they stop being needed they leave once the player is 60 m away. Branch choices can also be named at the head of a line's
+direction in the master (`[ASK_COPY]`). Places that aren't generated sites are built with `roadSpot()` (a site-like local frame by the road). A mission
+without rules ends the playable campaign with a message (the journal still lists the whole script).
+June's paper map on the office wall (Capture) puts the highway from the garage to 32 km on the maps (`paperRange()`); story places pin as the story needs them (`st.store.pins`, `mapPins()`, the current objective's ringed); a click on the full map sets a destination (`st.store.waypoint`: blue pin, blue beam, HUD distance; right-click clears).
+People are animated from js/npc/pose.js (gait tied to ground covered, breathing, weight shift, gestures) through model.js `animate()`, with idle habits (looking round, arms crossed, hands on hips, checking a watch…), age (stoop, shorter stride, grey hair; spawn spec `age`, campaign ages from the character directory) and injuries (limp, hunch). `walkSpeed(rig, health, run)` sets their pace.
+People (js/npc) have cartoon faces that blink and talk (`talkFor(secs)`), are thrown by cars (`knock`: tumble, bounce, slide) and get up again after a few seconds unless hostile or badly hurt; slow bumps just shove them (`shove`).
+Unrecorded lines are spoken by the browser's text-to-speech (js/speech.js): one stable voice per character by gender (js/cast.js), pitch and pace from age and the line's direction, volume from Settings → Audio → Character voices; a scene waits for a line to finish. Nobody on foot speaks to Kit's back: a scene holds before its first non-Kit line until the camera faces that speaker (`attending`).
+Lines play as subtitles; a recorded take plays instead when `audio/voice/index.json` lists its line id
+(`audio/voice/<LH-…>.mp3`, ids as in the recording manifest). Keys: `journal` (J), `skipLine` (Enter).
+
+## 16. Replacement campaign specification: The Way Back (edition 2)
+
+The current replacement design follows Callum Reed (Cal), Grevyn, Tayla (Tay), TayJay (TayJ) and Riped.
+Graduation is 2089, collapse is 2091, main story is 2096. Cal is approximately 26, male and aroace;
+his bond with Grevyn is platonic. The Scatterballasian Regime is led by Grandpa Gucki and enforced by
+Gucki Troopers. Two distinct supernatural entities are involved: the culpable, guiding Road Force and
+the predatory evil force (working production name Dominion). Gucki Paste sustains Grevyn's damaged
+body while reinforcing control; her own Golghis research enables support without the same bond.
+Do not mix the previous campaign's characters, yellow-door plot or recordings into this edition.
+
+### Sources and implementation status
+
+| Source | Authority / use |
+|---|---|
+| `story/campaign-v2/00-production-bible.md` | Canon, timeline, relationships, exact frame-up, treatment rules, endings and recording constraints |
+| `story/campaign-v2/Long_Haul_Full_Campaign.md` | Complete principal narrative, 40 missions, 128 scenes, every spoken LH2 line and all ending branches |
+| `story/campaign-v2/campaign_data.json` | Structured mirror of that edition; not imported by the legacy runtime |
+| `story/campaign-v2/Dialogue_Recording_Manifest.csv` | Recording IDs, speakers, branch conditions, text, preceding cues and scene context |
+| `CAMPAIGN_IMPLEMENTATION.md` | Mission-by-mission build sheets, site layouts, stage predicates, camera tracks, object hints, lighting, score requests, save/recovery rules and acceptance checks |
+| `story/campaign-v2/HANDOFF.md` | Resume ledger; update actual implementation references and checks after each development session |
+
+The editable artifact source and polished master/per-role PDFs are in the user's
+`Documents/longhaul/scripts` package, with a reproducible generator and gender-organized actor files.
+The beta `story/campaign-v2/source/` mirror retains the narrative/design sources for repository-only handoff.
+The 43-hour route total is an untested design budget for active gameplay, not a guaranteed runtime or
+43 hours of dialogue. P01-P04 now have a playable first implementation; M01-M36 remain NOT_IMPLEMENTED.
+Merely generating documents, JSON or a journal entry does not make later missions playable.
+No deployment or v1 save migration has occurred.
+
+### Separation and versioning
+
+Retain section 15's current runtime and `longhaul-campaign-v1` saves. Introduce separate proposed
+`longhaul-campaign-v2` and `longhaul-campaign-v2-checkpoint` slots, schema 2 and a v2 menu gate before
+switching defaults. Do not run `tools/build-campaign.mjs` against the new master: its parser and
+speaker table are for the legacy campaign. A v2 loader validates the new JSON and LH2 namespace.
+Never infer that similarly numbered missions are interchangeable between editions.
+
+Implement pure data/state first, then authored sites, a cinematic sequencer, hints, lighting/score
+adapters and chapter worlds under `js/campaign/v2/`. The prologue modules now exist; later chapter
+worlds and the full ending system remain planned. Reuse `ChapterWorld`, targets, NPC animation, vehicle seats and pure-rule patterns
+where appropriate. Maintain objective latching, transactional rewards, persisted pending scenes,
+private evidence custody and world reconstruction before scene playback. Main remains the only
+fixed-step and camera owner; no chapter starts a competing animation loop.
+
+### Camera and discoverable-object contract
+
+Main now arbitrates cinematic ownership through the v2 adapter and `cinematics.js`; CameraRig
+continues to handle normal gameplay views. Future chapters must use the same ownership path. Shots follow actual player/vehicle transforms, use absolute coordinates
+under worldRoot, and are collision checked. Convert render-space hits with `toWorld()`. Store and
+restore cab/chase/foot mode, look, zoom, FOV, pointer-lock intent and motion preferences on completion,
+skip, abort, reload and menu interruption; reset chase smoothing on return.
+
+Each scene has authored follow, reaction, wide and object-focus instructions in its build sheet.
+Start forced tracks only when safely stationary and no immediate threat is active. Never take
+steering during a chase or choose a dialogue response through a camera cut. Minimum shot holds
+extend for dialogue completion. Reduced-motion uses stable equivalent views; reduced-flash removes
+lightning modulation while retaining threat information. Riped's fatal impact is non-graphic and
+fixed, and Grevyn's injurious fall is not replaced with a rescue animation that erases her injuries.
+
+An object-focused shot or hint does not collect evidence. Objects require real targets, unobstructed
+interaction and saved inspection facts. Hints progress from composition/diegetic labels to an
+optional voiced clue after 45 active-search seconds, then an on-request visible-object marker after
+another 45. Pause, dialogue and travel do not accrue search time. No through-wall spoilers or
+unearned culprit markers. Skip stops presentation, provides a factual recap and returns to unresolved
+choices; it never auto-consents, spends reserve or selects sacrifice.
+
+### Rescue, endings and audio contracts
+
+Preparation is visible and repairable. A verified planned rescue deterministically lets both survive;
+only an explicitly chosen emergency attempt uses chance. Edition 2 proposes a disclosed 65% emergency
+survival value, one persisted draw at commitment and no reroll on reload. Fatal transfer is a separate,
+cancelable confirmation: Cal dies, Grevyn survives with verified bodily support, Road Force is consumed.
+All completed severings consume Road Force, including emergency failure. After both survive, an honest
+conversation offers together or separate; no romance or hidden approval score chooses the outcome.
+Resource numbers, emergency probability, supporting names and site offsets are production decisions
+supplied by this draft and must be settled before recording lock.
+
+`CAMPAIGN_IMPLEMENTATION.md` defines reserve/capacitor recovery and all preconditions. Medical support
+is independent of field guidance. Grevyn remains severely injured after extraction and needs ongoing
+care. Grandpa's later confrontation kills him and fatally damages the evil force; its subsequent death
+never reverses the rescue result. Audience-only scenes do not automatically become Cal-known facts.
+
+The existing music module only supports menu/radio playlists. New campaign score cues are requests
+for original/owner-approved audio; no cue is claimed to exist or be licensed. Implement one score
+owner with dialogue ducking and silence fallback. Preserve voice/subtitle settings and recorded-take
+routing by edition. Keep new LH2 lines, branch filters and actor manifests synchronized. Every mission
+must survive absent audio, reload, scene skip, streaming and camera restoration before its handoff
+ledger status can become VERIFIED.
+
+### Implemented prologue runtime (22 November 2026)
+
+`js/campaign/v2/` implements P01-P04 behind Play → The Way Back. `data.js` validates the narrative JSON; `state.js` owns latching checks, evidence and scene queues; `objects.js` supplies 26 real inspection targets; `index.js` adapts main/journal/HUD/speech; `cinematics.js` owns safe camera tracks; `hints.js` manages active-search time and visible highlights; `lighting.js` reversibly stages time. `sites.js` creates Westhaven/Drywell and a Highway 9 corridor; `traffic.js` drives civilian cars with ordinary physics.
+
+Ground grading is opt-in via `world/authored.js`; terrain height/surface and rendered sampling agree. Main selects v1/v2 adapters explicitly; v2 uses `campaign2`/`checkpoint2` storage slots mapping to the documented v2 keys. Vehicles marked transient are excluded from save flushing/removal writes. Ambient drivers claim and attach to real seats at offscreen spawn; reseating/boarding holds the car stopped. Roads use InstancedMesh batches with local geometry; town colliders and targets are disposed on campaign end.
+
+The guide's original all-missions-NOT_IMPLEMENTED statements describe the initial plan. HANDOFF.md is the current status authority: prologue functional flow is automated-tested, bespoke cinematic acting/final art/manual target-device review remain, and M01-M36 have no gameplay rules yet. No v1 save migration or deployment occurred.
+
+### Authored opening and explicit scene gates
+
+`direction.js` defines the continuous 100-second opening, verified credits, all twelve scene entries, dates, actor marks and walk paths. `film.js` owns letterbox/credits/fades/title cards. `Cinematics.beginTrack` evaluates smooth poses; geographical cuts are hidden, and FOV/control restoration waits for fade-out. Chapter changes stage the next location under a three-second transition. `openingSeen`, `openingTime` and `transitionPending` are persisted in schema 2 without changing legacy slots.
+
+The P01.A school-door target is explicit; proximity alone cannot start it. Regular later scenes use their designated object actions; only closing beats following a deliberate user action auto-continue after a settling interval. Do not reinstate the broad arrival-radius trigger. Static buildings are instanced for rendering and registered as raycast occluders; separate absolute physics colliders, interaction meshes and the mutable blockade are retained. Residents have sidewalk paths and continue walking during the opening.
+
+
+### Detailed buildings and HUD inventory (local beta, 22 November 2026)
+
+`js/campaign/v2/buildings.js` owns walls with real cutouts, glazed windows, roofs, thresholds, interior partitions and building-local door IDs. `building-materials.js` caches shared procedural finishes. `furnishings.js` supplies type-specific interiors. `sites.js` keeps 28 building records and 82 hinged leaves, registers collision and shelter, positions two shared indoor lights and disposes all per-world resources. `clues.js` supplies permanent evidence fixtures plus stage-specific raycast proxies; use these instead of generic evidence podiums.
+
+`BuildingDoor` in `doors.js` registers its hinge as the actual interaction target. Both the visible hinge and an oriented box collider follow `amount` in [0,1]. Each proposed step checks people in the swing area; blocked steps wait. Paired leaves share a toggle. `PrologueState.doors[id] = {open, amount}` persists geometry and intent. Cinematic staging can open required doors under the film transition. Global static instancing skips dynamic/target ancestors; per-leaf instancing happens inside the hinge so handles, rails and glass remain part of the moving target.
+
+The gameplay HUD uses `hud-roadglass` in `css/hud.css`: actual needs, mission/encounter, time/weather/money, contextual actions and minimap state. Pockets are absent from the normal HUD DOM. `menus.inventory()` renders the same six `Pockets.view()` slots in a compact right drawer, retaining vehicle/journey tabs. Select, use, hands, stow and drop call normal runtime actions; 1–6 quick-item controls remain available. No save format change is required for this presentation.
+
+`ui/inventory-gesture.js` captures the current inventory binding before the menu's keyboard handler. A short press toggles; a press held >=300ms closes its newly opened drawer on release. A second press on an already latched drawer closes it. Ownership survives input `releaseAll()` and the switch to overlay mode. DOM event timestamps prevent queued dispatch from inflating physical hold duration. Typing and OS shortcuts are ignored; blur clears gesture ownership without resuming background gameplay. Touch retains the existing Inventory action. Film/input-locked scenes cannot open the drawer. `openOverlay` keeps the HUD undimmed only for inventory; other overlays retain their prior behavior.
+
+Meaningful regressions: `tests/inventory-gesture.test.mjs`, `tests/buildings-v2.test.mjs`, `tests/campaign-v2-world.test.mjs`, `tests/cinematics-v2.test.mjs`, `tests/traffic-v2.test.mjs`, touch input, item actions/player and save tests. See campaign-v2/HANDOFF.md for observed browser checks and performance limits.

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Long Haul – traffic stop harness</title>
+<link rel="icon" href="data:,">
+<style>html, body { margin: 0; height: 100%; background: #9cc3e0; overflow: hidden; }</style>
+<script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
+</head>
+<body>
+<script type="module">
+// One prologue traffic stop (js/campaign/v2/traffic.js) on flat ground with real vehicles and people, for looking at
+// the cruiser livery, light bar and the officer at the window.  ?az=deg &el=deg &dist=m &stop=0|1 &t=seconds (light phase)
+import * as THREE from "three";
+import { prepare, Vehicles, setGround } from "../js/vehicles/index.js";
+import { Npcs } from "../js/npc/index.js";
+import { TownLife } from "../js/campaign/v2/traffic.js";
+
+const q = new URLSearchParams(location.search);
+await prepare();    // real terrain for the cars, as the people use
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight); renderer.setPixelRatio(devicePixelRatio); renderer.shadowMap.enabled = true;
+document.body.append(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x9cc3e0);
+scene.add(new THREE.HemisphereLight(0xdfe9f2, 0x6b5a45, 1.4));
+const sun = new THREE.DirectionalLight(0xfff1dc, 2.2); sun.position.set(30, 40, -20); sun.castShadow = true;
+Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20 }); sun.shadow.mapSize.set(2048, 2048); scene.add(sun);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: 0x55534f, roughness: 0.95 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const { heightAt } = await import("../js/world/terrain.js");
+const root = new THREE.Group(); scene.add(root);
+const vehicles = new Vehicles({ root, getColliders: () => [] }), fleet = vehicles.list;
+const npcs = new Npcs({ root, getVehicle: (id) => vehicles.get(id), getColliders: () => [] });
+const site = { x: 0, y: heightAt(0, 0), z: 0 }, me = { pos: new THREE.Vector3(0, 0, 0) };
+const life = new TownLife({ vehicles, npcs, root, player: () => me }, [site]);
+life.update(0.01);
+// keep only the chosen stop's people in view: no town traffic in the harness
+for (const e of life.towns[0].cars) { e.n.releaseClaim?.(e.v); npcs.remove(e.n); vehicles.remove(e.v, false); }
+life.towns[0].cars = [];
+const st = life.towns[0].stops[+(q.get("stop") || 0)];
+const focus = st.car.pos.clone().lerp(st.cop.pos, 0.5);
+ground.position.y = heightAt(focus.x, focus.z) - 0.02;   // a floor under the stop (the terrain itself is not drawn here)
+const cam = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 500);
+const az = (+(q.get("az") || 120)) * Math.PI / 180, el = (+(q.get("el") || 14)) * Math.PI / 180, dist = +(q.get("dist") || 11);
+const yaw = Math.atan2(st.car.pos.x - st.cop.pos.x, st.car.pos.z - st.cop.pos.z) + az;
+const gy = heightAt(focus.x, focus.z);
+cam.position.set(focus.x + Math.sin(yaw) * Math.cos(el) * dist, gy + 1 + Math.sin(el) * dist, focus.z + Math.cos(yaw) * Math.cos(el) * dist);
+cam.lookAt(focus.x, gy + 1, focus.z);
+for (let i = 0; i < 60; i++) { npcs.update(1 / 30, { playerPos: cam.position, viewPos: cam.position }); for (const v of fleet) v.update?.(1 / 60); }
+life.t = +(q.get("t") || 0.03); life.update(0.001);
+renderer.render(scene, cam);
+document.title += " · ready";
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* Long Haul – on-screen touch controls (js/touch.js) and touch-mode adjustments to the HUD and menus.
+   html.lh-touch: the last input was a touch. html.lh-touch-play: the controls are showing (drive / foot / photo). */
+html, body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+html.lh-touch #game, #touch { touch-action: none; }
+html.lh-touch .lh-menus { touch-action: manipulation; }
+
+/* --tb: button height; --t-top: where the HUD can start below the top button row */
+html.lh-touch {
+  --sl: env(safe-area-inset-left, 0px); --sr: env(safe-area-inset-right, 0px);
+  --st: env(safe-area-inset-top, 0px); --sb: env(safe-area-inset-bottom, 0px);
+  --tb: clamp(44px, 6.2vmin + 18px, 64px);
+  --t-top: calc(var(--st) + var(--tb) * 0.72 + 16px);
+}
+#touch {
+  position: fixed; inset: 0; z-index: 25; pointer-events: none; user-select: none; -webkit-user-select: none;
+  font: 600 clamp(10px, 1.1vmin + 7px, 14px)/1.1 var(--lh-ui); color: var(--lh-bone);
+}
+#touch > * { pointer-events: none; }
+#touch .t-layer, #touch .t-b, #touch .t-more, #touch .t-rotate { pointer-events: auto; }
+.t-layer { position: absolute; inset: 0; }
+
+/* floating stick: rests faintly bottom-left, jumps to where the left thumb lands */
+.t-stick { position: absolute; left: 0; top: 0; width: 0; height: 0; transition: opacity 0.15s; }
+.t-stick.rest { opacity: 0.45; }
+.t-stick::before, .t-stick i { content: ""; position: absolute; border-radius: 50%; }
+.t-stick::before { left: -64px; top: -64px; width: 128px; height: 128px; border: 2px solid rgba(241, 233, 216, 0.35); background: rgba(17, 14, 11, 0.25); }
+.t-stick.steer::before { left: -74px; top: -26px; width: 148px; height: 52px; border-radius: 26px; }
+.t-stick i { left: -26px; top: -26px; width: 52px; height: 52px; background: rgba(241, 233, 216, 0.55); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); }
+
+/* buttons */
+.t-b {
+  position: relative; display: grid; place-content: center; justify-items: center; gap: 2px;
+  min-width: var(--tb); height: var(--tb); padding: 0 0.9em; margin: 0; border-radius: calc(var(--tb) / 2);
+  border: 1.5px solid rgba(241, 233, 216, 0.4); background: rgba(17, 14, 11, 0.55); color: var(--lh-bone);
+  font: inherit; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8); touch-action: none; cursor: default;
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+}
+.t-b span { white-space: nowrap; max-width: 11em; overflow: hidden; text-overflow: ellipsis; }
+.t-b small { font-size: 0.75em; font-weight: 500; color: var(--lh-amber); max-width: 12em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-b.down { background: rgba(242, 170, 46, 0.55); border-color: var(--lh-amber); }
+.t-b.sq { min-width: 0; height: calc(var(--tb) * 0.72); padding: 0 0.75em; border-radius: 0.6em; font-size: 0.92em; }
+.t-b.big { min-width: calc(var(--tb) * 1.3); height: calc(var(--tb) * 1.3); border-radius: 50%; font-size: 1.05em; }
+.t-b.wide { padding: 0 1.1em; }
+.t-b.act { border-color: rgba(242, 170, 46, 0.75); background: rgba(40, 28, 12, 0.65); }
+.t-b.off { opacity: 0.6; }
+.t-b.hot { border-color: var(--lh-amber); background: rgba(160, 98, 18, 0.6); }
+.t-b.pedal { width: calc(var(--tb) * 1.25); height: calc(var(--tb) * 1.7); border-radius: 0.9em; }
+.t-b.pedal.gas { height: calc(var(--tb) * 2); border-color: rgba(147, 196, 125, 0.7); }
+
+/* placement */
+.t-top { position: absolute; top: calc(var(--st) + 8px); left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+.t-pad { position: absolute; right: calc(var(--sr) + 14px); bottom: calc(var(--sb) + 14px); display: flex; flex-wrap: wrap-reverse; flex-direction: row-reverse;
+  align-items: flex-end; justify-content: flex-start; gap: 10px; max-width: calc(var(--tb) * 4.6); }
+.t-ctx { position: absolute; right: calc(var(--sr) + 14px); bottom: calc(var(--sb) + 14px + var(--tb) * 1.5); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-height: 52vh; flex-wrap: wrap-reverse; }
+#touch[data-mode="drive"] .t-pad { max-width: calc(var(--tb) * 3); }
+#touch[data-mode="drive"] .t-ctx { bottom: auto; top: var(--t-top); right: calc(var(--sr) + 14px); flex-direction: row; flex-wrap: wrap; justify-content: flex-end; max-width: 46vw; }
+#touch[data-mode="drive"] .t-ctx .t-b { height: calc(var(--tb) * 0.8); }
+.t-more { position: absolute; top: calc(var(--t-top) + var(--tb) * 0.8 + 10px); z-index: 1; right: calc(var(--sr) + 14px); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 46vw;
+  padding: 8px; border-radius: 0.8em; background: rgba(17, 14, 11, 0.7); border: 1px solid var(--lh-line); }
+
+/* portrait: offer a turn, but let them play anyway */
+.t-rotate { display: none; position: absolute; inset: 0; z-index: 2; place-content: center; justify-items: center; gap: 1em; padding: 2em; text-align: center;
+  background: rgba(11, 9, 6, 0.92); font-size: 1.2em; }
+.t-rotate p { margin: 0; }
+.t-rotate button { padding: 0.7em 1.4em; border-radius: 2em; border: 1px solid var(--lh-line); background: rgba(241, 233, 216, 0.1); color: var(--lh-bone); font: inherit; }
+@media (orientation: portrait) { html:not(.lh-rotate-ok) .t-rotate { display: grid; } }
+
+/* HUD in touch mode: no keyboard help, no "click to look", tap Inventory for pockets. The corners that the
+   thumbs cover move: the gauges and held-item card go bottom centre, warnings and trip under the top buttons. */
+html.lh-touch #hud .hints, html.lh-touch #hud .lockhint, html.lh-touch #hud .acts, html.lh-touch #hud .lh-minimap-key,
+html.lh-touch .lh-keys { display: none !important; }
+html.lh-touch-play #hud { --hud-scale-max: 0.9; --m: 0.6em; left: var(--sl); right: var(--sr); }
+html.lh-touch-play #hud .hud-bl { left: 50%; transform: translateX(-50%); align-items: center; bottom: calc(var(--sb) + var(--m) + 5.2em); }
+html.lh-touch-play #hud[data-mode="drive"] .hud-bl { bottom: calc(var(--sb) + var(--m)); }
+html.lh-touch-play #hud .hud-br { top: calc(var(--t-top) + 5em); bottom: auto; right: auto; left: 50%; transform: translateX(-50%); align-items: center; }
+html.lh-touch-play #hud .hud-tr { top: calc(var(--t-top) + var(--map-gap)); }
+html.lh-touch-play #hud[data-mode="drive"] .hud-tr { top: calc(var(--t-top) + var(--tb) * 0.8 + 10px + var(--map-gap)); }
+html.lh-touch-play #hud .hud-tl { top: var(--t-top); }
+/* the thumbs own the bottom right on touch: the minimap sits top right under the buttons instead, a little smaller */
+html.lh-touch-play #hud { --map-w: 13em; --map-h: 8em; }
+html.lh-touch-play #hud .hud-map { top: var(--t-top); bottom: auto; }
+html.lh-touch-play #hud[data-mode="drive"] .hud-map { top: calc(var(--t-top) + var(--tb) * 0.8 + 10px); }
+html.lh-touch-play #hud .hud-br, html.lh-touch-play #hud .hud-help { bottom: auto; }
+html.lh-touch-play #hud .hud-obj { top: calc(var(--t-top) + 0.2em); max-width: calc(100% - 2 * (14em + var(--m))); }
+html.lh-touch-play #hud .hud-bc { bottom: calc(var(--sb) + var(--m)); }
+html.lh-touch-play #hud .hud-say, html.lh-touch-play #hud[data-mode="drive"] .hud-say { bottom: 40%; }

@@ -5,6 +5,9 @@
 const KEY = "longhaul-save-v3";
 const KEY_V2 = "longhaul-save-v2";
 const BACKUP = "longhaul-save-backup";
+// The campaign (The Return Trip) keeps its own slot, so it never replaces a free-roam journey or the other way round
+const CAMPAIGN_KEY = "longhaul-campaign-v1", CAMPAIGN_BACKUP = "longhaul-campaign-backup", CHECKPOINT_KEY = "longhaul-campaign-checkpoint";
+const slotKey = (slot) => (slot === "campaign2" ? "longhaul-campaign-v2" : slot === "checkpoint2" ? "longhaul-campaign-v2-checkpoint" : slot === "campaign" ? CAMPAIGN_KEY : slot === "checkpoint" ? CHECKPOINT_KEY : KEY);
 export const SAVE_VERSION = 4;
 
 let store = null;
@@ -49,8 +52,9 @@ export function migrateV2(d) {
 
 // → { save, error }  error: null | "corrupt" | "newer" | "unavailable"
 // A save that cannot be read is never deleted: it is copied to a backup key and reported.
-export function loadSave() {
+export function loadSave(slot) {
   if (!store) return { save: null, error: "unavailable" };
+  if (["campaign", "checkpoint", "campaign2", "checkpoint2"].includes(slot)) return loadCampaign(slotKey(slot), slot);
   const raw = get(KEY);
   if (raw) {
     try {
@@ -76,20 +80,35 @@ export function loadSave() {
   return { save: null, error: null };
 }
 
+function loadCampaign(key, slot) {
+  const raw = get(key);
+  if (!raw) return { save: null, error: null };
+  try {
+    const d = JSON.parse(raw);
+    if (valid(d) && d.campaign && ((slot === "campaign2" || slot === "checkpoint2") ? d.campaign.schema === 2 : d.campaign.schema !== 2)) return { save: d, error: null };
+    if (d && d.v > SAVE_VERSION) return { save: null, error: "newer" };
+  } catch (e) {}
+  set(key.includes("v2") ? key + "-backup" : CAMPAIGN_BACKUP, raw);
+  return { save: null, error: "corrupt" };
+}
+
 // A journey from somewhere else (the X-ORBIT account): the same checks as a local save → save | null
 export function checkSave(d) {
   return d && typeof d === "object" && valid(d) ? migrateV3(d) : null;
 }
 
 // Returns true when the save reached storage
-export function writeSave(data) {
+export function writeSave(data, slot) {
   let json;
   try { json = JSON.stringify(Object.assign({ v: SAVE_VERSION, at: Date.now() }, data)); } catch (e) { return false; }
-  return set(KEY, json);
+  return set(slotKey(slot), json);
 }
 
 // Starting a new journey: the old one (any version) is removed
-export function clearSave() { del(KEY); del(KEY_V2); del("longhaul-save-v1"); }
+export function clearSave(slot) {
+  if (slot) { del(slotKey(slot)); return; }
+  del(KEY); del(KEY_V2); del("longhaul-save-v1");
+}
 
 // What the main menu shows about a save
 export function previewOf(save) {
@@ -98,6 +117,7 @@ export function previewOf(save) {
     day: save.day, diff: save.diff, distance: (save.stats && save.stats.distance) || 0,
     vehicle: save.vehicleName || (save.migrated ? "Pickup (journey from an older version)" : "Pickup"),
     at: save.at, migrated: !!save.migrated,
+    ...(save.campaign ? { mission: save.campaign.mission } : {}),
   };
 }
 
@@ -106,7 +126,7 @@ const PREFS = "longhaul-prefs";
 export const PREF_DEFAULTS = {
   quality: "auto", fov: 70, camMotion: 1, camera: "cab", chaseZoom: 1, sens: 1, invertY: false,
   units: "km", gearbox: "auto",
-  vol: { master: 0.8, music: 0.6, sfx: 0.8, ambience: 0.7, voice: 1 }, muted: false, radio: true, voiceMode: "open",
+  vol: { master: 0.8, music: 0.6, sfx: 0.8, ambience: 0.7, voice: 1, speech: 1 }, muted: false, radio: true, voiceMode: "open",
   hud: { scale: 1, opacity: 1, show: "full", critical: true, help: true },
   a11y: { reduceMotion: false, highContrast: false },
 };

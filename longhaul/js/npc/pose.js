@@ -31,11 +31,58 @@ export function strideAngle(speed) { return Math.min(0.74, Math.asin(Math.min(0.
 //   mode: "stand" | "sit" | "down",
 //   speed (m/s over the ground), phase (gait, rad), t (seconds, for idle motion), seed (0..1 personal offset),
 //   sit: 0..1 blend from standing to sitting (enter / exit transitions), recline (rad, seated back angle),
+//   chair: bool (a chair at a desk rather than a car seat: thighs level, feet on the floor),
+//   act: seated activity at a desk – "write" | "read" | "listen" (chin on hand) | "chat" (turned by `turn` rad) | "lean" | "raise",
+//   lean: bool (leaning in at a car window: bent at the hips, a forearm along the roof, a hand on the door),
 //   talk: bool, hitch: 0 | 1 (right arm) | -1 (left arm), signal: bool (raised "stop" hand),
 //   threat: bool, armed: bool, strike: -1 | 0..1 (progress of a swing; impact at STRIKE_HIT),
 //   lookYaw, lookPitch (rad, relative to the body; already limited by the caller)
 // }
 export const STRIKE_TIME = 0.62, STRIKE_HIT = 0.5;   // seconds for one swing; fraction at which it lands
+
+// Things people do sitting at a desk. Blended by k (the sit amount), upper body only.
+function desk(out, act, t, seed, turn, k) {
+  const set = (j, v) => { out[j] = out[j] * (1 - k) + v * k; };
+  const rest = () => { set(J.armLRx, -0.8); set(J.armRRx, -0.8); set(J.elbL, -1.05); set(J.elbR, -1.05); set(J.armLRy, 0.45); set(J.armRRy, -0.45); set(J.armLRz, 0.06); set(J.armRRz, -0.06); };
+  // every so often someone bent over their work looks up at the board for a moment
+  const up = smooth(0.82, 0.95, Math.sin(t * 0.21 + seed * 3));
+  switch (act) {
+    case "write": {
+      rest();
+      const sc = Math.sin(t * 8.5 + seed) * (1 - up), line = Math.sin(t * 0.9 + seed);
+      set(J.spineRx, 0.3 - 0.18 * up); set(J.headRx, 0.5 - 0.42 * up); set(J.headRy, -0.08 + 0.04 * line);
+      set(J.armRRx, -0.85 + 0.04 * line); set(J.elbR, -1.1 + 0.05 * sc); set(J.armRRz, -0.08 + 0.03 * sc); set(J.handRRx, 0.35 + 0.08 * sc);
+      break;
+    }
+    case "read": {
+      rest();
+      const page = smooth(0.94, 1, Math.sin(t * 0.33 + seed));
+      set(J.spineRx, 0.22); set(J.headRx, 0.42 - 0.3 * up); set(J.headRy, 0.12 * Math.sin(t * 0.5 + seed));
+      set(J.armRRz, -0.06 - 0.35 * page); set(J.armRRy, -0.45 + 0.6 * page);
+      break;
+    }
+    case "listen":
+      rest();
+      set(J.armLRx, -0.95); set(J.elbL, -2.25); set(J.armLRy, 0.75); set(J.armLRz, -0.05); set(J.handLRx, -0.3);
+      set(J.spineRx, 0.22); set(J.spineRz, 0.06); set(J.headRx, 0.08 + 0.03 * Math.sin(t * 0.4 + seed));
+      break;
+    case "chat":
+      rest();
+      set(J.spineRx, 0.08); set(J.spineRy, turn * 0.45); set(J.hipsRy, turn * 0.15); set(J.headRy, turn * 0.6 + 0.08 * Math.sin(t * 0.7 + seed));
+      set(J.armLRx, turn > 0 ? -0.3 : -0.8); set(J.armRRx, turn < 0 ? -0.3 : -0.8);
+      break;
+    case "lean":
+      set(J.hipsRx, -0.2); set(J.spineRx, -0.22);
+      set(J.armLRx, -0.55); set(J.armRRx, -0.6); set(J.elbL, -1.9); set(J.elbR, -1.85); set(J.armLRz, -0.15); set(J.armRRz, 0.15); set(J.armLRy, 0.5); set(J.armRRy, -0.5);
+      set(J.headRx, 0.05 + 0.05 * Math.sin(t * 0.3 + seed));
+      break;
+    case "raise":
+      rest();
+      set(J.armRRx, -2.75 + 0.05 * Math.sin(t * 1.7 + seed)); set(J.armRRz, -0.1); set(J.armRRy, 0); set(J.elbR, -0.3); set(J.handRRx, -0.2);
+      set(J.spineRx, 0.02); set(J.headRx, -0.08);
+      break;
+  }
+}
 
 export function poseFor(out, s) {
   for (let i = 0; i < J.N; i++) out[i] = 0;
@@ -98,6 +145,8 @@ export function poseFor(out, s) {
     set(J.armLRz, 0.12); set(J.armRRz, -0.12);
     set(J.headRx, rec * 0.8);
     if (s.armed) set(J.handRRx, 0.2);
+    if (s.chair) { set(J.legLRx, -1.45); set(J.legRRx, -1.45); set(J.kneeL, 1.42); set(J.kneeR, 1.42); set(J.footL, 0.03); set(J.footR, 0.03); set(J.legLRz, 0.08); set(J.legRRz, -0.08); }
+    if (s.act) desk(out, s.act, t, seed, s.turn || 0, k);
   }
 
   // ── gestures (upper body only, so they work standing, walking and seated)
@@ -115,6 +164,13 @@ export function poseFor(out, s) {
     if (!s.hitch) { out[J.armLRx] = -0.15; out[J.elbL] = -0.7 - 0.22 * g2; }
     out[J.headRx] += 0.05 * Math.sin(t * 2.7 + seed);
     out[J.spineRy] += 0.05 * g2;
+  }
+  if (s.lean && sit < 0.5) {
+    const b = Math.sin(t * 0.6 + seed) * 0.03;
+    out[J.hipsRx] += 0.42; out[J.spineRx] += 0.46 + b; out[J.headRx] -= 0.5;
+    out[J.kneeL] += 0.08; out[J.kneeR] += 0.04; out[J.legRRx] -= 0.06;
+    out[J.armRRx] = -1.95; out[J.armRRz] = -0.32; out[J.armRRy] = -0.4; out[J.elbR] = -1.15; out[J.handRRx] = 0.2;   // forearm on the roof
+    out[J.armLRx] = -0.75 + b; out[J.armLRz] = 0.12; out[J.elbL] = -0.55;                                              // hand on the door
   }
   if (s.signal) {                                 // flat hand raised: "stop"
     out[J.armRRx] = -2.55 + 0.04 * Math.sin(t * 1.3); out[J.armRRz] = -0.22; out[J.elbR] = -0.22; out[J.armRRy] = 0;

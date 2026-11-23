@@ -1,3 +1,4 @@
+import { authoredFeatures } from "./authored.js";
 // Long Haul – the streamed world: terrain + road chunks, sites, scenery, far terrain, colliders.
 import * as THREE from "three";
 import { CHUNK, ROAD_HALF, roadX, roadDir, heightAt, regionAt, floorAt, featureTint } from "./terrain.js";
@@ -73,6 +74,13 @@ function columnsFor(k) {
     const r = Math.hypot(s.pad.hx, s.pad.hz) + 8;
     add(s.x - r, s.x + r, s.z - r, s.z + r);
     if (s.route) add(s.route.xmin - 8, s.route.xmax + 8, s.route.zmin - 8, s.route.zmax + 8);
+  }
+  // Sample secondary highways/town pads densely so rendered terrain matches authored driving ground.
+  const extraFeatures=new Set();
+  for(let z=z0;z<=z0+CHUNK;z+=64) for(const f of authoredFeatures(z)) extraFeatures.add(f);
+  for(const f of extraFeatures) {
+    const off=f.x-roadX(Math.max(z0,Math.min(z0+CHUNK,f.z)));
+    for(let x=Math.max(-STRIP+4,off-f.hx-12);x<Math.min(STRIP-4,off+f.hx+12);x+=4)cols.push(x);
   }
   cols.sort((a, b) => a - b);
   const out = [];

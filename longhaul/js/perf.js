@@ -7,7 +7,8 @@ const device = (() => {
   const chromebook = /\bCrOS\b/.test(navigator.userAgent || "");
   const memory = navigator.deviceMemory || null;
   const cores = navigator.hardwareConcurrency || null;
-  return chromebook || (memory !== null && memory <= 4) || (cores !== null && cores <= 2);
+  const handheld = matchMedia("(pointer: coarse)").matches && matchMedia("(hover: none)").matches;   // phones, tablets: small GPUs, hot batteries
+  return chromebook || handheld || (memory !== null && memory <= 4) || (cores !== null && cores <= 2);
 })();
 
 export const embedded = (() => { try { return window.parent !== window; } catch (e) { return true; } })();

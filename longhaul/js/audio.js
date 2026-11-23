@@ -421,6 +421,23 @@ function deathClip(src, delay, level) {
   deathClips.push({ a, t });
 }
 
+// Recorded clips played on <audio> elements (looping or one-shot), at master × sfx volume times their own level.
+// Used for the town's dogs. A handle's volume can be changed while it plays (distance to the dog, etc.).
+const clips = new Set();
+let clipsPaused = false;
+const clipLevel = (c) => Math.max(0, Math.min(1, (muted ? 0 : vol.master * vol.sfx) * c.level));
+function clip(src, { loop = false, volume = 1 } = {}) {
+  if (clipsPaused && !loop) return null;
+  const el = new Audio(src), c = { el, level: volume };
+  el.loop = loop; el.preload = "auto"; el.volume = clipLevel(c);
+  clips.add(c);
+  el.onended = () => { if (!loop) clips.delete(c); };
+  if (!clipsPaused) el.play().catch(() => {});
+  c.setVolume = (v) => { c.level = v; el.volume = clipLevel(c); };
+  c.stop = () => { clips.delete(c); try { el.pause(); el.removeAttribute("src"); el.load(); } catch (e) {} };
+  return c;
+}
+
 export const audio = {
   get ready() { return !!ctx; },
   get context() { return ctx; },
@@ -454,7 +471,11 @@ export const audio = {
     if (!listener) listener = { x: 0, y: 0, z: 0 };
     listener.x = pos.x || 0; listener.y = pos.y || 0; listener.z = pos.z || 0;
   },
-  setVolumes(v, isMuted) { Object.assign(vol, v); muted = !!isMuted; applyVolume(); },
+  setVolumes(v, isMuted) { Object.assign(vol, v); muted = !!isMuted; applyVolume(); for (const c of clips) c.el.volume = clipLevel(c); },
+  clip,
+  // the game's pause menu: recorded clips (the dogs) stop where they are and carry on afterwards
+  pauseClips() { clipsPaused = true; for (const c of clips) try { c.el.pause(); } catch (e) {} },
+  resumeClips() { clipsPaused = false; for (const c of clips) c.el.play().catch(() => {}); },
   play,
 
   // s: { active, tel (Telemetry|null: the vehicle you sit in or stand next to), inCab, dist (m to that vehicle),

@@ -1,3 +1,4 @@
+import { authoredHeight, authoredSurface, authoredFeatures } from "./authored.js";
 // Long Haul – terrain: the one ground function for wheels, feet, props and meshes.
 // Pure math (no DOM, no THREE objects) – importable in Node. Built from base.js (noise, road, regions, natural
 // ground) plus the pad / side-track registry of sites.js, so roads, terrain, floors and collision always agree.
@@ -29,7 +30,7 @@ export function heightAt(x, z) {
       if (pf > 0) { h += (ft.y - h) * pf; if (pf > padF) padF = pf; }
     }
   }
-  return ry + (h - ry) * smooth(EDGE, EDGE + 30 - 25 * padF, d);
+  return authoredHeight(x, z, ry + (h - ry) * smooth(EDGE, EDGE + 30 - 25 * padF, d));
 }
 
 export function normalAt(x, z, out) {
@@ -40,10 +41,11 @@ export function normalAt(x, z, out) {
   return out;
 }
 
-export function onRoad(x, z) { return roadFrame(x, z, _f).d < ROAD_HALF + 0.3; }
+export function onRoad(x, z) { return authoredSurface(x,z) === "asphalt" || roadFrame(x, z, _f).d < ROAD_HALF + 0.3; }
 
 const _w = [0, 0, 0, 0];
 export function surfaceAt(x, z) {
+  const authored = authoredSurface(x,z); if (authored) return authored;
   const d = roadFrame(x, z, _f).d;
   if (d < ROAD_HALF + 0.3) return "asphalt";
   if (d < EDGE) return "gravel";
@@ -72,6 +74,7 @@ export function surfaceAt(x, z) {
 
 // True when (x, z) is at least `m` metres clear of every site pad and side track (scenery placement).
 export function featureClear(x, z, m) {
+  for (const f of authoredFeatures(z)) if (Math.abs(x-f.x)<f.hx+m && Math.abs(z-f.z)<f.hz+m) return false;
   const feats = featuresAt(z);
   if (!feats) return true;
   for (let i = 0; i < feats.length; i++) {

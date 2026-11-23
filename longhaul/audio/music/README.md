@@ -27,6 +27,8 @@ The title screen plays three tracks by Jaobi, and once in a while (1 in 50) a tr
 - `title`, `artist` and `license` are optional. They appear in the now-playing line and on the Credits screen.
 - `chance` (optional, between 0 and 1) makes a track rare: it is left out of the normal order, and each time a new
   track starts it is picked with that probability instead. `"chance": 0.02` is 1 in 50.
+- `cues` (optional) holds named one-shot tracks that story scenes start themselves. They play once over whatever
+  else would be playing, then hand back. `cues.opening` plays over the prologue's opening cinematic.
 - `menuOrder` / `radioOrder`: `"sequence"` or `"shuffle"`. `loop: false` stops a single-track list after one play.
 - Only local files are accepted; web addresses are ignored on purpose.
 
